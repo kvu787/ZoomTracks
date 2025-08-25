@@ -405,7 +405,7 @@ GameObject:
   - component: {fileID: 410087040}
   - component: {fileID: 410087042}
   m_Layer: 0
-  m_Name: Directional Light
+  m_Name: Sunlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -796,8 +796,8 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 330585546}
-  - {fileID: 247133701}
   - {fileID: 832575519}
+  - {fileID: 247133701}
   - {fileID: 410087041}
   - {fileID: 526604350}
   - {fileID: 1758110203}
