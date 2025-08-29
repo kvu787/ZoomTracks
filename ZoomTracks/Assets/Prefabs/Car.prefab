@@ -80,6 +80,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 43708c25f607fc5478a0fe01fce019b0, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a56de8d1a1cf57c458246a6902b7de8b, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 43708c25f607fc5478a0fe01fce019b0, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ef6ab53ab71aed848984fc48e2d7df35, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 43708c25f607fc5478a0fe01fce019b0, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6360a483cf4497647aa9485b1f39d117, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 43708c25f607fc5478a0fe01fce019b0, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 87cb3373991b57947abda02064d96e7c, type: 2}
     - target: {fileID: 919132149155446097, guid: 43708c25f607fc5478a0fe01fce019b0, type: 3}
       propertyPath: m_Name
       value: Car
