@@ -98,6 +98,5 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
-
 # User-specific settings for ProBuilder package 
 /ProjectSettings/Packages/com.unity.probuilder/Settings.json
