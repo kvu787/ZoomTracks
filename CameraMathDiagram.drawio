@@ -1,0 +1,106 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram name="Page-1" id="FrN06xPbd_DsweXHBffh">
+    <mxGraphModel dx="1722" dy="1001" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="4000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="QoR44doOhelGxvLLjrM_-17" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="570" y="550" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-1" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="480" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-4" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1110" y="440" as="sourcePoint" />
+            <mxPoint x="1110" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-5" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="623" y="440" as="sourcePoint" />
+            <mxPoint x="1230" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-6" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="120" as="sourcePoint" />
+            <mxPoint x="1110" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-7" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="680" y="280" as="sourcePoint" />
+            <mxPoint x="680" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-8" value="" style="whiteSpace=wrap;html=1;aspect=fixed;rotation=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="650" y="280" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-10" value="" style="whiteSpace=wrap;html=1;aspect=fixed;rotation=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="680" y="430" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-11" value="" style="whiteSpace=wrap;html=1;aspect=fixed;rotation=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="670" y="430" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-16" value="The center of red the circle is the focal point of the camera." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="430" y="540" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-18" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="680" y="280" as="sourcePoint" />
+            <mxPoint x="580" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-20" value="In Unity, the height of the orthographic camera is equal to twice its size field. S = size." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="990" y="110.1" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-21" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;flipH=1;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;rotation=291;" vertex="1" parent="1">
+          <mxGeometry x="879.34" y="110.1" width="49.89" height="443.48" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-23" value="S = 12.82" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="889" y="285" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-24" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;flipH=1;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;rotation=291;" vertex="1" parent="1">
+          <mxGeometry x="450.18" y="-57" width="49.89" height="445.3" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-25" value="S = 12.82" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="459" y="118.1" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-26" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="877.5" y="258.5" width="35" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-27" value="B = 12" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="865" y="476" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-29" value="A = 4.5" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="529" y="347.5" width="50" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-30" value="β = 20°" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="419" width="46" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-31" value="α = 70°" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="686" y="301" width="42" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-32" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="576" y="283" width="35" height="153" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-33" value="C = 3.4" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1143" y="486" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-34" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;flipH=1;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1119" y="445.58" width="31" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-35" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="623" y="440" as="sourcePoint" />
+            <mxPoint x="623" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QoR44doOhelGxvLLjrM_-36" value="The width of the camera is set based on the height so that the aspect ratio is 16:9. The width is irrelevant to this diagram&#39;s calculations." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="990" y="190" width="170" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
