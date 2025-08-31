@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Loading...
+  m_text: Loading
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -477,8 +477,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdd85f26e066af843831823392b69de0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StartSceneScript
+  Canvas: {fileID: 180182820}
   LoadingLabel: {fileID: 102345534}
-  DotChangeDurationSeconds: 0.3
+  DotChangeDurationSeconds: 0.1
+  MinLoadDurationSeconds: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
