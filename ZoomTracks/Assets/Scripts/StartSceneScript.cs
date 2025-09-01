@@ -7,9 +7,14 @@ using UnityEngine.SceneManagement;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
 public class StartSceneScript : MonoBehaviour {
-    public TMP_Text LoadingLabel;
-    public float DotChangeDurationSeconds;
-    public float MinLoadDurationSeconds;
+    [SerializeField]
+    private TMP_Text LoadingLabel;
+
+    [SerializeField]
+    private float DotChangeDurationSeconds;
+
+    [SerializeField]
+    private float MinLoadDurationSeconds;
 
     private const string SceneToLoad = "MainScene";
     private readonly Stopwatch DotsStopwatch = new();
@@ -28,6 +33,7 @@ public class StartSceneScript : MonoBehaviour {
         this.DotsStopwatch.Start();
         this.MinLoadStopwatch.Start();
         _ = this.StartCoroutine(this.TransitionScene());
+        _ = this.StartCoroutine(this.UpdateDots());
     }
 
     private IEnumerator TransitionScene() {
@@ -45,12 +51,15 @@ public class StartSceneScript : MonoBehaviour {
         _ = SceneManager.UnloadSceneAsync(this.gameObject.scene);
     }
 
-    // Update is called once per frame
-    void Update() {
-        if (this.DotsStopwatch.Elapsed > TimeSpan.FromSeconds(this.DotChangeDurationSeconds)) {
-            this.NumDots = (this.NumDots + 1) % LoadingStrings.Length;
-            this.LoadingLabel.text = LoadingStrings[this.NumDots];
-            this.DotsStopwatch.Restart();
+    private IEnumerator UpdateDots() {
+        TimeSpan dotChangeDuration = TimeSpan.FromSeconds(this.DotChangeDurationSeconds);
+        while (true) {
+            if (this.DotsStopwatch.Elapsed > dotChangeDuration) {
+                this.NumDots = (this.NumDots + 1) % LoadingStrings.Length;
+                this.LoadingLabel.text = LoadingStrings[this.NumDots];
+                this.DotsStopwatch.Restart();
+            }
+            yield return null;
         }
     }
 }
