@@ -4,11 +4,21 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameLoop : MonoBehaviour {
+    private GameObject Car;
+    private Transform[] TireGroundContactPoints;
 
     void Awake() {
         Debug.Log($"GameLoop Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         QualitySettings.maxQueuedFrames = 0;
         QualitySettings.vSyncCount = 1;
+
+        this.Car = GameObject.Find("SlopeCarPlaceholder");
+        this.TireGroundContactPoints = new Transform[] {
+            this.Car.transform.Find("CarFL"),
+            this.Car.transform.Find("CarFR"),
+            this.Car.transform.Find("CarRL"),
+            this.Car.transform.Find("CarRR"),
+        };
     }
 
     /*
@@ -18,9 +28,25 @@ public class GameLoop : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        this.Update_MoveCarToCursor();
+    }
+
+    private void Update_MoveCarToCursor() {
+        Vector3 mousePosition = new(Mouse.current.position.x.ReadValue(), Mouse.current.position.y.ReadValue(), 0);
+        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+        float t = -ray.origin.y / ray.direction.y;
+        float x = ray.origin.x + ray.direction.x * t;
+        float z = ray.origin.z + ray.direction.z * t;
+        Vector3 mousePositionWorld = new(x, 0, z);
+        Draw.ingame.Cross(mousePositionWorld, 10, Color.red);
+        this.Car.transform.position = mousePositionWorld;
+        foreach (Transform transform in this.TireGroundContactPoints) {
+            Draw.ingame.Cross(transform.position, 1, Color.red);
+        }
+    }
+
+    private void Update_PrintTicks() {
         Debug.Log(DateTime.Now.Ticks);
-        this.Update_TestAline();
-        this.Update_DrawCursor();
     }
 
     private Matrix4x4 originMatrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
@@ -35,12 +61,12 @@ public class GameLoop : MonoBehaviour {
         }
     }
 
-    public void Update_DrawCursor() {
+    private void Update_DrawCursor() {
         Vector3 mousePosition = new(Mouse.current.position.x.ReadValue(), Mouse.current.position.y.ReadValue(), 0);
         Ray ray = Camera.main.ScreenPointToRay(mousePosition);
         float t = -ray.origin.y / ray.direction.y;
         float x = ray.origin.x + ray.direction.x * t;
         float z = ray.origin.z + ray.direction.z * t;
-        Draw.ingame.WireSphere(new Unity.Mathematics.float3(x, 0, z), 10, Color.red);
+        Draw.ingame.WireSphere(new Vector3(x, 0, z), 10, Color.red);
     }
 }
