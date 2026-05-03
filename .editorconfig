@@ -75,10 +75,10 @@ dotnet_diagnostic.IDE0045.severity = none
 dotnet_diagnostic.IDE0046.severity = suggestion
 
 # Remove unnecessary parentheses
-dotnet_diagnostic.IDE0047.severity = suggestion
+dotnet_diagnostic.IDE0047.severity = none
 
 # Add parentheses for clarity
-dotnet_diagnostic.IDE0048.severity = suggestion
+dotnet_diagnostic.IDE0048.severity = none
 
 # Remove unused private member
 dotnet_diagnostic.IDE0051.severity = suggestion
