@@ -29,13 +29,13 @@ public static class OpenScenesTool {
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
 
-    private static string[] MeshColliderPrefixes = {
+    private static readonly string[] MeshColliderPrefixes = {
         "Road",
         "Grass",
         "Gravel",
     };
 
-    private static string[] MeshColliderConvexPrefixes = {
+    private static readonly string[] MeshColliderConvexPrefixes = {
         "Barrier",
         "Cone",
         "Checkpoint",
