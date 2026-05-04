@@ -4,6 +4,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameLoop : MonoBehaviour {
+    [SerializeField]
+    private float CarTranslationSpeed = 150;
+
+    [SerializeField]
+    private float CarRotateSpeed = 540;
+
     private GameObject Car;
     private Transform[] TireGroundContactPoints;
 
@@ -28,7 +34,22 @@ public class GameLoop : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        this.Update_MoveCarToCursor();
+        this.Update_DebugMoveCarWithKeyboard();
+    }
+
+    private void Update_DebugMoveCarWithKeyboard() {
+        if (Keyboard.current.eKey.isPressed) {
+            this.Car.transform.Translate(Time.deltaTime * this.CarTranslationSpeed * Vector3.forward);
+        }
+        if (Keyboard.current.sKey.isPressed) {
+            this.Car.transform.Rotate(new Vector3(0, 1, 0), -1 * Time.deltaTime * this.CarRotateSpeed);
+        }
+        if (Keyboard.current.dKey.isPressed) {
+            this.Car.transform.Translate(Time.deltaTime * this.CarTranslationSpeed * Vector3.back);
+        }
+        if (Keyboard.current.fKey.isPressed) {
+            this.Car.transform.Rotate(new Vector3(0, 1, 0), Time.deltaTime * this.CarRotateSpeed);
+        }
     }
 
     private void Update_MoveCarToCursor() {
