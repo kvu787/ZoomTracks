@@ -63,9 +63,10 @@ public class GameLoop : MonoBehaviour {
 
         if (this.ControlMode == ControlModeEnum.Camera) {
             this.Update_CameraControl();
-        } else if (Gamepad.startButton.wasPressedThisFrame) {
+        } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
             this.Update_DebugMoveCar_ControlCamera();
         }
+
         this.Update_Ui();
     }
 
