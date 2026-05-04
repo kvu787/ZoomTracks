@@ -2,6 +2,7 @@ using Drawing;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameLoop : MonoBehaviour {
     [SerializeField]
@@ -38,10 +39,13 @@ public class GameLoop : MonoBehaviour {
 
     }
 
-    /*
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() { }
-    */
+    void Start() {
+        if (!SceneManager.GetSceneByName("UiScene").isLoaded) {
+            SceneManager.LoadScene("UiScene", LoadSceneMode.Additive);
+            Debug.Log("Finished calling 'SceneManager.LoadScene(\"UiScene\", LoadSceneMode.Additive);'");
+        }
+    }
 
     // Update is called once per frame
     void Update() {
