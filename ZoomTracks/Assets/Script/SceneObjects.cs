@@ -10,7 +10,7 @@ public static class SceneObjects {
     public static Transform CameraPanOffsetAndPitch;
     public static Camera Camera;
 
-    public static TMP_Text TestTextBox;
+    public static TMP_Text TestLabel;
 
     public static void Init() {
         Car = GameObject.Find("SlopeCarPlaceholder");
@@ -26,6 +26,6 @@ public static class SceneObjects {
         CameraPanOffsetAndPitch = GameObject.Find(nameof(CameraPanOffsetAndPitch)).transform;
         Camera = GameObject.Find(nameof(Camera)).GetComponent<Camera>();
 
-        TestTextBox = GameObject.Find(nameof(TestTextBox)).GetComponent<TMP_Text>();
+        TestLabel = GameObject.Find(nameof(TestLabel)).GetComponent<TMP_Text>();
     }
 }

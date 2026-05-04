@@ -30,7 +30,7 @@ public class GameLoop : MonoBehaviour {
         }
 
         SceneObjects.Init();
-        SceneObjects.TestTextBox.text = "Test passed";
+        SceneObjects.TestLabel.text = "Test passed";
     }
 
     // Update is called once per frame
