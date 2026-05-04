@@ -50,10 +50,7 @@ public class GameLoop : MonoBehaviour {
         Usually, I don't always have a gamepad connected. After I start the game, I plug in the gamepad.
         So my game should handle controller connect/disconnect during runtime.
         */
-        Keyboard = Keyboard.current;
-        if (Keyboard == null) {
-            throw new Exception("Keyboard.current is null");
-        }
+        Keyboard = Keyboard.current ?? throw new Exception("Keyboard.current is null");
 
         this.IsStartFinished = true;
     }
