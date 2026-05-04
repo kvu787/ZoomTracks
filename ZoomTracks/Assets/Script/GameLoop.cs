@@ -13,6 +13,11 @@ public class GameLoop : MonoBehaviour {
     private GameObject Car;
     private Transform[] TireGroundContactPoints;
 
+    private Transform CameraPanAndYaw;
+    private Transform CameraYawOffset;
+    private Transform CameraPanOffsetAndPitch;
+    private Camera Camera;
+
     void Awake() {
         Debug.Log($"GameLoop Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         QualitySettings.maxQueuedFrames = 0;
@@ -25,6 +30,12 @@ public class GameLoop : MonoBehaviour {
             this.Car.transform.Find("CarRL"),
             this.Car.transform.Find("CarRR"),
         };
+
+        this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
+        this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
+        this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
+        this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
+
     }
 
     /*
@@ -54,7 +65,7 @@ public class GameLoop : MonoBehaviour {
 
     private void Update_MoveCarToCursor() {
         Vector3 mousePosition = new(Mouse.current.position.x.ReadValue(), Mouse.current.position.y.ReadValue(), 0);
-        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+        Ray ray = this.Camera.ScreenPointToRay(mousePosition);
         float t = -ray.origin.y / ray.direction.y;
         float x = ray.origin.x + ray.direction.x * t;
         float z = ray.origin.z + ray.direction.z * t;
@@ -84,7 +95,7 @@ public class GameLoop : MonoBehaviour {
 
     private void Update_DrawCursor() {
         Vector3 mousePosition = new(Mouse.current.position.x.ReadValue(), Mouse.current.position.y.ReadValue(), 0);
-        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+        Ray ray = this.Camera.ScreenPointToRay(mousePosition);
         float t = -ray.origin.y / ray.direction.y;
         float x = ray.origin.x + ray.direction.x * t;
         float z = ray.origin.z + ray.direction.z * t;
