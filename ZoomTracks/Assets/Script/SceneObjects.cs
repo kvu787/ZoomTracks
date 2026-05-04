@@ -10,6 +10,7 @@ public static class SceneObjects {
     public static Transform CameraPanOffsetAndPitch;
     public static Camera Camera;
 
+    public static TMP_Text ControlModeLabel;
     public static TMP_Text TestLabel;
 
     public static void Init() {
@@ -26,6 +27,7 @@ public static class SceneObjects {
         CameraPanOffsetAndPitch = GameObject.Find(nameof(CameraPanOffsetAndPitch)).transform;
         Camera = GameObject.Find(nameof(Camera)).GetComponent<Camera>();
 
+        ControlModeLabel = GameObject.Find(nameof(ControlModeLabel)).GetComponent<TMP_Text>();
         TestLabel = GameObject.Find(nameof(TestLabel)).GetComponent<TMP_Text>();
     }
 }

@@ -12,44 +12,88 @@ public class GameLoop : MonoBehaviour {
     [SerializeField]
     private float CarRotateSpeed = 540;
 
+    private enum ControlModeEnum {
+        DebugMoveCar,
+        Camera,
+    }
+
+    private ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
+
+    private static Keyboard Keyboard;
+    private static Gamepad Gamepad;
+
+    private bool IsStartFinished = false;
+
+    // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
     void Awake() {
         Debug.Log($"GameLoop Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         QualitySettings.maxQueuedFrames = 0;
         QualitySettings.vSyncCount = 1;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
     IEnumerator Start() {
         if (SceneManager.GetSceneByName("UiScene").isLoaded) {
-            Debug.Log("UiScene is already loaded.");
+            Debug.Log("UiScene is already loaded");
         } else {
-            Debug.Log("UiScene is not loadeasdfd yet.");
-            Debug.Log("Will execute the following: yield return SceneManager.LoadSceneAsync(\"UiScene\", LoadSceneMode.Additive); ...");
+            Debug.Log("UiScene is not loaded yet");
+            Debug.Log("Loading UiScene with this: yield return SceneManager.LoadSceneAsync(\"UiScene\", LoadSceneMode.Additive);");
             yield return SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
-            Debug.Log("Finished executing: yield return SceneManager.LoadSceneAsync(\"UiScene\", LoadSceneMode.Additive);");
+            Debug.Log("Finished loading UiScene");
         }
 
         SceneObjects.Init();
         SceneObjects.TestLabel.text = "Test passed";
+
+        Keyboard = Keyboard.current;
+        Gamepad = Gamepad.current;
+
+        if (Keyboard == null || Gamepad == null) {
+            throw new Exception("Keyboard.current or Gamepad.current is null");
+        }
+
+        this.IsStartFinished = true;
     }
 
     // Update is called once per frame
     void Update() {
-        this.Update_DebugMoveCarWithKeyboard();
+        if (!this.IsStartFinished) {
+            return;
+        }
+
+        if (this.ControlMode == ControlModeEnum.Camera) {
+            this.Update_CameraControl();
+        } else if (Gamepad.startButton.wasPressedThisFrame) {
+            this.Update_DebugMoveCar_ControlCamera();
+        }
+        this.Update_Ui();
     }
 
-    private void Update_DebugMoveCarWithKeyboard() {
-        if (Keyboard.current.eKey.isPressed) {
+    private void Update_Ui() {
+        SceneObjects.ControlModeLabel.text = $"Control mode: {this.ControlMode}";
+    }
+
+    private void Update_CameraControl() {
+        if (Gamepad.startButton.wasPressedThisFrame) {
+            this.ControlMode = ControlModeEnum.DebugMoveCar;
+        }
+    }
+
+    private void Update_DebugMoveCar_ControlCamera() {
+        if (Keyboard.eKey.isPressed) {
             SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarTranslationSpeed * Vector3.forward);
         }
-        if (Keyboard.current.sKey.isPressed) {
+        if (Keyboard.sKey.isPressed) {
             SceneObjects.Car.transform.Rotate(new Vector3(0, 1, 0), -1 * Time.deltaTime * this.CarRotateSpeed);
         }
-        if (Keyboard.current.dKey.isPressed) {
+        if (Keyboard.dKey.isPressed) {
             SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarTranslationSpeed * Vector3.back);
         }
-        if (Keyboard.current.fKey.isPressed) {
+        if (Keyboard.fKey.isPressed) {
             SceneObjects.Car.transform.Rotate(new Vector3(0, 1, 0), Time.deltaTime * this.CarRotateSpeed);
+        }
+        if (Gamepad.startButton.wasPressedThisFrame) {
+            this.ControlMode = ControlModeEnum.Camera;
         }
     }
 
