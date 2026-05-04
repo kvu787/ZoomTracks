@@ -20,7 +20,6 @@ public class GameLoop : MonoBehaviour {
     private ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
 
     private static Keyboard Keyboard;
-    private static Gamepad Gamepad;
 
     private bool IsStartFinished = false;
 
@@ -45,11 +44,15 @@ public class GameLoop : MonoBehaviour {
         SceneObjects.Init();
         SceneObjects.TestLabel.text = "Test passed";
 
+        /*
+        For my personal use case:
+        I should always have a keyboard connected, so verify this and use the Keyboard static var as a shortcut.
+        Usually, I don't always have a gamepad connected. After I start the game, I plug in the gamepad.
+        So my game should handle controller connect/disconnect during runtime.
+        */
         Keyboard = Keyboard.current;
-        Gamepad = Gamepad.current;
-
-        if (Keyboard == null || Gamepad == null) {
-            throw new Exception("Keyboard.current or Gamepad.current is null");
+        if (Keyboard == null) {
+            throw new Exception("Keyboard.current is null");
         }
 
         this.IsStartFinished = true;
@@ -75,7 +78,7 @@ public class GameLoop : MonoBehaviour {
     }
 
     private void Update_CameraControl() {
-        if (Gamepad.startButton.wasPressedThisFrame) {
+        if (Gamepad.current?.startButton.wasPressedThisFrame == true) {
             this.ControlMode = ControlModeEnum.DebugMoveCar;
         }
     }
@@ -93,7 +96,8 @@ public class GameLoop : MonoBehaviour {
         if (Keyboard.fKey.isPressed) {
             SceneObjects.Car.transform.Rotate(new Vector3(0, 1, 0), Time.deltaTime * this.CarRotateSpeed);
         }
-        if (Gamepad.startButton.wasPressedThisFrame) {
+
+        if (Gamepad.current?.startButton.wasPressedThisFrame == true) {
             this.ControlMode = ControlModeEnum.Camera;
         }
     }
