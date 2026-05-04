@@ -8,7 +8,7 @@ public static class OpenScenesTool {
     public static void OpenScenes() {
         SceneSetup[] setup = new SceneSetup[] {
             new() { path = "Assets/Scenes/MainScene.unity", isLoaded = true, isActive = true },
-            new() { path = "Assets/Scenes/UIScene.unity", isLoaded = true, isActive = false },
+            new() { path = "Assets/Scenes/UiScene.unity", isLoaded = true, isActive = false },
         };
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
