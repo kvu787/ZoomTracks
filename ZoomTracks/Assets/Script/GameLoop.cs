@@ -80,10 +80,16 @@ public class GameLoop : MonoBehaviour {
     private void Update_CameraControl() {
         if (Gamepad.current?.startButton.wasPressedThisFrame == true) {
             this.ControlMode = ControlModeEnum.DebugMoveCar;
+            return;
         }
     }
 
     private void Update_DebugMoveCar_ControlCamera() {
+        if (Gamepad.current?.startButton.wasPressedThisFrame == true) {
+            this.ControlMode = ControlModeEnum.Camera;
+            return;
+        }
+
         if (Keyboard.eKey.isPressed) {
             SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarTranslationSpeed * Vector3.forward);
         }
@@ -95,10 +101,6 @@ public class GameLoop : MonoBehaviour {
         }
         if (Keyboard.fKey.isPressed) {
             SceneObjects.Car.transform.Rotate(new Vector3(0, 1, 0), Time.deltaTime * this.CarRotateSpeed);
-        }
-
-        if (Gamepad.current?.startButton.wasPressedThisFrame == true) {
-            this.ControlMode = ControlModeEnum.Camera;
         }
     }
 
