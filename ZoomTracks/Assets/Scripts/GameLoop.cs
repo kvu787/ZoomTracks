@@ -83,7 +83,7 @@ namespace ZoomTracks {
             if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
                 // TODO: Don't execute this for non-zero actuation
                 Vector2 leftStick = gamepad.leftStick.ReadValue();
-                CameraController.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * (new Vector3(leftStick.x, 0, leftStick.y).normalized);
+                CameraController.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(leftStick.x, 0, leftStick.y);
             }
 
             // D-pad up reset pan offset
