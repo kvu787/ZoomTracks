@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public static class CameraController {
@@ -30,19 +29,11 @@ namespace ZoomTracks {
             Assert.IsTrue(CameraPanAndYaw.localScale == Vector3.one);
         }
 
-        public static void UpdateCamera() {
+        public static void UpdateCameraFollow() {
             if (ShouldFollowCarLocation) {
                 CameraPanAndYaw.transform.position = SceneObjects.Car.transform.position;
             } else {
                 CameraPanAndYaw.transform.position = OriginalCameraPanAndYawTransform.Position;
-            }
-
-            if (GameLoop.ControlMode == GameLoop.ControlModeEnum.Camera) {
-                Vector2? vec2 = Gamepad.current?.leftStick.ReadValue();
-                if (vec2 == null) {
-                    return;
-                }
-                CameraPanOffsetAndPitch.localPosition += Time.deltaTime * GameLoop.CameraPanSpeed * new Vector3(vec2.Value.x, 0, vec2.Value.y);
             }
         }
     }
