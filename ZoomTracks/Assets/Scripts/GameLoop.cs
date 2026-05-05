@@ -16,6 +16,9 @@ namespace ZoomTracks {
         private float _CameraPanSpeed = 150;
         public static float CameraPanSpeed;
 
+        [SerializeField]
+        private float CameraZoomSpeed = 100;
+
         public enum ControlModeEnum {
             DebugMoveCar,
             Camera,
@@ -94,6 +97,12 @@ namespace ZoomTracks {
             // Left shoulder toggle follow
             if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.leftShoulder.wasPressedThisFrame) {
                 CameraController.ShouldFollowCarLocation = !CameraController.ShouldFollowCarLocation;
+            }
+
+            // Left/right trigger zoom
+            if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
+                CameraController.Camera.orthographicSize += Time.deltaTime * this.CameraZoomSpeed * (gamepad.leftTrigger.ReadValue() - gamepad.rightTrigger.ReadValue());
+                CameraController.Camera.orthographicSize = Mathf.Clamp(CameraController.Camera.orthographicSize, CameraController.MinCameraOrthographicSize, CameraController.MaxCameraOrthographicSize);
             }
 
             // Left stick debug move car

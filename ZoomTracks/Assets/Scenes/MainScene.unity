@@ -427,8 +427,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f885d485b8c4c4e4aa1b9465e5155577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameLoop
-  CarTranslationSpeed: 150
+  CarForwardBackwardSpeed: 150
   CarRotateSpeed: 540
+  _CameraPanSpeed: 150
+  CameraZoomSpeed: 100
 --- !u!1 &786445053
 GameObject:
   m_ObjectHideFlags: 0

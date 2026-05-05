@@ -9,6 +9,9 @@ namespace ZoomTracks {
         public static Camera Camera;
 
         private static TransformStruct OriginalCameraPanAndYawTransform;
+        public static float OriginalCameraOrthographicSize;
+        public const float MinCameraOrthographicSize = 1;
+        public const float MaxCameraOrthographicSize = 281.25f;
 
         public static bool ShouldFollowCarLocation = false;
 
@@ -18,6 +21,7 @@ namespace ZoomTracks {
             CameraPanOffsetAndPitch = GameObject.Find(nameof(CameraPanOffsetAndPitch)).transform;
             Camera = GameObject.Find(nameof(Camera)).GetComponent<Camera>();
             OriginalCameraPanAndYawTransform = new TransformStruct(CameraPanAndYaw.transform);
+            OriginalCameraOrthographicSize = Camera.orthographicSize;
 
             ValidateCameraParameters();
         }
