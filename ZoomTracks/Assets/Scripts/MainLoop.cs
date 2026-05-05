@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -31,14 +30,14 @@ namespace ZoomTracks {
         private bool IsStartFinished = false;
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
-        void Awake() {
+        private void Awake() {
             Debug.Log($"GameLoop Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             QualitySettings.maxQueuedFrames = 0;
             QualitySettings.vSyncCount = 1;
         }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
-        IEnumerator Start() {
+        private async void Start() {
             CameraPanSpeed = this._CameraPanSpeed;
 
             if (SceneManager.GetSceneByName("UiScene").isLoaded) {
@@ -46,7 +45,7 @@ namespace ZoomTracks {
             } else {
                 Debug.Log("UiScene is not loaded yet");
                 Debug.Log("Loading UiScene with this: yield return SceneManager.LoadSceneAsync(\"UiScene\", LoadSceneMode.Additive);");
-                yield return SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
+                await SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
                 Debug.Log("Finished loading UiScene");
             }
 
@@ -66,7 +65,7 @@ namespace ZoomTracks {
         }
 
         // Update is called once per frame
-        void Update() {
+        private void Update() {
             if (!this.IsStartFinished) {
                 return;
             }
