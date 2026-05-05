@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
-    public class GameLoop : MonoBehaviour {
+    public class MainLoop : MonoBehaviour {
         [SerializeField]
         private float CarForwardBackwardSpeed = 150;
 
