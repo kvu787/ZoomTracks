@@ -91,8 +91,8 @@ namespace ZoomTracks {
                 CameraController.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
             }
 
-            // Left stick click toggle follow
-            if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.leftStickButton.wasPressedThisFrame) {
+            // Left shoulder toggle follow
+            if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.leftShoulder.wasPressedThisFrame) {
                 CameraController.ShouldFollowCarLocation = !CameraController.ShouldFollowCarLocation;
             }
 
