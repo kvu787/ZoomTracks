@@ -1,8 +1,8 @@
-using Drawing;
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
@@ -11,14 +11,18 @@ namespace ZoomTracks {
         private float CarTranslationSpeed = 150;
 
         [SerializeField]
+        private float _CameraPanSpeed = 150;
+        public static float CameraPanSpeed;
+
+        [SerializeField]
         private float CarRotateSpeed = 540;
 
-        private enum ControlModeEnum {
+        public enum ControlModeEnum {
             DebugMoveCar,
             Camera,
         }
 
-        private ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
+        public static ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
 
         private static Keyboard Keyboard;
 
@@ -33,6 +37,8 @@ namespace ZoomTracks {
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
         IEnumerator Start() {
+            CameraPanSpeed = this._CameraPanSpeed;
+
             if (SceneManager.GetSceneByName("UiScene").isLoaded) {
                 Debug.Log("UiScene is already loaded");
             } else {
@@ -44,6 +50,7 @@ namespace ZoomTracks {
 
             SceneObjects.Init();
             SceneObjects.TestLabel.text = "Test passed";
+            CameraController.Init();
 
             /*
             For my personal use case:
@@ -62,19 +69,44 @@ namespace ZoomTracks {
                 return;
             }
 
-            if (this.ControlMode == ControlModeEnum.Camera) {
-                this.Update_CameraControl();
-            } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
-                this.Update_DebugMoveCar_ControlCamera();
+            if (ControlMode == ControlModeEnum.Camera) {
+                if (Gamepad.current?.leftStickButton.wasPressedThisFrame is true) {
+                    CameraController.ShouldFollowCarLocation = !CameraController.ShouldFollowCarLocation;
+                }
+
+                if (Gamepad.current?.startButton.wasPressedThisFrame is true) {
+                    ControlMode = ControlModeEnum.DebugMoveCar;
+                }
+            } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                DpadControl dpad = Gamepad.current?.dpad;
+                if (Keyboard.eKey.isPressed || dpad?.up.isPressed is true) {
+                    SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarTranslationSpeed * Vector3.forward);
+                }
+                if (Keyboard.sKey.isPressed || dpad?.left.isPressed is true) {
+                    SceneObjects.Car.transform.Rotate(new Vector3(0, 1, 0), -1 * Time.deltaTime * this.CarRotateSpeed);
+                }
+                if (Keyboard.dKey.isPressed || dpad?.down.isPressed is true) {
+                    SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarTranslationSpeed * Vector3.back);
+                }
+                if (Keyboard.fKey.isPressed || dpad?.right.isPressed is true) {
+                    SceneObjects.Car.transform.Rotate(new Vector3(0, 1, 0), Time.deltaTime * this.CarRotateSpeed);
+                }
+
+                if (Gamepad.current?.startButton.wasPressedThisFrame is true) {
+                    ControlMode = ControlModeEnum.Camera;
+                }
             }
 
-            this.Update_Ui();
+            CameraController.UpdateCamera();
+            this.UpdateUi();
         }
 
-        private void Update_Ui() {
-            SceneObjects.ControlModeLabel.text = $"Control mode: {this.ControlMode}";
+        private void UpdateUi() {
+            SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {CameraController.ShouldFollowCarLocation}";
+            SceneObjects.ControlModeLabel.text = $"Control mode: {ControlMode}";
         }
 
+        /*
         private void Update_CameraControl() {
             if (Gamepad.current?.startButton.wasPressedThisFrame == true) {
                 this.ControlMode = ControlModeEnum.DebugMoveCar;
@@ -104,7 +136,7 @@ namespace ZoomTracks {
 
         private void Update_MoveCarToCursor() {
             Vector3 mousePosition = new(Mouse.current.position.x.ReadValue(), Mouse.current.position.y.ReadValue(), 0);
-            Ray ray = SceneObjects.Camera.ScreenPointToRay(mousePosition);
+            Ray ray = CameraController.Camera.ScreenPointToRay(mousePosition);
             float t = -ray.origin.y / ray.direction.y;
             float x = ray.origin.x + ray.direction.x * t;
             float z = ray.origin.z + ray.direction.z * t;
@@ -134,11 +166,12 @@ namespace ZoomTracks {
 
         private void Update_DrawCursor() {
             Vector3 mousePosition = new(Mouse.current.position.x.ReadValue(), Mouse.current.position.y.ReadValue(), 0);
-            Ray ray = SceneObjects.Camera.ScreenPointToRay(mousePosition);
+            Ray ray = CameraController.Camera.ScreenPointToRay(mousePosition);
             float t = -ray.origin.y / ray.direction.y;
             float x = ray.origin.x + ray.direction.x * t;
             float z = ray.origin.z + ray.direction.z * t;
             Draw.ingame.WireSphere(new Vector3(x, 0, z), 10, Color.red);
         }
+        */
     }
 }
