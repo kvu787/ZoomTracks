@@ -23,6 +23,7 @@ namespace ZoomTracks {
             CameraYawOffset = GameObject.Find(nameof(CameraYawOffset)).transform;
             CameraPanOffsetAndPitch = GameObject.Find(nameof(CameraPanOffsetAndPitch)).transform;
             Camera = GameObject.Find(nameof(Camera)).GetComponent<Camera>();
+
             OriginalCameraPanAndYawTransform = new TransformStruct(CameraPanAndYaw.transform);
             OriginalCameraOrthographicSize = Camera.orthographicSize;
 
@@ -55,9 +56,9 @@ namespace ZoomTracks {
         }
 
         private static void ValidateCameraParameters() {
-            Assert.IsTrue(CameraPanAndYaw.position.y == 0);
-            Assert.IsTrue(CameraPanAndYaw.rotation.x == 0);
-            Assert.IsTrue(CameraPanAndYaw.rotation.z == 0);
+            Assert.IsTrue(CameraPanAndYaw.localPosition.y == 0);
+            Assert.IsTrue(CameraPanAndYaw.localRotation.x == 0);
+            Assert.IsTrue(CameraPanAndYaw.localRotation.z == 0);
             Assert.IsTrue(CameraPanAndYaw.localScale == Vector3.one);
         }
     }
