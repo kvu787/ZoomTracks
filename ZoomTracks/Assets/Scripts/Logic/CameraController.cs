@@ -24,10 +24,10 @@ namespace ZoomTracks {
             CameraPanOffsetAndPitch = GameObject.Find(nameof(CameraPanOffsetAndPitch)).transform;
             Camera = GameObject.Find(nameof(Camera)).GetComponent<Camera>();
 
+            ValidateCameraParameters();
+
             OriginalCameraPanAndYawTransform = new TransformStruct(CameraPanAndYaw.transform);
             OriginalCameraOrthographicSize = Camera.orthographicSize;
-
-            ValidateCameraParameters();
         }
 
         public static void UpdateCameraFollow() {
@@ -60,6 +60,28 @@ namespace ZoomTracks {
             Assert.IsTrue(CameraPanAndYaw.localEulerAngles.x == 0);
             Assert.IsTrue(CameraPanAndYaw.localEulerAngles.z == 0);
             Assert.IsTrue(CameraPanAndYaw.localScale == Vector3.one);
+
+            Assert.IsTrue(CameraYawOffset.localPosition == Vector3.zero);
+            Assert.IsTrue(CameraYawOffset.localEulerAngles == Vector3.zero);
+            Assert.IsTrue(CameraYawOffset.localScale == Vector3.one);
+
+            Assert.IsTrue(CameraPanOffsetAndPitch.localPosition == Vector3.zero);
+            Assert.IsTrue(CameraPanOffsetAndPitch.localEulerAngles.x == 45);
+            Assert.IsTrue(CameraPanOffsetAndPitch.localEulerAngles.y == 0);
+            Assert.IsTrue(CameraPanOffsetAndPitch.localEulerAngles.z == 0);
+            Assert.IsTrue(CameraPanOffsetAndPitch.localScale == Vector3.one);
+
+            Assert.IsTrue(Camera.transform.localPosition.x == 0);
+            Assert.IsTrue(Camera.transform.localPosition.y == 0);
+            Assert.IsTrue(Camera.transform.localPosition.z == -500);
+            Assert.IsTrue(Camera.transform.localEulerAngles == Vector3.zero);
+            Assert.IsTrue(Camera.transform.localScale == Vector3.one);
+            Assert.IsTrue(Camera.orthographic);
+            Assert.IsTrue(MinCameraOrthographicSize <= Camera.orthographicSize && Camera.orthographicSize <= MaxCameraOrthographicSize);
+            Assert.IsTrue(Camera.nearClipPlane == 1);
+            Assert.IsTrue(Camera.farClipPlane == 1000);
+            Assert.IsTrue(Camera.clearFlags == CameraClearFlags.SolidColor);
+            Assert.IsTrue(ColorUtility.ToHtmlStringRGB(Camera.backgroundColor) == "404040");
         }
     }
 }
