@@ -58,22 +58,13 @@ namespace ZoomTracks {
 
         // Update is called once per frame
         private void Update() {
-            Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
-            Gamepad = Gamepad.current;
-
             if (!this.IsStartFinished) {
                 return;
             }
 
-            // Load/unload test scene
-            if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
-                    SceneSwitcher.LoadTestScene();
-                }
-                if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
-                    SceneSwitcher.UnloadTestScene();
-                }
-            }
+            // Update input convenience fields
+            Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
+            Gamepad = Gamepad.current;
 
             // Switch control mode
             if (Gamepad?.startButton.wasPressedThisFrame is true) {
@@ -107,6 +98,16 @@ namespace ZoomTracks {
                 CameraController.Camera.orthographicSize = Mathf.Clamp(CameraController.Camera.orthographicSize, CameraController.MinCameraOrthographicSize, CameraController.MaxCameraOrthographicSize);
             }
 
+            // Load/unload test scene
+            if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
+                    SceneSwitcher.LoadTestScene();
+                }
+                if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
+                    SceneSwitcher.UnloadTestScene();
+                }
+            }
+
             // Left stick debug move car
             if (ControlMode == ControlModeEnum.DebugMoveCar && Gamepad != null) {
                 // TODO: Don't execute this for non-zero actuation
@@ -132,8 +133,8 @@ namespace ZoomTracks {
             }
 
             CameraController.UpdateCameraFollow();
-            this.UpdateUi();
             SceneSwitcher.Update();
+            this.UpdateUi();
         }
 
         private void UpdateUi() {
