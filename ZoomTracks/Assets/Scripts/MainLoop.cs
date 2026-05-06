@@ -61,18 +61,47 @@ namespace ZoomTracks {
             this.IsStartFinished = true;
         }
 
-        private async Awaitable LoadTestSceneAsync() {
-            Debug.Log("Loading scene...");
-            DateTime startTime = DateTime.Now;
-            AsyncOperation loadOperation = SceneManager.LoadSceneAsync("TestScene", LoadSceneMode.Additive);
-            while (!loadOperation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(5))) {
+        private static async Awaitable LoadTestSceneAsync() {
+            DateTime startTime;
+            AsyncOperation operation;
+
+            Debug.Log("Loading TestScene...");
+            startTime = DateTime.Now;
+            operation = SceneManager.LoadSceneAsync("TestScene", LoadSceneMode.Additive);
+            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(1))) {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
             Debug.Log("...done");
         }
 
-        private Awaitable SceneLoadOperation = null;
+        private static async Awaitable UnloadTestSceneAsync() {
+            DateTime startTime;
+            AsyncOperation operation;
+
+            Debug.Log("Unloading TestScene...");
+            startTime = DateTime.Now;
+            operation = SceneManager.UnloadSceneAsync("TestScene");
+            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.5))) {
+                Debug.Log($"{Time.frameCount}");
+                await Awaitable.NextFrameAsync();
+            }
+            Debug.Log("...done");
+
+            Debug.Log("Executing UnloadUnusedAssets...");
+            startTime = DateTime.Now;
+            operation = Resources.UnloadUnusedAssets();
+            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.5))) {
+                Debug.Log($"{Time.frameCount}");
+                await Awaitable.NextFrameAsync();
+            }
+            Debug.Log("...done");
+        }
+
+        private static Awaitable LoadSceneAwaitable = null;
+        private static Awaitable UnloadSceneAwaitable = null;
+        private static bool IsTestSceneLoaded = false;
+
 
         // Update is called once per frame
         private void Update() {
@@ -80,78 +109,101 @@ namespace ZoomTracks {
                 return;
             }
 
-            if (this.SceneLoadOperation != null && this.SceneLoadOperation.IsCompleted) {
-                Transform t = GameObject.Find("TestSceneObject").GetComponent<Transform>();
-                Debug.Log($"Test transform: {t.position.x}, {t.position.y}, {t.position.z}");
-                this.SceneLoadOperation = null;
+            if (LoadSceneAwaitable != null && LoadSceneAwaitable.IsCompleted) {
+                Debug.Log($"Completed LoadSceneAwaitable: {LoadSceneAwaitable}");
+                IsTestSceneLoaded = true;
+                LoadSceneAwaitable = null;
             }
 
-            if (this.SceneLoadOperation == null) {
-                if (Keyboard.pauseKey.wasPressedThisFrame) {
-                    this.SceneLoadOperation = this.LoadTestSceneAsync();
-                }
-
-                Gamepad gamepad = Gamepad.current;
-
-                // Switch control mode
-                if (gamepad != null && gamepad.startButton.wasPressedThisFrame) {
-                    if (ControlMode == ControlModeEnum.Camera) {
-                        ControlMode = ControlModeEnum.DebugMoveCar;
-                    } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                        ControlMode = ControlModeEnum.Camera;
-                    }
-                }
-
-                // Left stick pan offset
-                if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
-                    // TODO: Don't execute this for non-zero actuation
-                    Vector2 leftStick = gamepad.leftStick.ReadValue();
-                    CameraController.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(leftStick.x, 0, leftStick.y);
-                }
-
-                // D-pad up reset pan offset
-                if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.dpad.up.wasPressedThisFrame) {
-                    CameraController.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
-                }
-
-                // Left shoulder toggle follow
-                if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.leftShoulder.wasPressedThisFrame) {
-                    CameraController.ShouldFollowCarLocation = !CameraController.ShouldFollowCarLocation;
-                }
-
-                // Left/right trigger zoom
-                if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
-                    CameraController.Camera.orthographicSize += Time.deltaTime * this.CameraZoomSpeed * (gamepad.leftTrigger.ReadValue() - gamepad.rightTrigger.ReadValue());
-                    CameraController.Camera.orthographicSize = Mathf.Clamp(CameraController.Camera.orthographicSize, CameraController.MinCameraOrthographicSize, CameraController.MaxCameraOrthographicSize);
-                }
-
-                // Left stick debug move car
-                if (ControlMode == ControlModeEnum.DebugMoveCar && gamepad != null) {
-                    // TODO: Don't execute this for non-zero actuation
-                    Vector2 leftStick = gamepad.leftStick.ReadValue();
-                    SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
-                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * this.CarRotateSpeed);
-                }
-
-                // ESDF debug move car
-                if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                    if (Keyboard.eKey.isPressed) {
-                        SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarForwardBackwardSpeed * Vector3.forward);
-                    }
-                    if (Keyboard.dKey.isPressed) {
-                        SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarForwardBackwardSpeed * Vector3.back);
-                    }
-                    if (Keyboard.sKey.isPressed) {
-                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * this.CarRotateSpeed);
-                    }
-                    if (Keyboard.fKey.isPressed) {
-                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * this.CarRotateSpeed);
-                    }
-                }
-
-                CameraController.UpdateCameraFollow();
-                this.UpdateUi();
+            if (UnloadSceneAwaitable != null && UnloadSceneAwaitable.IsCompleted) {
+                Debug.Log($"Completed UnloadSceneAwaitable: {UnloadSceneAwaitable}");
+                IsTestSceneLoaded = false;
+                UnloadSceneAwaitable = null;
             }
+
+            bool isLoading = LoadSceneAwaitable != null;
+            bool isUnloading = UnloadSceneAwaitable != null;
+
+            if (!isLoading && !isUnloading && !IsTestSceneLoaded) {
+                this.RunGame();
+                if (Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) {
+                    LoadSceneAwaitable = LoadTestSceneAsync();
+                }
+            } else if (!isLoading && !isUnloading && IsTestSceneLoaded) {
+                this.RunGame();
+                if (Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) {
+                    UnloadSceneAwaitable = UnloadTestSceneAsync();
+                }
+            } else if (!isLoading && isUnloading && IsTestSceneLoaded) {
+                Debug.Log("Update: Waiting for load/unload...");
+            } else if (isLoading && !isUnloading && !IsTestSceneLoaded) {
+                Debug.Log("Update: Waiting for load/unload...");
+            } else {
+                throw new Exception($"Invalid TestScene state: {isLoading}, {isUnloading}, {IsTestSceneLoaded}");
+            }
+        }
+
+        private void RunGame() {
+            Gamepad gamepad = Gamepad.current;
+
+            // Switch control mode
+            if (gamepad != null && gamepad.startButton.wasPressedThisFrame) {
+                if (ControlMode == ControlModeEnum.Camera) {
+                    ControlMode = ControlModeEnum.DebugMoveCar;
+                } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                    ControlMode = ControlModeEnum.Camera;
+                }
+            }
+
+            // Left stick pan offset
+            if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
+                // TODO: Don't execute this for non-zero actuation
+                Vector2 leftStick = gamepad.leftStick.ReadValue();
+                CameraController.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(leftStick.x, 0, leftStick.y);
+            }
+
+            // D-pad up reset pan offset
+            if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.dpad.up.wasPressedThisFrame) {
+                CameraController.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
+            }
+
+            // Left shoulder toggle follow
+            if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.leftShoulder.wasPressedThisFrame) {
+                CameraController.ShouldFollowCarLocation = !CameraController.ShouldFollowCarLocation;
+            }
+
+            // Left/right trigger zoom
+            if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
+                CameraController.Camera.orthographicSize += Time.deltaTime * this.CameraZoomSpeed * (gamepad.leftTrigger.ReadValue() - gamepad.rightTrigger.ReadValue());
+                CameraController.Camera.orthographicSize = Mathf.Clamp(CameraController.Camera.orthographicSize, CameraController.MinCameraOrthographicSize, CameraController.MaxCameraOrthographicSize);
+            }
+
+            // Left stick debug move car
+            if (ControlMode == ControlModeEnum.DebugMoveCar && gamepad != null) {
+                // TODO: Don't execute this for non-zero actuation
+                Vector2 leftStick = gamepad.leftStick.ReadValue();
+                SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
+                SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * this.CarRotateSpeed);
+            }
+
+            // ESDF debug move car
+            if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                if (Keyboard.eKey.isPressed) {
+                    SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarForwardBackwardSpeed * Vector3.forward);
+                }
+                if (Keyboard.dKey.isPressed) {
+                    SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarForwardBackwardSpeed * Vector3.back);
+                }
+                if (Keyboard.sKey.isPressed) {
+                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * this.CarRotateSpeed);
+                }
+                if (Keyboard.fKey.isPressed) {
+                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * this.CarRotateSpeed);
+                }
+            }
+
+            CameraController.UpdateCameraFollow();
+            this.UpdateUi();
         }
 
         private void UpdateUi() {
