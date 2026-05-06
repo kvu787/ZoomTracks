@@ -108,15 +108,15 @@ namespace ZoomTracks {
 
                 // Load/unload test scene
                 if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
-                    SceneSwitcher.LoadTestScene();
+                    ZtSceneManager.LoadTestScene();
                 }
                 if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
-                    SceneSwitcher.UnloadTestScene();
+                    ZtSceneManager.UnloadTestScene();
                 }
             }
 
             CameraController.UpdateCameraFollow();
-            SceneSwitcher.Update();
+            ZtSceneManager.Update();
             UpdateUi();
         }
 
