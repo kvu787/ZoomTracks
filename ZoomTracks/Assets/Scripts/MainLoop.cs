@@ -141,9 +141,9 @@ namespace ZoomTracks {
                     }
                 }
             } else if (!isLoading && isUnloading && IsTestSceneLoaded) {
-                Debug.Log("Update: Waiting for load/unload...");
+                Debug.Log("Update: Waiting for TestScene unload...");
             } else if (isLoading && !isUnloading && !IsTestSceneLoaded) {
-                Debug.Log("Update: Waiting for load/unload...");
+                Debug.Log("Update: Waiting for TestScene load...");
             } else {
                 throw new Exception($"Invalid TestScene state: {isLoading}, {isUnloading}, {IsTestSceneLoaded}");
             }
