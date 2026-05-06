@@ -128,13 +128,17 @@ namespace ZoomTracks {
 
             if (!isLoading && !isUnloading && !IsTestSceneLoaded) {
                 this.RunGame();
-                if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
-                    LoadSceneAwaitable = LoadTestSceneAsync();
+                if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                    if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
+                        LoadSceneAwaitable = LoadTestSceneAsync();
+                    }
                 }
             } else if (!isLoading && !isUnloading && IsTestSceneLoaded) {
                 this.RunGame();
-                if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
-                    UnloadSceneAwaitable = UnloadTestSceneAsync();
+                if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                    if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
+                        UnloadSceneAwaitable = UnloadTestSceneAsync();
+                    }
                 }
             } else if (!isLoading && isUnloading && IsTestSceneLoaded) {
                 Debug.Log("Update: Waiting for load/unload...");
