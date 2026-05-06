@@ -134,10 +134,10 @@ namespace ZoomTracks {
 
             CameraController.UpdateCameraFollow();
             SceneSwitcher.Update();
-            this.UpdateUi();
+            UpdateUi();
         }
 
-        private void UpdateUi() {
+        private static void UpdateUi() {
             SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {CameraController.ShouldFollowCarLocation}";
             SceneObjects.ControlModeLabel.text = $"Control mode: {ControlMode}";
         }
