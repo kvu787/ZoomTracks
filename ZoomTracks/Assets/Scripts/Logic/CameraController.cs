@@ -29,13 +29,6 @@ namespace ZoomTracks {
             ValidateCameraParameters();
         }
 
-        private static void ValidateCameraParameters() {
-            Assert.IsTrue(CameraPanAndYaw.position.y == 0);
-            Assert.IsTrue(CameraPanAndYaw.rotation.x == 0);
-            Assert.IsTrue(CameraPanAndYaw.rotation.z == 0);
-            Assert.IsTrue(CameraPanAndYaw.localScale == Vector3.one);
-        }
-
         public static void UpdateCameraFollow() {
             if (ShouldFollowCarLocation) {
                 CameraPanAndYaw.transform.position = SceneObjects.Car.transform.position;
@@ -59,6 +52,13 @@ namespace ZoomTracks {
 
         public static void ToggleFollowLocation() {
             ShouldFollowCarLocation = !ShouldFollowCarLocation;
+        }
+
+        private static void ValidateCameraParameters() {
+            Assert.IsTrue(CameraPanAndYaw.position.y == 0);
+            Assert.IsTrue(CameraPanAndYaw.rotation.x == 0);
+            Assert.IsTrue(CameraPanAndYaw.rotation.z == 0);
+            Assert.IsTrue(CameraPanAndYaw.localScale == Vector3.one);
         }
     }
 }

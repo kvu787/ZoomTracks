@@ -8,13 +8,16 @@ namespace ZoomTracks {
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
-        public enum ControlModeEnum {
+        private enum ControlModeEnum {
             DebugMoveCar,
             Camera,
         }
-        public static ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
+
+        private static ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
+
         private static Keyboard Keyboard = null;
         private static Gamepad Gamepad = null;
+
         private bool IsStartFinished = false;
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
