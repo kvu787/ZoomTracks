@@ -72,6 +72,7 @@ namespace ZoomTracks {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
+            await operation;
             Debug.Log("...done");
         }
 
@@ -86,6 +87,7 @@ namespace ZoomTracks {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
+            await operation;
             Debug.Log("...done");
 
             Debug.Log("Executing UnloadUnusedAssets...");
@@ -95,13 +97,13 @@ namespace ZoomTracks {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
+            await operation;
             Debug.Log("...done");
         }
 
         private static Awaitable LoadSceneAwaitable = null;
         private static Awaitable UnloadSceneAwaitable = null;
         private static bool IsTestSceneLoaded = false;
-
 
         // Update is called once per frame
         private void Update() {
@@ -111,12 +113,14 @@ namespace ZoomTracks {
 
             if (LoadSceneAwaitable != null && LoadSceneAwaitable.IsCompleted) {
                 Debug.Log($"Completed LoadSceneAwaitable: {LoadSceneAwaitable}");
+                LoadSceneAwaitable.GetAwaiter().GetResult();
                 IsTestSceneLoaded = true;
                 LoadSceneAwaitable = null;
             }
 
             if (UnloadSceneAwaitable != null && UnloadSceneAwaitable.IsCompleted) {
                 Debug.Log($"Completed UnloadSceneAwaitable: {UnloadSceneAwaitable}");
+                UnloadSceneAwaitable.GetAwaiter().GetResult();
                 IsTestSceneLoaded = false;
                 UnloadSceneAwaitable = null;
             }
