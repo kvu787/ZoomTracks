@@ -11,6 +11,8 @@ namespace ZoomTracks {
         Unloading,
     }
 
+    // Awaitable docs:
+    // https://docs.unity3d.com/6000.3/Documentation/Manual/async-await-support.html
     public static class SceneSwitcher {
         private static SceneSwitcherState State = SceneSwitcherState.Unloaded;
         private static Awaitable LoadSceneAwaitable = null;
