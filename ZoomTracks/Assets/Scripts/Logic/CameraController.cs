@@ -3,17 +3,20 @@ using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     public static class CameraController {
-        public static Transform CameraPanAndYaw;
-        public static Transform CameraYawOffset;
-        public static Transform CameraPanOffsetAndPitch;
-        public static Camera Camera;
+        private const float CameraPanSpeed = 150;
+        private const float CameraZoomSpeed = 100;
+        private const float MinCameraOrthographicSize = 1;
+        private const float MaxCameraOrthographicSize = 281.25f;
+
+        private static Transform CameraPanAndYaw;
+        private static Transform CameraYawOffset;
+        private static Transform CameraPanOffsetAndPitch;
+        private static Camera Camera;
 
         private static TransformStruct OriginalCameraPanAndYawTransform;
-        public static float OriginalCameraOrthographicSize;
-        public const float MinCameraOrthographicSize = 1;
-        public const float MaxCameraOrthographicSize = 281.25f;
+        private static float OriginalCameraOrthographicSize;
 
-        public static bool ShouldFollowCarLocation = false;
+        public static bool ShouldFollowCarLocation { get; private set; } = false;
 
         public static void Init() {
             CameraPanAndYaw = GameObject.Find(nameof(CameraPanAndYaw)).transform;
@@ -39,6 +42,23 @@ namespace ZoomTracks {
             } else {
                 CameraPanAndYaw.transform.position = OriginalCameraPanAndYawTransform.Position;
             }
+        }
+
+        public static void PanOffset(Vector2 vector2) {
+            CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
+        }
+
+        public static void Zoom(float a, float b) {
+            Camera.orthographicSize += Time.deltaTime * CameraZoomSpeed * (a - b);
+            Camera.orthographicSize = Mathf.Clamp(Camera.orthographicSize, MinCameraOrthographicSize, MaxCameraOrthographicSize);
+        }
+
+        public static void ResetPanOffset() {
+            CameraPanOffsetAndPitch.localPosition = Vector3.zero;
+        }
+
+        public static void ToggleFollowLocation() {
+            ShouldFollowCarLocation = !ShouldFollowCarLocation;
         }
     }
 }
