@@ -24,6 +24,7 @@ namespace ZoomTracks {
         }
         public static ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
         private static Keyboard Keyboard = null;
+        private static Gamepad Gamepad = null;
         private bool IsStartFinished = false;
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
@@ -51,14 +52,6 @@ namespace ZoomTracks {
             SceneObjects.Init();
             SceneObjects.TestLabel.text = "Test passed";
             CameraController.Init();
-
-            /*
-            For my personal use case:
-            I should always have a keyboard connected, so verify this and use the Keyboard static var as a shortcut.
-            Usually, I don't always have a gamepad connected. After I start the game, I plug in the gamepad.
-            So my game should handle controller connect/disconnect during runtime.
-            */
-            Keyboard = Keyboard.current ?? throw new Exception("Keyboard.current is null");
 
             this.IsStartFinished = true;
         }
@@ -109,18 +102,21 @@ namespace ZoomTracks {
 
         // Update is called once per frame
         private void Update() {
+            Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
+            Gamepad = Gamepad.current;
+
             if (!this.IsStartFinished) {
                 return;
             }
 
-            if (LoadSceneAwaitable != null && LoadSceneAwaitable.IsCompleted) {
+            if (LoadSceneAwaitable?.IsCompleted is true) {
                 Debug.Log($"Completed LoadSceneAwaitable: {LoadSceneAwaitable}");
                 LoadSceneAwaitable.GetAwaiter().GetResult();
                 IsTestSceneLoaded = true;
                 LoadSceneAwaitable = null;
             }
 
-            if (UnloadSceneAwaitable != null && UnloadSceneAwaitable.IsCompleted) {
+            if (UnloadSceneAwaitable?.IsCompleted is true) {
                 Debug.Log($"Completed UnloadSceneAwaitable: {UnloadSceneAwaitable}");
                 UnloadSceneAwaitable.GetAwaiter().GetResult();
                 IsTestSceneLoaded = false;
@@ -132,14 +128,12 @@ namespace ZoomTracks {
 
             if (!isLoading && !isUnloading && !IsTestSceneLoaded) {
                 this.RunGame();
-                Gamepad gamepad = Gamepad.current;
-                if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (gamepad != null && gamepad.leftShoulder.isPressed)) {
+                if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
                     LoadSceneAwaitable = LoadTestSceneAsync();
                 }
             } else if (!isLoading && !isUnloading && IsTestSceneLoaded) {
                 this.RunGame();
-                Gamepad gamepad = Gamepad.current;
-                if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (gamepad != null && gamepad.rightShoulder.isPressed)) {
+                if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
                     UnloadSceneAwaitable = UnloadTestSceneAsync();
                 }
             } else if (!isLoading && isUnloading && IsTestSceneLoaded) {
@@ -152,10 +146,8 @@ namespace ZoomTracks {
         }
 
         private void RunGame() {
-            Gamepad gamepad = Gamepad.current;
-
             // Switch control mode
-            if (gamepad != null && gamepad.startButton.wasPressedThisFrame) {
+            if (Gamepad?.startButton.wasPressedThisFrame is true) {
                 if (ControlMode == ControlModeEnum.Camera) {
                     ControlMode = ControlModeEnum.DebugMoveCar;
                 } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
@@ -164,32 +156,32 @@ namespace ZoomTracks {
             }
 
             // Left stick pan offset
-            if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
+            if (ControlMode == ControlModeEnum.Camera && Gamepad != null) {
                 // TODO: Don't execute this for non-zero actuation
-                Vector2 leftStick = gamepad.leftStick.ReadValue();
+                Vector2 leftStick = Gamepad.leftStick.ReadValue();
                 CameraController.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(leftStick.x, 0, leftStick.y);
             }
 
             // D-pad up reset pan offset
-            if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.dpad.up.wasPressedThisFrame) {
+            if (ControlMode == ControlModeEnum.Camera && Gamepad?.dpad.up.wasPressedThisFrame is true) {
                 CameraController.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
             }
 
             // Left shoulder toggle follow
-            if (ControlMode == ControlModeEnum.Camera && gamepad != null && gamepad.leftShoulder.wasPressedThisFrame) {
+            if (ControlMode == ControlModeEnum.Camera && Gamepad?.leftShoulder.wasPressedThisFrame is true) {
                 CameraController.ShouldFollowCarLocation = !CameraController.ShouldFollowCarLocation;
             }
 
             // Left/right trigger zoom
-            if (ControlMode == ControlModeEnum.Camera && gamepad != null) {
-                CameraController.Camera.orthographicSize += Time.deltaTime * this.CameraZoomSpeed * (gamepad.leftTrigger.ReadValue() - gamepad.rightTrigger.ReadValue());
+            if (ControlMode == ControlModeEnum.Camera && Gamepad != null) {
+                CameraController.Camera.orthographicSize += Time.deltaTime * this.CameraZoomSpeed * (Gamepad.leftTrigger.ReadValue() - Gamepad.rightTrigger.ReadValue());
                 CameraController.Camera.orthographicSize = Mathf.Clamp(CameraController.Camera.orthographicSize, CameraController.MinCameraOrthographicSize, CameraController.MaxCameraOrthographicSize);
             }
 
             // Left stick debug move car
-            if (ControlMode == ControlModeEnum.DebugMoveCar && gamepad != null) {
+            if (ControlMode == ControlModeEnum.DebugMoveCar && Gamepad != null) {
                 // TODO: Don't execute this for non-zero actuation
-                Vector2 leftStick = gamepad.leftStick.ReadValue();
+                Vector2 leftStick = Gamepad.leftStick.ReadValue();
                 SceneObjects.Car.transform.Translate(Time.deltaTime * this.CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
                 SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * this.CarRotateSpeed);
             }
