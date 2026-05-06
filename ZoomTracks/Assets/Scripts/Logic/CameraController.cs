@@ -57,8 +57,8 @@ namespace ZoomTracks {
 
         private static void ValidateCameraParameters() {
             Assert.IsTrue(CameraPanAndYaw.localPosition.y == 0);
-            Assert.IsTrue(CameraPanAndYaw.localRotation.x == 0);
-            Assert.IsTrue(CameraPanAndYaw.localRotation.z == 0);
+            Assert.IsTrue(CameraPanAndYaw.localEulerAngles.x == 0);
+            Assert.IsTrue(CameraPanAndYaw.localEulerAngles.z == 0);
             Assert.IsTrue(CameraPanAndYaw.localScale == Vector3.one);
         }
     }
