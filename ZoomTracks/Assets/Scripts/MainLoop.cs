@@ -53,71 +53,74 @@ namespace ZoomTracks {
                 return;
             }
 
-            // Update input convenience fields
-            Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
-            Gamepad = Gamepad.current;
-
-            // Switch control mode
-            if (Gamepad?.startButton.wasPressedThisFrame is true) {
-                if (ControlMode == ControlModeEnum.Camera) {
-                    ControlMode = ControlModeEnum.DebugMoveCar;
-                } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                    ControlMode = ControlModeEnum.Camera;
-                }
-            }
-
-            if (ControlMode == ControlModeEnum.Camera) {
-                if (Gamepad != null) {
-                    // Left stick pan offset
-                    CameraController.PanOffset(Gamepad.leftStick.ReadValue());
-
-                    // Left/right trigger zoom
-                    CameraController.Zoom(Gamepad.leftTrigger.ReadValue(), Gamepad.rightTrigger.ReadValue());
-
-                    // D-pad up reset pan offset
-                    if (Gamepad.dpad.up.wasPressedThisFrame) {
-                        CameraController.ResetPanOffset();
-                    }
-
-                    // Left shoulder toggle follow
-                    if (Gamepad.leftShoulder.wasPressedThisFrame) {
-                        CameraController.ToggleFollowLocation();
-                    }
-                }
-            } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                // ESDF debug move car
-                if (Keyboard.eKey.isPressed) {
-                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
-                }
-                if (Keyboard.dKey.isPressed) {
-                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
-                }
-                if (Keyboard.sKey.isPressed) {
-                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
-                }
-                if (Keyboard.fKey.isPressed) {
-                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
-                }
-
-                if (Gamepad != null) {
-                    // Left stick debug move car
-                    Vector2 leftStick = Gamepad.leftStick.ReadValue();
-                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
-                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
-                }
-
-                // Load/unload test scene
-                if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
-                    ZtSceneManager.LoadTestScene();
-                }
-                if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
-                    ZtSceneManager.UnloadTestScene();
-                }
-            }
-
-            CameraController.UpdateCameraFollow();
             ZtSceneManager.Update();
-            UpdateUi();
+
+            if (!ZtSceneManager.IsBusy()) {
+                // Update input convenience fields
+                Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
+                Gamepad = Gamepad.current;
+
+                // Switch control mode
+                if (Gamepad?.startButton.wasPressedThisFrame is true) {
+                    if (ControlMode == ControlModeEnum.Camera) {
+                        ControlMode = ControlModeEnum.DebugMoveCar;
+                    } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                        ControlMode = ControlModeEnum.Camera;
+                    }
+                }
+
+                if (ControlMode == ControlModeEnum.Camera) {
+                    if (Gamepad != null) {
+                        // Left stick pan offset
+                        CameraController.PanOffset(Gamepad.leftStick.ReadValue());
+
+                        // Left/right trigger zoom
+                        CameraController.Zoom(Gamepad.leftTrigger.ReadValue(), Gamepad.rightTrigger.ReadValue());
+
+                        // D-pad up reset pan offset
+                        if (Gamepad.dpad.up.wasPressedThisFrame) {
+                            CameraController.ResetPanOffset();
+                        }
+
+                        // Left shoulder toggle follow
+                        if (Gamepad.leftShoulder.wasPressedThisFrame) {
+                            CameraController.ToggleFollowLocation();
+                        }
+                    }
+                } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                    // ESDF debug move car
+                    if (Keyboard.eKey.isPressed) {
+                        SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
+                    }
+                    if (Keyboard.dKey.isPressed) {
+                        SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
+                    }
+                    if (Keyboard.sKey.isPressed) {
+                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
+                    }
+                    if (Keyboard.fKey.isPressed) {
+                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
+                    }
+
+                    if (Gamepad != null) {
+                        // Left stick debug move car
+                        Vector2 leftStick = Gamepad.leftStick.ReadValue();
+                        SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
+                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
+                    }
+
+                    // Load/unload test scene
+                    if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
+                        ZtSceneManager.LoadTestScene();
+                    }
+                    if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
+                        ZtSceneManager.UnloadTestScene();
+                    }
+                }
+
+                CameraController.UpdateCameraFollow();
+                UpdateUi();
+            }
         }
 
         private static void UpdateUi() {

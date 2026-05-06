@@ -21,18 +21,20 @@ namespace ZoomTracks {
         public static void Update() {
             ValidateState();
 
-            if (LoadSceneAwaitable?.IsCompleted is true) {
-                Debug.Log($"Completed LoadSceneAwaitable: {LoadSceneAwaitable}");
-                LoadSceneAwaitable.GetAwaiter().GetResult();
-                LoadSceneAwaitable = null;
-                State = ZtSceneManagerState.Loaded;
-            }
+            if (IsBusy()) {
+                if (LoadSceneAwaitable?.IsCompleted is true) {
+                    Debug.Log($"Completed LoadSceneAwaitable: {LoadSceneAwaitable}");
+                    LoadSceneAwaitable.GetAwaiter().GetResult();
+                    LoadSceneAwaitable = null;
+                    State = ZtSceneManagerState.Loaded;
+                }
 
-            if (UnloadSceneAwaitable?.IsCompleted is true) {
-                Debug.Log($"Completed UnloadSceneAwaitable: {UnloadSceneAwaitable}");
-                UnloadSceneAwaitable.GetAwaiter().GetResult();
-                UnloadSceneAwaitable = null;
-                State = ZtSceneManagerState.Unloaded;
+                if (UnloadSceneAwaitable?.IsCompleted is true) {
+                    Debug.Log($"Completed UnloadSceneAwaitable: {UnloadSceneAwaitable}");
+                    UnloadSceneAwaitable.GetAwaiter().GetResult();
+                    UnloadSceneAwaitable = null;
+                    State = ZtSceneManagerState.Unloaded;
+                }
             }
         }
 
@@ -48,6 +50,10 @@ namespace ZoomTracks {
                 UnloadSceneAwaitable = UnloadTestSceneAsync();
                 State = ZtSceneManagerState.Unloading;
             }
+        }
+
+        public static bool IsBusy() {
+            return State == ZtSceneManagerState.Loading || State == ZtSceneManagerState.Unloading;
         }
 
         private static void ValidateState() {
