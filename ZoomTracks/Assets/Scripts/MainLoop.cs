@@ -35,6 +35,8 @@ namespace ZoomTracks {
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
         private async void Start() {
+            Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
+
             CameraPanSpeed = this._CameraPanSpeed;
 
             if (SceneManager.GetSceneByName("UiScene").isLoaded) {
@@ -130,12 +132,14 @@ namespace ZoomTracks {
 
             if (!isLoading && !isUnloading && !IsTestSceneLoaded) {
                 this.RunGame();
-                if (Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) {
+                Gamepad gamepad = Gamepad.current;
+                if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (gamepad != null && gamepad.leftShoulder.isPressed)) {
                     LoadSceneAwaitable = LoadTestSceneAsync();
                 }
             } else if (!isLoading && !isUnloading && IsTestSceneLoaded) {
                 this.RunGame();
-                if (Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) {
+                Gamepad gamepad = Gamepad.current;
+                if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (gamepad != null && gamepad.rightShoulder.isPressed)) {
                     UnloadSceneAwaitable = UnloadTestSceneAsync();
                 }
             } else if (!isLoading && isUnloading && IsTestSceneLoaded) {
