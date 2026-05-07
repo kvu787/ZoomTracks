@@ -1,107 +1,104 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
-    public enum ZtSceneManagerState {
-        Unloaded,
-        Loading,
-        Loaded,
-        Unloading,
-    }
-
     // Awaitable docs:
     // https://docs.unity3d.com/6000.3/Documentation/Manual/async-await-support.html
     public static class ZtSceneManager {
-        private static ZtSceneManagerState State = ZtSceneManagerState.Unloaded;
-        private static Awaitable LoadSceneAwaitable = null;
-        private static Awaitable UnloadSceneAwaitable = null;
+        private const string MainSceneName = "MainScene";
+
+        private enum SceneState {
+            Loading,
+            Loaded,
+            Unloading,
+        }
+
+        /*
+         * Invariants:
+         * - SceneStates contains at most one scene that is in Loading or Unloading state
+         * - SceneStates contains a scene in Loading/Unloading state iff InProgressSceneAwaitable and InProgressSceneName match that scene
+         */
+        private static readonly Dictionary<string, SceneState> SceneStates = new();
+        private static Awaitable InProgressSceneAwaitable = null;
+        private static string InProgressSceneName = null;
 
         public static void Update() {
-            ValidateState();
+            //ValidateState();
 
-            if (IsBusy()) {
-                if (LoadSceneAwaitable?.IsCompleted is true) {
-                    Debug.Log($"Completed LoadSceneAwaitable: {LoadSceneAwaitable}");
-                    LoadSceneAwaitable.GetAwaiter().GetResult();
-                    LoadSceneAwaitable = null;
-                    State = ZtSceneManagerState.Loaded;
+            if (IsBusy() && InProgressSceneAwaitable.IsCompleted) {
+                if (SceneStates[InProgressSceneName] == SceneState.Loading) {
+                    Debug.Log($"Finished loading scene='{InProgressSceneName}'");
+                    SceneStates[InProgressSceneName] = SceneState.Loaded;
+                } else if (SceneStates[InProgressSceneName] == SceneState.Unloading) {
+                    Debug.Log($"Finished unloading scene='{InProgressSceneName}'");
+                    _ = SceneStates.Remove(InProgressSceneName);
                 }
 
-                if (UnloadSceneAwaitable?.IsCompleted is true) {
-                    Debug.Log($"Completed UnloadSceneAwaitable: {UnloadSceneAwaitable}");
-                    UnloadSceneAwaitable.GetAwaiter().GetResult();
-                    UnloadSceneAwaitable = null;
-                    State = ZtSceneManagerState.Unloaded;
-                }
+                InProgressSceneAwaitable.GetAwaiter().GetResult();
+                InProgressSceneAwaitable = null;
+                InProgressSceneName = null;
             }
         }
 
-        public static void LoadTestScene() {
-            if (State == ZtSceneManagerState.Unloaded) {
-                LoadSceneAwaitable = LoadTestSceneAsync();
-                State = ZtSceneManagerState.Loading;
+        public static void LoadScene(string sceneName) {
+            if (sceneName == MainSceneName) {
+                throw new Exception($"Should not load {MainSceneName}");
+            }
+
+            if (!IsBusy() && !SceneStates.ContainsKey(sceneName)) {
+                SceneStates[sceneName] = SceneState.Loading;
+                InProgressSceneAwaitable = LoadSceneAsync(sceneName);
+                InProgressSceneName = sceneName;
             }
         }
 
-        public static void UnloadTestScene() {
-            if (State == ZtSceneManagerState.Loaded) {
-                UnloadSceneAwaitable = UnloadTestSceneAsync();
-                State = ZtSceneManagerState.Unloading;
+        public static void UnloadScene(string sceneName) {
+            if (sceneName == MainSceneName) {
+                throw new Exception($"Should not load {MainSceneName}");
+            }
+
+            if (!IsBusy() && SceneStates.ContainsKey(sceneName) && SceneStates[sceneName] == SceneState.Loaded) {
+                SceneStates[sceneName] = SceneState.Unloading;
+                InProgressSceneAwaitable = UnloadSceneAsync(sceneName);
+                InProgressSceneName = sceneName;
             }
         }
 
         public static bool IsBusy() {
-            return State == ZtSceneManagerState.Loading || State == ZtSceneManagerState.Unloading;
+            return InProgressSceneAwaitable != null;
         }
 
-        private static void ValidateState() {
-            Assert.IsFalse(LoadSceneAwaitable != null && UnloadSceneAwaitable != null);
-
-            if (State == ZtSceneManagerState.Unloaded) {
-                Assert.IsTrue(LoadSceneAwaitable == null && UnloadSceneAwaitable == null);
-            } else if (State == ZtSceneManagerState.Loading) {
-                Assert.IsTrue(LoadSceneAwaitable != null && UnloadSceneAwaitable == null);
-            } else if (State == ZtSceneManagerState.Loaded) {
-                Assert.IsTrue(LoadSceneAwaitable == null && UnloadSceneAwaitable == null);
-            } else if (State == ZtSceneManagerState.Unloading) {
-                Assert.IsTrue(LoadSceneAwaitable == null && UnloadSceneAwaitable != null);
-            } else {
-                throw new Exception("Unknown state");
-            }
-        }
-
-        private static async Awaitable LoadTestSceneAsync() {
+        private static async Awaitable LoadSceneAsync(string sceneName) {
             DateTime startTime;
             AsyncOperation operation;
 
-            Debug.Log("Loading TestScene...");
+            Debug.Log($"Loading scene '{sceneName}' ...");
             startTime = DateTime.Now;
-            operation = SceneManager.LoadSceneAsync("TestScene", LoadSceneMode.Additive);
+            operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(1))) {
-                Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            Debug.Log("...done");
+            Debug.Log($"... Finished loading scene '{sceneName}'");
         }
 
-        private static async Awaitable UnloadTestSceneAsync() {
+        private static async Awaitable UnloadSceneAsync(string sceneName) {
             DateTime startTime;
             AsyncOperation operation;
 
-            Debug.Log("Unloading TestScene...");
+            Debug.Log($"Unloading scene '{sceneName}'...");
             startTime = DateTime.Now;
-            operation = SceneManager.UnloadSceneAsync("TestScene");
+            operation = SceneManager.UnloadSceneAsync(sceneName);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.5))) {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            Debug.Log("...done");
+            Debug.Log($"... Finished unloading scene '{sceneName}'");
 
-            Debug.Log("Executing UnloadUnusedAssets...");
+            Debug.Log("Executing Resources.UnloadUnusedAssets()...");
             startTime = DateTime.Now;
             operation = Resources.UnloadUnusedAssets();
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.5))) {
@@ -109,7 +106,23 @@ namespace ZoomTracks {
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            Debug.Log("...done");
+            Debug.Log("... Finished executing Resources.UnloadUnusedAssets()");
         }
+
+        //private static void ValidateState() {
+        //    Assert.IsFalse(LoadSceneAwaitable != null && UnloadSceneAwaitable != null);
+
+        //    if (State == ZtSceneManagerState.Unloaded) {
+        //        Assert.IsTrue(LoadSceneAwaitable == null && UnloadSceneAwaitable == null);
+        //    } else if (State == ZtSceneManagerState.Loading) {
+        //        Assert.IsTrue(LoadSceneAwaitable != null && UnloadSceneAwaitable == null);
+        //    } else if (State == ZtSceneManagerState.Loaded) {
+        //        Assert.IsTrue(LoadSceneAwaitable == null && UnloadSceneAwaitable == null);
+        //    } else if (State == ZtSceneManagerState.Unloading) {
+        //        Assert.IsTrue(LoadSceneAwaitable == null && UnloadSceneAwaitable != null);
+        //    } else {
+        //        throw new Exception("Unknown state");
+        //    }
+        //}
     }
 }

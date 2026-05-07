@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
+        private const string TestSceneName = "TestScene";
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
@@ -111,10 +112,10 @@ namespace ZoomTracks {
 
                     // Load/unload test scene
                     if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
-                        ZtSceneManager.LoadTestScene();
+                        ZtSceneManager.LoadScene(TestSceneName);
                     }
                     if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
-                        ZtSceneManager.UnloadTestScene();
+                        ZtSceneManager.UnloadScene(TestSceneName);
                     }
                 }
 
