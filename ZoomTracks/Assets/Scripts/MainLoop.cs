@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
         private const string TestSceneName = "TestScene";
+        private const string UiSceneName = "UiScene";
+        private const string InitialTrackSceneName = "Track1Scene";
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
@@ -39,7 +41,7 @@ namespace ZoomTracks {
         private GameStateEnum GameState = GameStateEnum.Start;
 
         private void UpdateBusyAnimation() {
-            Debug.Log($"Busy... (frameCount={Time.frameCount})");
+            Debug.Log($"Busy... frameCount={Time.frameCount}");
         }
 
         // Update is called once per frame
@@ -49,27 +51,30 @@ namespace ZoomTracks {
             switch (this.GameState) {
                 case GameStateEnum.Start:
                     if (SceneManager.loadedSceneCount != 1) {
-                        throw new Exception($"Started with {SceneManager.loadedSceneCount} loaded scenes");
+                        throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
                     }
 
-                    Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
                     this.UpdateBusyAnimation();
+                    Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
                     Debug.Log("Start game");
-                    ZtSceneManager.LoadScene("UiScene");
+                    ZtSceneManager.LoadScene(UiSceneName);
+                    Debug.Log("Start loading UI");
                     this.GameState = GameStateEnum.LoadingUiScene;
                     break;
                 case GameStateEnum.LoadingUiScene:
                     this.UpdateBusyAnimation();
                     if (ZtSceneManager.WasOperationFinishedThisFrame) {
                         Debug.Log("Finished loading UI");
-                        ZtSceneManager.LoadScene("Track1Scene");
+                        ZtSceneManager.LoadScene(InitialTrackSceneName);
+                        Debug.Log("Start loading initial track");
                         this.GameState = GameStateEnum.LoadingNewTrack;
                     }
                     break;
                 case GameStateEnum.LoadingNewTrack:
                     this.UpdateBusyAnimation();
                     if (ZtSceneManager.WasOperationFinishedThisFrame) {
-                        Debug.Log("Finished loading new track");
+                        Debug.Log("Finished loading track");
+                        Debug.Log("Start initializing track");
                         this.GameState = GameStateEnum.InitNewTrack;
                     }
                     break;
@@ -78,7 +83,7 @@ namespace ZoomTracks {
                     SceneObjects.Init();
                     SceneObjects.TestLabel.text = "Test passed";
                     CameraController.Init();
-                    Debug.Log("Finished initializing new track");
+                    Debug.Log("Finished initializing track");
                     this.GameState = GameStateEnum.InGame;
                     break;
                 case GameStateEnum.InGame:
@@ -89,6 +94,7 @@ namespace ZoomTracks {
                     if (ZtSceneManager.WasOperationFinishedThisFrame) {
                         Debug.Log("Finished unloading old track");
                         ZtSceneManager.LoadScene("NewTrack");
+                        Debug.Log("Start loading new track");
                         this.GameState = GameStateEnum.LoadingNewTrack;
                     }
                     break;
