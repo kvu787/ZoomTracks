@@ -78,6 +78,7 @@ namespace ZoomTracks {
             startTime = DateTime.Now;
             operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(1))) {
+                Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
             await operation;
