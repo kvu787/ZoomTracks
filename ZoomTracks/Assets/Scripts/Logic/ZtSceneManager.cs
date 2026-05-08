@@ -6,6 +6,20 @@ using UnityEngine.SceneManagement;
 namespace ZoomTracks {
     // Awaitable docs:
     // https://docs.unity3d.com/6000.3/Documentation/Manual/async-await-support.html
+    /// <summary>
+    /// ZtSceneManager provides a simple and complete way to load/unload scenes by doing the following:
+    ///   1. Propagates any exceptions, including from async operations.
+    ///   2. Throws an exception if you try to do any invalid operations, such as:
+    ///      - Load/unload any special scenes, such as MainScene or UiScene
+    ///      - Load/unload a non-existent scene
+    ///      - Load a scene that is already loaded
+    ///      - Unload a scene that is not loaded
+    ///      - Start a load/unload if there is an in-progress load/unload
+    ///
+    /// To use ZtSceneManager:
+    ///   1. Call ZtSceneManager.UpdateBeforeAll and ZtSceneManager.UpdateAfterAll at the start and end of MainLoop.Update.
+    ///   2. Call ZtSceneManager.Update anywhere in MainLoop.Update.
+    /// </summary>
     public static class ZtSceneManager {
         private const string MainSceneName = "MainScene";
 
@@ -24,10 +38,12 @@ namespace ZoomTracks {
         private static Awaitable InProgressSceneAwaitable = null;
         private static string InProgressSceneName = null;
 
-        public static void Update() {
-            //ValidateState();
+        public static bool WasOperationFinishedThisFrame { get; private set; } = false;
 
-            if (IsBusy() && InProgressSceneAwaitable.IsCompleted) {
+        public static void UpdateBeforeAll() {
+            if (IsOperationRunning() && InProgressSceneAwaitable.IsCompleted) {
+                WasOperationFinishedThisFrame = true;
+
                 if (SceneStates[InProgressSceneName] == SceneState.Loading) {
                     Debug.Log($"Finished loading scene='{InProgressSceneName}'");
                     SceneStates[InProgressSceneName] = SceneState.Loaded;
@@ -35,7 +51,6 @@ namespace ZoomTracks {
                     Debug.Log($"Finished unloading scene='{InProgressSceneName}'");
                     _ = SceneStates.Remove(InProgressSceneName);
                 }
-
                 InProgressSceneAwaitable.GetAwaiter().GetResult();
                 InProgressSceneAwaitable = null;
                 InProgressSceneName = null;
@@ -47,7 +62,7 @@ namespace ZoomTracks {
                 throw new Exception($"Should not load {MainSceneName}");
             }
 
-            if (!IsBusy() && !SceneStates.ContainsKey(sceneName)) {
+            if (!IsOperationRunning() && !SceneStates.ContainsKey(sceneName)) {
                 SceneStates[sceneName] = SceneState.Loading;
                 InProgressSceneAwaitable = LoadSceneAsync(sceneName);
                 InProgressSceneName = sceneName;
@@ -59,15 +74,19 @@ namespace ZoomTracks {
                 throw new Exception($"Should not load {MainSceneName}");
             }
 
-            if (!IsBusy() && SceneStates.ContainsKey(sceneName) && SceneStates[sceneName] == SceneState.Loaded) {
+            if (!IsOperationRunning() && SceneStates.ContainsKey(sceneName) && SceneStates[sceneName] == SceneState.Loaded) {
                 SceneStates[sceneName] = SceneState.Unloading;
                 InProgressSceneAwaitable = UnloadSceneAsync(sceneName);
                 InProgressSceneName = sceneName;
             }
         }
-
-        public static bool IsBusy() {
+        public static bool IsOperationRunning() {
             return InProgressSceneAwaitable != null;
+        }
+
+
+        public static void UpdateAfterAll() {
+            WasOperationFinishedThisFrame = false;
         }
 
         private static async Awaitable LoadSceneAsync(string sceneName) {
