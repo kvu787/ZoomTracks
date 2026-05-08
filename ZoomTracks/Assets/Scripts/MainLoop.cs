@@ -56,12 +56,12 @@ namespace ZoomTracks {
 
             ZtSceneManager.UpdateBeforeAll();
 
-            if (ZtSceneManager.IsOperationRunning()) {
+            if (!ZtSceneManager.IsOperationRunning()) {
                 if (ZtSceneManager.WasOperationFinishedThisFrame) {
                     // Run init on newly loaded scene
                     Debug.Log("Scene finished loading/unloading");
                 }
-            } else {
+
                 // Update input convenience fields
                 Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
                 Gamepad = Gamepad.current;
