@@ -44,8 +44,8 @@ public static class OpenScenesTool {
         "SlopeCar",
     };
 
-    [MenuItem(itemName: "Tools/Setup new scene", isValidateFunction: false, priority: 4)]
-    public static void SetupSceneFromFbx() {
+    [MenuItem(itemName: "Tools/Setup track scene", isValidateFunction: false, priority: 4)]
+    public static void SetupTrackSceneFromFbx() {
         GameObject[] allObjects = Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
             MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
