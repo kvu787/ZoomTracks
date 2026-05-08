@@ -4,19 +4,20 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public static class OpenScenesTool {
-    [MenuItem(itemName: "Tools/Open all scenes (full game setup)", isValidateFunction: false, priority: 1)]
-    public static void OpenScenes() {
+    [MenuItem(itemName: "Tools/Open scenes for full game", isValidateFunction: false, priority: 1)]
+    public static void OpenScenesForFullGame() {
         SceneSetup[] setup = new SceneSetup[] {
             new() { path = "Assets/Scenes/MainScene.unity", isLoaded = true, isActive = true },
             new() { path = "Assets/Scenes/UiScene.unity", isLoaded = true, isActive = false },
+            new() { path = "Assets/Scenes/Track1Scene.unity", isLoaded = true, isActive = false },
         };
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
 
-    [MenuItem(itemName: "Tools/Open game scene", isValidateFunction: false, priority: 2)]
+    [MenuItem(itemName: "Tools/Open initial track scene", isValidateFunction: false, priority: 2)]
     public static void OpenGameScene() {
         SceneSetup[] setup = new SceneSetup[] {
-            new() { path = "Assets/Scenes/MainScene.unity", isLoaded = true, isActive = true },
+            new() { path = "Assets/Scenes/Track1Scene.unity", isLoaded = true, isActive = true },
         };
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
