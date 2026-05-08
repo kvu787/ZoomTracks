@@ -14,18 +14,18 @@ public static class OpenScenesTool {
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
 
-    [MenuItem(itemName: "Tools/Open initial track scene", isValidateFunction: false, priority: 2)]
-    public static void OpenGameScene() {
+    [MenuItem(itemName: "Tools/Open UI scene", isValidateFunction: false, priority: 2)]
+    public static void OpenUiScene() {
         SceneSetup[] setup = new SceneSetup[] {
-            new() { path = "Assets/Scenes/Track1Scene.unity", isLoaded = true, isActive = true },
+            new() { path = "Assets/Scenes/UiScene.unity", isLoaded = true, isActive = true },
         };
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
 
-    [MenuItem(itemName: "Tools/Open UI scene", isValidateFunction: false, priority: 3)]
-    public static void OpenUiScene() {
+    [MenuItem(itemName: "Tools/Open initial track scene", isValidateFunction: false, priority: 3)]
+    public static void OpenGameScene() {
         SceneSetup[] setup = new SceneSetup[] {
-            new() { path = "Assets/Scenes/UiScene.unity", isLoaded = true, isActive = true },
+            new() { path = "Assets/Scenes/Track1Scene.unity", isLoaded = true, isActive = true },
         };
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
