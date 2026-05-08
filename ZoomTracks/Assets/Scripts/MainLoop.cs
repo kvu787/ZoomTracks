@@ -30,7 +30,7 @@ namespace ZoomTracks {
             Start,
             LoadingUiScene,
             LoadingNewTrack,
-            SettingUpNewTrack,
+            InitNewTrack,
             InGame,
             UnloadingOldTrack,
             DoNothing,
@@ -39,7 +39,7 @@ namespace ZoomTracks {
         private GameStateEnum GameState = GameStateEnum.Start;
 
         private void UpdateBusyAnimation() {
-            Debug.Log($"[Frame {Time.frameCount}] Loading...");
+            Debug.Log($"Busy... (frameCount={Time.frameCount})");
         }
 
         // Update is called once per frame
@@ -70,14 +70,15 @@ namespace ZoomTracks {
                     this.UpdateBusyAnimation();
                     if (ZtSceneManager.WasOperationFinishedThisFrame) {
                         Debug.Log("Finished loading new track");
-                        this.GameState = GameStateEnum.SettingUpNewTrack;
+                        this.GameState = GameStateEnum.InitNewTrack;
                     }
                     break;
-                case GameStateEnum.SettingUpNewTrack:
+                case GameStateEnum.InitNewTrack:
                     this.UpdateBusyAnimation();
                     SceneObjects.Init();
                     SceneObjects.TestLabel.text = "Test passed";
                     CameraController.Init();
+                    Debug.Log("Finished initializing new track");
                     this.GameState = GameStateEnum.InGame;
                     break;
                 case GameStateEnum.InGame:
