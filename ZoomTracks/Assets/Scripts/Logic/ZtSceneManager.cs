@@ -77,7 +77,7 @@ namespace ZoomTracks {
             Debug.Log($"Loading scene '{sceneName}' ...");
             startTime = DateTime.Now;
             operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(1))) {
+            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.1))) {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
@@ -92,7 +92,7 @@ namespace ZoomTracks {
             Debug.Log($"Unloading scene '{sceneName}'...");
             startTime = DateTime.Now;
             operation = SceneManager.UnloadSceneAsync(sceneName);
-            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.5))) {
+            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
@@ -102,7 +102,7 @@ namespace ZoomTracks {
             Debug.Log("Executing Resources.UnloadUnusedAssets()...");
             startTime = DateTime.Now;
             operation = Resources.UnloadUnusedAssets();
-            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.5))) {
+            while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
                 Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
