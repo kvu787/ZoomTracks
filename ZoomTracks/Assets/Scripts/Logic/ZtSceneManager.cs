@@ -45,10 +45,10 @@ namespace ZoomTracks {
                 WasOperationFinishedThisFrame = true;
 
                 if (SceneStates[InProgressSceneName] == SceneState.Loading) {
-                    Debug.Log($"Post-process loaded scene='{InProgressSceneName}'");
+                    //Debug.Log($"Post-process loaded scene='{InProgressSceneName}'");
                     SceneStates[InProgressSceneName] = SceneState.Loaded;
                 } else if (SceneStates[InProgressSceneName] == SceneState.Unloading) {
-                    Debug.Log($"Post-process unloaded scene='{InProgressSceneName}'");
+                    //Debug.Log($"Post-process unloaded scene='{InProgressSceneName}'");
                     _ = SceneStates.Remove(InProgressSceneName);
                 }
                 InProgressSceneAwaitable.GetAwaiter().GetResult();
@@ -93,40 +93,40 @@ namespace ZoomTracks {
             DateTime startTime;
             AsyncOperation operation;
 
-            Debug.Log($"Loading scene '{sceneName}'...");
+            //Debug.Log($"Loading scene '{sceneName}'...");
             startTime = DateTime.Now;
             operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.1))) {
-                Debug.Log($"{Time.frameCount}");
+                //Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            Debug.Log($"...Finished loading scene '{sceneName}'");
+            //Debug.Log($"...Finished loading scene '{sceneName}'");
         }
 
         private static async Awaitable UnloadSceneAsync(string sceneName) {
             DateTime startTime;
             AsyncOperation operation;
 
-            Debug.Log($"Unloading scene '{sceneName}'...");
+            //Debug.Log($"Unloading scene '{sceneName}'...");
             startTime = DateTime.Now;
             operation = SceneManager.UnloadSceneAsync(sceneName);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                Debug.Log($"{Time.frameCount}");
+                //Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            Debug.Log($"...Finished unloading scene '{sceneName}'");
+            //Debug.Log($"...Finished unloading scene '{sceneName}'");
 
-            Debug.Log("Executing Resources.UnloadUnusedAssets()...");
+            //Debug.Log("Executing Resources.UnloadUnusedAssets()...");
             startTime = DateTime.Now;
             operation = Resources.UnloadUnusedAssets();
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                Debug.Log($"{Time.frameCount}");
+                //Debug.Log($"{Time.frameCount}");
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            Debug.Log("...Finished executing Resources.UnloadUnusedAssets()");
+            //Debug.Log("...Finished executing Resources.UnloadUnusedAssets()");
         }
 
         //private static void ValidateState() {
