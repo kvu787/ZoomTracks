@@ -19,8 +19,6 @@ namespace ZoomTracks {
         private static Keyboard Keyboard = null;
         private static Gamepad Gamepad = null;
 
-        private bool IsStartFinished = false;
-
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
         private void Awake() {
             Debug.Log($"GameLoop Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
@@ -28,34 +26,81 @@ namespace ZoomTracks {
             QualitySettings.vSyncCount = 1;
         }
 
-        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
-        private async void Start() {
-            Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
+        private enum GameStateEnum {
+            Start,
+            LoadingUiScene,
+            LoadingNewTrack,
+            SettingUpNewTrack,
+            InGame,
+            UnloadingOldTrack,
+            DoNothing,
+        }
 
-            if (SceneManager.GetSceneByName("UiScene").isLoaded) {
-                Debug.Log("UiScene is already loaded");
-            } else {
-                Debug.Log("UiScene is not loaded yet");
-                Debug.Log("Loading UiScene...");
-                await SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
-                Debug.Log("...Finished loading UiScene");
-            }
+        private GameStateEnum GameState = GameStateEnum.Start;
 
-            SceneObjects.Init();
-            SceneObjects.TestLabel.text = "Test passed";
-            CameraController.Init();
-
-            this.IsStartFinished = true;
+        private void UpdateBusyAnimation() {
+            Debug.Log($"[Frame {Time.frameCount}] Loading...");
         }
 
         // Update is called once per frame
         private void Update() {
-            if (!this.IsStartFinished) {
-                return;
-            }
-
             ZtSceneManager.UpdateBeforeAll();
 
+            switch (this.GameState) {
+                case GameStateEnum.Start:
+                    if (SceneManager.loadedSceneCount != 1) {
+                        throw new Exception($"Started with {SceneManager.loadedSceneCount} loaded scenes");
+                    }
+
+                    Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
+                    this.UpdateBusyAnimation();
+                    Debug.Log("Start game");
+                    ZtSceneManager.LoadScene("UiScene");
+                    this.GameState = GameStateEnum.LoadingUiScene;
+                    break;
+                case GameStateEnum.LoadingUiScene:
+                    this.UpdateBusyAnimation();
+                    if (ZtSceneManager.WasOperationFinishedThisFrame) {
+                        Debug.Log("Finished loading UI");
+                        ZtSceneManager.LoadScene("Track1Scene");
+                        this.GameState = GameStateEnum.LoadingNewTrack;
+                    }
+                    break;
+                case GameStateEnum.LoadingNewTrack:
+                    this.UpdateBusyAnimation();
+                    if (ZtSceneManager.WasOperationFinishedThisFrame) {
+                        Debug.Log("Finished loading new track");
+                        this.GameState = GameStateEnum.SettingUpNewTrack;
+                    }
+                    break;
+                case GameStateEnum.SettingUpNewTrack:
+                    this.UpdateBusyAnimation();
+                    SceneObjects.Init();
+                    SceneObjects.TestLabel.text = "Test passed";
+                    CameraController.Init();
+                    this.GameState = GameStateEnum.InGame;
+                    break;
+                case GameStateEnum.InGame:
+                    this.HandleInGameState();
+                    break;
+                case GameStateEnum.UnloadingOldTrack:
+                    this.UpdateBusyAnimation();
+                    if (ZtSceneManager.WasOperationFinishedThisFrame) {
+                        Debug.Log("Finished unloading old track");
+                        ZtSceneManager.LoadScene("NewTrack");
+                        this.GameState = GameStateEnum.LoadingNewTrack;
+                    }
+                    break;
+                case GameStateEnum.DoNothing:
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            ZtSceneManager.UpdateAfterAll();
+        }
+
+        private void HandleInGameState() {
             if (!ZtSceneManager.IsOperationRunning()) {
                 if (ZtSceneManager.WasOperationFinishedThisFrame) {
                     // Run init on newly loaded scene
@@ -115,21 +160,20 @@ namespace ZoomTracks {
                         SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
                     }
 
-                    // Load/unload test scene
-                    if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
-                        ZtSceneManager.LoadScene(TestSceneName);
-                    }
-                    if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
-                        ZtSceneManager.UnloadScene(TestSceneName);
-                    }
+                    //// Load/unload test scene
+                    //if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
+                    //    ZtSceneManager.LoadScene(TestSceneName);
+                    //    this.GameState = GameStateEnum.LoadingNewTrack;
+                    //}
+                    //if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
+                    //    ZtSceneManager.UnloadScene(TestSceneName);
+                    //    this.GameState = GameStateEnum.UnloadingOldTrack;
+                    //}
                 }
 
                 CameraController.UpdateCameraFollow();
                 UpdateUi();
-
             }
-
-            ZtSceneManager.UpdateAfterAll();
         }
 
         private static void UpdateUi() {
