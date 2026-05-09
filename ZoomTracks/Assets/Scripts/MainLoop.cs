@@ -7,7 +7,7 @@ namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
         private const string TestSceneName = "TestScene";
         private const string UiSceneName = "UiScene";
-        private const string InitialTrackSceneName = "Track1Scene";
+        private const string InitialTrackSceneName = "Track2Scene";
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
