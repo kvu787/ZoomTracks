@@ -21,7 +21,7 @@ namespace ZoomTracks {
     ///   2. Call ZtSceneManager.Update anywhere in MainLoop.Update.
     /// </summary>
     public static class ZtSceneManager {
-        private const string MainSceneName = "MainScene";
+        private const string MainSceneName = "Main";
 
         private enum SceneState {
             Loading,
