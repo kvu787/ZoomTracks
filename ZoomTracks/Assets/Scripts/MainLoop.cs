@@ -5,9 +5,9 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
-        private const string TestSceneName = "TestScene";
-        private const string UiSceneName = "UiScene";
-        private const string InitialTrackSceneName = "Track2Scene";
+        private const string TestSceneName = "Test";
+        private const string UiSceneName = "Ui";
+        private const string InitialTrackSceneName = "Track2";
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
