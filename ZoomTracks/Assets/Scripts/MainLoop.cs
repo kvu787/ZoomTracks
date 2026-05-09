@@ -20,7 +20,7 @@ namespace ZoomTracks {
             Camera,
         }
 
-        private static ControlModeEnum ControlMode = ControlModeEnum.DebugMoveCar;
+        private static ControlModeEnum ControlMode;
 
         private static Keyboard Keyboard = null;
         private static Gamepad Gamepad = null;
@@ -102,6 +102,7 @@ namespace ZoomTracks {
                     SceneObjects.Init();
                     SceneObjects.TestLabel.text = "Test passed";
                     CameraController.Init();
+                    ControlMode = ControlModeEnum.DebugMoveCar;
                     CurrentTrackIndex = NewTrackIndex;
                     OldTrackIndex = -1;
                     NewTrackIndex = -1;
