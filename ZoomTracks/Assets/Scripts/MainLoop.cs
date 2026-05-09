@@ -7,7 +7,11 @@ namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
         private const string TestSceneName = "Test";
         private const string UiSceneName = "Ui";
-        private const string InitialTrackSceneName = "Track2";
+        private static readonly string[] TrackSceneNames = {
+            "Track1",
+            "Track2",
+        };
+        private const int InitialTrackSceneIndex = 1;
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
@@ -39,9 +43,31 @@ namespace ZoomTracks {
         }
 
         private GameStateEnum GameState = GameStateEnum.Start;
+        private static int CurrentTrackIndex = InitialTrackSceneIndex;
+        private static int OldTrackIndex = -1;
+        private static int NewTrackIndex = InitialTrackSceneIndex;
 
         private void UpdateBusyAnimation() {
             Debug.Log($"Busy... frameCount={Time.frameCount}");
+        }
+
+        private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
+            if (ZtSceneManager.IsOperationRunning()) {
+                this.UpdateBusyAnimation();
+            } else {
+                string verb = isLoad ? "loading" : "unloading";
+                if (ZtSceneManager.WasOperationFinishedThisFrame) {
+                    Debug.Log($"Finished {verb} {sceneName}");
+                    this.GameState = nextState;
+                } else {
+                    Debug.Log($"Started {verb} {sceneName}");
+                    if (isLoad) {
+                        ZtSceneManager.LoadScene(sceneName);
+                    } else {
+                        ZtSceneManager.UnloadScene(sceneName);
+                    }
+                }
+            }
         }
 
         // Update is called once per frame
@@ -54,35 +80,31 @@ namespace ZoomTracks {
                         throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
                     }
 
-                    this.UpdateBusyAnimation();
                     Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
-                    Debug.Log("Start game");
-                    ZtSceneManager.LoadScene(UiSceneName);
-                    Debug.Log("Start loading UI");
+                    Debug.Log("Starting game...");
                     this.GameState = GameStateEnum.LoadingUiScene;
                     break;
                 case GameStateEnum.LoadingUiScene:
-                    this.UpdateBusyAnimation();
-                    if (ZtSceneManager.WasOperationFinishedThisFrame) {
-                        Debug.Log("Finished loading UI");
-                        ZtSceneManager.LoadScene(InitialTrackSceneName);
-                        Debug.Log("Start loading initial track");
-                        this.GameState = GameStateEnum.LoadingNewTrack;
-                    }
+                    this.LoadUnloadOrWait(
+                        sceneName: UiSceneName,
+                        isLoad: true,
+                        nextState: GameStateEnum.LoadingNewTrack);
                     break;
                 case GameStateEnum.LoadingNewTrack:
-                    this.UpdateBusyAnimation();
-                    if (ZtSceneManager.WasOperationFinishedThisFrame) {
-                        Debug.Log("Finished loading track");
-                        Debug.Log("Start initializing track");
-                        this.GameState = GameStateEnum.InitNewTrack;
-                    }
+                    this.LoadUnloadOrWait(
+                        sceneName: TrackSceneNames[NewTrackIndex],
+                        isLoad: true,
+                        nextState: GameStateEnum.InitNewTrack);
                     break;
                 case GameStateEnum.InitNewTrack:
                     this.UpdateBusyAnimation();
+                    Debug.Log("Started initializing track");
                     SceneObjects.Init();
                     SceneObjects.TestLabel.text = "Test passed";
                     CameraController.Init();
+                    CurrentTrackIndex = NewTrackIndex;
+                    OldTrackIndex = -1;
+                    NewTrackIndex = -1;
                     Debug.Log("Finished initializing track");
                     this.GameState = GameStateEnum.InGame;
                     break;
@@ -90,13 +112,10 @@ namespace ZoomTracks {
                     this.HandleInGameState();
                     break;
                 case GameStateEnum.UnloadingOldTrack:
-                    this.UpdateBusyAnimation();
-                    if (ZtSceneManager.WasOperationFinishedThisFrame) {
-                        Debug.Log("Finished unloading old track");
-                        ZtSceneManager.LoadScene("NewTrack");
-                        Debug.Log("Start loading new track");
-                        this.GameState = GameStateEnum.LoadingNewTrack;
-                    }
+                    this.LoadUnloadOrWait(
+                        sceneName: TrackSceneNames[OldTrackIndex],
+                        isLoad: false,
+                        nextState: GameStateEnum.LoadingNewTrack);
                     break;
                 case GameStateEnum.DoNothing:
                     break;
@@ -108,79 +127,76 @@ namespace ZoomTracks {
         }
 
         private void HandleInGameState() {
-            if (!ZtSceneManager.IsOperationRunning()) {
-                if (ZtSceneManager.WasOperationFinishedThisFrame) {
-                    // Run init on newly loaded scene
-                    Debug.Log("Scene finished loading/unloading");
-                }
+            // Update input convenience fields
+            Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
+            Gamepad = Gamepad.current;
 
-                // Update input convenience fields
-                Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
-                Gamepad = Gamepad.current;
-
-                // Switch control mode
-                if (Gamepad?.startButton.wasPressedThisFrame is true) {
-                    if (ControlMode == ControlModeEnum.Camera) {
-                        ControlMode = ControlModeEnum.DebugMoveCar;
-                    } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                        ControlMode = ControlModeEnum.Camera;
-                    }
-                }
-
+            // Switch control mode
+            if (Gamepad?.startButton.wasPressedThisFrame is true) {
                 if (ControlMode == ControlModeEnum.Camera) {
-                    if (Gamepad != null) {
-                        // Left stick pan offset
-                        CameraController.PanOffset(Gamepad.leftStick.ReadValue());
-
-                        // Left/right trigger zoom
-                        CameraController.Zoom(Gamepad.leftTrigger.ReadValue(), Gamepad.rightTrigger.ReadValue());
-
-                        // D-pad up reset pan offset
-                        if (Gamepad.dpad.up.wasPressedThisFrame) {
-                            CameraController.ResetPanOffset();
-                        }
-
-                        // Left shoulder toggle follow
-                        if (Gamepad.leftShoulder.wasPressedThisFrame) {
-                            CameraController.ToggleFollowLocation();
-                        }
-                    }
+                    ControlMode = ControlModeEnum.DebugMoveCar;
                 } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                    // ESDF debug move car
-                    if (Keyboard.eKey.isPressed) {
-                        SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
-                    }
-                    if (Keyboard.dKey.isPressed) {
-                        SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
-                    }
-                    if (Keyboard.sKey.isPressed) {
-                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
-                    }
-                    if (Keyboard.fKey.isPressed) {
-                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
+                    ControlMode = ControlModeEnum.Camera;
+                }
+            }
+
+            if (ControlMode == ControlModeEnum.Camera) {
+                if (Gamepad != null) {
+                    // Left stick pan offset
+                    CameraController.PanOffset(Gamepad.leftStick.ReadValue());
+
+                    // Left/right trigger zoom
+                    CameraController.Zoom(Gamepad.leftTrigger.ReadValue(), Gamepad.rightTrigger.ReadValue());
+
+                    // D-pad up reset pan offset
+                    if (Gamepad.dpad.up.wasPressedThisFrame) {
+                        CameraController.ResetPanOffset();
                     }
 
-                    if (Gamepad != null) {
-                        // Left stick debug move car
-                        Vector2 leftStick = Gamepad.leftStick.ReadValue();
-                        SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
-                        SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
+                    // Left shoulder toggle follow
+                    if (Gamepad.leftShoulder.wasPressedThisFrame) {
+                        CameraController.ToggleFollowLocation();
                     }
-
-                    //// Load/unload test scene
-                    //if ((Keyboard.ctrlKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true)) {
-                    //    ZtSceneManager.LoadScene(TestSceneName);
-                    //    this.GameState = GameStateEnum.LoadingNewTrack;
-                    //}
-                    //if ((Keyboard.shiftKey.isPressed && Keyboard.pauseKey.wasPressedThisFrame) || (Gamepad?.rightShoulder.isPressed is true)) {
-                    //    ZtSceneManager.UnloadScene(TestSceneName);
-                    //    this.GameState = GameStateEnum.UnloadingOldTrack;
-                    //}
+                }
+            } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                // ESDF debug move car
+                if (Keyboard.eKey.isPressed) {
+                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
+                }
+                if (Keyboard.dKey.isPressed) {
+                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
+                }
+                if (Keyboard.sKey.isPressed) {
+                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
+                }
+                if (Keyboard.fKey.isPressed) {
+                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
                 }
 
-                CameraController.UpdateCameraFollow();
-                UpdateUi();
+                if (Gamepad != null) {
+                    // Left stick debug move car
+                    Vector2 leftStick = Gamepad.leftStick.ReadValue();
+                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
+                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
+                }
+
+                // Switch tracks
+                bool isPrevTrack = (Keyboard.leftArrowKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true);
+                bool isNextTrack = (Keyboard.rightArrowKey.isPressed) || (Gamepad?.rightShoulder.isPressed is true);
+                if (isPrevTrack || isNextTrack) {
+                    OldTrackIndex = CurrentTrackIndex;
+                    if (isPrevTrack) {
+                        NewTrackIndex = (CurrentTrackIndex - 1 + TrackSceneNames.Length) % TrackSceneNames.Length;
+                    } else if (isNextTrack) {
+                        NewTrackIndex = (CurrentTrackIndex + 1) % TrackSceneNames.Length;
+                    }
+                    CurrentTrackIndex = -1;
+                    this.GameState = GameStateEnum.UnloadingOldTrack;
+                }
             }
+
+            CameraController.UpdateCameraFollow();
+            UpdateUi();
         }
 
         private static void UpdateUi() {
