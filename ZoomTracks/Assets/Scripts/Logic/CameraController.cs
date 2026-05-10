@@ -2,88 +2,92 @@ using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ZoomTracks {
-    public static class CameraController {
+    public class CameraController {
         private const float CameraPanSpeed = 150;
         private const float CameraZoomSpeed = 100;
         private const float MinCameraOrthographicSize = 1;
         private const float MaxCameraOrthographicSize = 281.25f;
-        public static bool ShouldFollowCarLocation { get; private set; } = false;
 
-        private static Transform CameraPanAndYaw;
-        private static Transform CameraYawOffset;
-        private static Transform CameraPanOffsetAndPitch;
-        private static Camera Camera;
+        public bool ShouldFollowCarLocation { get; private set; } = false;
 
-        private static TransformStruct OriginalCameraPanAndYawTransform;
-        private static float OriginalCameraOrthographicSize;
+        private readonly SceneObjects SceneObjects;
+
+        private readonly Transform CameraPanAndYaw;
+        private readonly Transform CameraYawOffset;
+        private readonly Transform CameraPanOffsetAndPitch;
+        private readonly Camera Camera;
+
+        private TransformStruct OriginalCameraPanAndYawTransform;
+        private float OriginalCameraOrthographicSize;
 
 
-        public static void Init() {
-            ShouldFollowCarLocation = false;
+        public CameraController(SceneObjects SceneObjects) {
+            this.ShouldFollowCarLocation = false;
+            this.SceneObjects = SceneObjects;
 
-            CameraPanAndYaw = GameObject.Find(nameof(CameraPanAndYaw)).transform;
-            CameraYawOffset = GameObject.Find(nameof(CameraYawOffset)).transform;
-            CameraPanOffsetAndPitch = GameObject.Find(nameof(CameraPanOffsetAndPitch)).transform;
-            Camera = GameObject.Find(nameof(Camera)).GetComponent<Camera>();
+            this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
+            this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
+            this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
+            this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
 
-            ValidateCameraParameters();
+            this.ValidateCameraParameters();
 
-            OriginalCameraPanAndYawTransform = new TransformStruct(CameraPanAndYaw.transform);
-            OriginalCameraOrthographicSize = Camera.orthographicSize;
+            this.OriginalCameraPanAndYawTransform = new TransformStruct(this.CameraPanAndYaw.transform);
+            this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
         }
 
-        public static void UpdateCameraFollow() {
-            if (ShouldFollowCarLocation) {
-                CameraPanAndYaw.transform.position = SceneObjects.Car.transform.position;
+        public void UpdateCameraFollow() {
+            if (this.ShouldFollowCarLocation) {
+                this.CameraPanAndYaw.transform.position = this.SceneObjects.Car.transform.position;
             } else {
-                CameraPanAndYaw.transform.position = OriginalCameraPanAndYawTransform.Position;
+                this.CameraPanAndYaw.transform.position = this.OriginalCameraPanAndYawTransform.Position;
             }
         }
 
-        public static void PanOffset(Vector2 vector2) {
-            CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
+        public void PanOffset(Vector2 vector2) {
+            this.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
         }
 
-        public static void Zoom(float a, float b) {
-            Camera.orthographicSize += Time.deltaTime * CameraZoomSpeed * (a - b);
-            Camera.orthographicSize = Mathf.Clamp(Camera.orthographicSize, MinCameraOrthographicSize, MaxCameraOrthographicSize);
+        public void Zoom(float a, float b) {
+            this.Camera.orthographicSize += Time.deltaTime * CameraZoomSpeed * (a - b);
+            this.Camera.orthographicSize = Mathf.Clamp(this.Camera.orthographicSize, MinCameraOrthographicSize, MaxCameraOrthographicSize);
         }
 
-        public static void ResetPanOffset() {
-            CameraPanOffsetAndPitch.localPosition = Vector3.zero;
+        public void ResetPanOffset() {
+            this.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
         }
 
-        public static void ToggleFollowLocation() {
-            ShouldFollowCarLocation = !ShouldFollowCarLocation;
+        public void ToggleFollowLocation() {
+            this.ShouldFollowCarLocation = !this.ShouldFollowCarLocation;
         }
 
-        private static void ValidateCameraParameters() {
-            Assert.IsTrue(CameraPanAndYaw.localPosition.y == 0);
-            Assert.IsTrue(CameraPanAndYaw.localEulerAngles.x == 0);
-            Assert.IsTrue(CameraPanAndYaw.localEulerAngles.z == 0);
-            Assert.IsTrue(CameraPanAndYaw.localScale == Vector3.one);
+        private void ValidateCameraParameters() {
+            Assert.IsTrue(this.CameraPanAndYaw.localPosition.y == 0);
+            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.x == 0);
+            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.z == 0);
+            Assert.IsTrue(this.CameraPanAndYaw.localScale == Vector3.one);
 
-            Assert.IsTrue(CameraYawOffset.localPosition == Vector3.zero);
-            Assert.IsTrue(CameraYawOffset.localEulerAngles == Vector3.zero);
-            Assert.IsTrue(CameraYawOffset.localScale == Vector3.one);
+            Assert.IsTrue(this.CameraYawOffset.localPosition == Vector3.zero);
+            Assert.IsTrue(this.CameraYawOffset.localEulerAngles == Vector3.zero);
+            Assert.IsTrue(this.CameraYawOffset.localScale == Vector3.one);
 
-            Assert.IsTrue(CameraPanOffsetAndPitch.localPosition == Vector3.zero);
-            Assert.IsTrue(CameraPanOffsetAndPitch.localEulerAngles.x == 45);
-            Assert.IsTrue(CameraPanOffsetAndPitch.localEulerAngles.y == 0);
-            Assert.IsTrue(CameraPanOffsetAndPitch.localEulerAngles.z == 0);
-            Assert.IsTrue(CameraPanOffsetAndPitch.localScale == Vector3.one);
+            Assert.IsTrue(this.CameraPanOffsetAndPitch.localPosition == Vector3.zero);
+            Assert.IsTrue(this.CameraPanOffsetAndPitch.localEulerAngles.x == 45);
+            Assert.IsTrue(this.CameraPanOffsetAndPitch.localEulerAngles.y == 0);
+            Assert.IsTrue(this.CameraPanOffsetAndPitch.localEulerAngles.z == 0);
+            Assert.IsTrue(this.CameraPanOffsetAndPitch.localScale == Vector3.one);
 
-            Assert.IsTrue(Camera.transform.localPosition.x == 0);
-            Assert.IsTrue(Camera.transform.localPosition.y == 0);
-            Assert.IsTrue(Camera.transform.localPosition.z == -500);
-            Assert.IsTrue(Camera.transform.localEulerAngles == Vector3.zero);
-            Assert.IsTrue(Camera.transform.localScale == Vector3.one);
-            Assert.IsTrue(Camera.orthographic);
-            Assert.IsTrue(MinCameraOrthographicSize <= Camera.orthographicSize && Camera.orthographicSize <= MaxCameraOrthographicSize);
-            Assert.IsTrue(Camera.nearClipPlane == 1);
-            Assert.IsTrue(Camera.farClipPlane == 1000);
-            Assert.IsTrue(Camera.clearFlags == CameraClearFlags.SolidColor);
-            Assert.IsTrue(ColorUtility.ToHtmlStringRGB(Camera.backgroundColor) == "404040");
+            Assert.IsTrue(this.Camera.transform.localPosition.x == 0);
+            Assert.IsTrue(this.Camera.transform.localPosition.y == 0);
+            Assert.IsTrue(this.Camera.transform.localPosition.z == -500);
+            Assert.IsTrue(this.Camera.transform.localEulerAngles == Vector3.zero);
+            Assert.IsTrue(this.Camera.transform.localScale == Vector3.one);
+            Assert.IsTrue(this.Camera.orthographic);
+            Assert.IsTrue(MinCameraOrthographicSize <= this.Camera.orthographicSize && this.Camera.orthographicSize <= MaxCameraOrthographicSize);
+            Assert.IsTrue(this.Camera.nearClipPlane == 1);
+            Assert.IsTrue(this.Camera.farClipPlane == 1000);
+            Assert.IsTrue(this.Camera.clearFlags == CameraClearFlags.SolidColor);
+            Assert.IsTrue(ColorUtility.ToHtmlStringRGB(this.Camera.backgroundColor) == "404040");
         }
     }
 }

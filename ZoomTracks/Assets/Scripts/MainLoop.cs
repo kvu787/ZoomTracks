@@ -11,6 +11,7 @@ namespace ZoomTracks {
         private ZtSceneManager ZtSceneManager;
         private TrackSwitcher TrackSwitcher;
         private SceneObjects SceneObjects;
+        private CameraController CameraController;
 
         public enum ControlModeEnum {
             DebugMoveCar,
@@ -107,7 +108,7 @@ namespace ZoomTracks {
                     this.UpdateBusyAnimation();
                     Debug.Log("Started initializing track");
                     this.SceneObjects = new SceneObjects();
-                    CameraController.Init();
+                    this.CameraController = new CameraController(this.SceneObjects);
                     this.ControlMode = ControlModeEnum.DebugMoveCar;
                     this.TrackSwitcher.FinishSwitchingTrack();
                     Debug.Log("Finished initializing track");
@@ -141,7 +142,7 @@ namespace ZoomTracks {
                 this.SwitchTracks();
             }
 
-            CameraController.UpdateCameraFollow();
+            this.CameraController.UpdateCameraFollow();
             this.UpdateUi();
         }
 
@@ -158,19 +159,19 @@ namespace ZoomTracks {
         private void UpdateCameraSettings() {
             if (this.Gamepad != null) {
                 // Left stick pan offset
-                CameraController.PanOffset(this.Gamepad.leftStick.ReadValue());
+                this.CameraController.PanOffset(this.Gamepad.leftStick.ReadValue());
 
                 // Left/right trigger zoom
-                CameraController.Zoom(this.Gamepad.leftTrigger.ReadValue(), this.Gamepad.rightTrigger.ReadValue());
+                this.CameraController.Zoom(this.Gamepad.leftTrigger.ReadValue(), this.Gamepad.rightTrigger.ReadValue());
 
                 // D-pad up reset pan offset
                 if (this.Gamepad.dpad.up.wasPressedThisFrame) {
-                    CameraController.ResetPanOffset();
+                    this.CameraController.ResetPanOffset();
                 }
 
                 // Left shoulder toggle follow
                 if (this.Gamepad.leftShoulder.wasPressedThisFrame) {
-                    CameraController.ToggleFollowLocation();
+                    this.CameraController.ToggleFollowLocation();
                 }
             }
         }
@@ -217,7 +218,7 @@ namespace ZoomTracks {
         }
 
         private void UpdateUi() {
-            this.SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {CameraController.ShouldFollowCarLocation}";
+            this.SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {this.CameraController.ShouldFollowCarLocation}";
             this.SceneObjects.ControlModeLabel.text = $"Control mode: {this.ControlMode}";
         }
     }
