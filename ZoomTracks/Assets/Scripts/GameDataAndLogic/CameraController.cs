@@ -18,9 +18,8 @@ namespace ZoomTracks {
         private readonly Transform CameraPanOffsetAndPitch;
         private readonly Camera Camera;
 
-        private TransformStruct OriginalCameraPanAndYawTransform;
-        private float OriginalCameraOrthographicSize;
-
+        private readonly TransformStruct OriginalCameraPanAndYawTransform;
+        private readonly float OriginalCameraOrthographicSize;
 
         public CameraController(TrackObjects trackObjects) {
             this.ShouldFollowCarLocation = false;
@@ -42,6 +41,10 @@ namespace ZoomTracks {
                 // Z reset pan offset
                 if (keyboard.zKey.wasPressedThisFrame) {
                     this.ResetPanOffset();
+                }
+
+                if (keyboard.cKey.wasPressedThisFrame) {
+                    this.ResetZoom();
                 }
 
                 // A toggle follow
@@ -71,6 +74,11 @@ namespace ZoomTracks {
                     this.ResetPanOffset();
                 }
 
+                // D-pad down reset zoom
+                if (gamepad.dpad.down.wasPressedThisFrame) {
+                    this.ResetZoom();
+                }
+
                 // Left shoulder toggle follow
                 if (gamepad.leftShoulder.wasPressedThisFrame) {
                     this.ToggleFollowLocation();
@@ -97,6 +105,10 @@ namespace ZoomTracks {
 
         private void ResetPanOffset() {
             this.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
+        }
+
+        private void ResetZoom() {
+            this.Camera.orthographicSize = this.OriginalCameraOrthographicSize;
         }
 
         private void ToggleFollowLocation() {
