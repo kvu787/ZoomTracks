@@ -36,15 +36,6 @@ namespace ZoomTracks {
             QualitySettings.vSyncCount = 1;
         }
 
-        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
-        private void Start() {
-            this.GameState = GameStateEnum.Start;
-            this.ZtSceneManager = new ZtSceneManager(log: false);
-            this.TrackSwitcher = new TrackSwitcher();
-            this.Keyboard = null;
-            this.Gamepad = null;
-        }
-
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
         private void Update() {
             this.ZtSceneManager.UpdateBeforeAll();
@@ -58,6 +49,13 @@ namespace ZoomTracks {
 
                     Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
                     Debug.Log("Starting game...");
+
+                    this.GameState = GameStateEnum.Start;
+                    this.ZtSceneManager = new ZtSceneManager(log: false);
+                    this.TrackSwitcher = new TrackSwitcher();
+                    this.Keyboard = null;
+                    this.Gamepad = null;
+
                     this.GameState = GameStateEnum.LoadingUiScene;
                     break;
 
