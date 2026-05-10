@@ -12,13 +12,14 @@ namespace ZoomTracks {
         private TrackSwitcher TrackSwitcher;
         private SceneObjects SceneObjects;
         private CameraController CameraController;
+        private UiObjects UiObjects;
 
         public enum ControlModeEnum {
             DebugMoveCar,
             Camera,
         }
 
-        private ControlModeEnum ControlMode;
+        public ControlModeEnum ControlMode;
 
         private Keyboard Keyboard;
         private Gamepad Gamepad;
@@ -109,6 +110,7 @@ namespace ZoomTracks {
                     Debug.Log("Started initializing track");
                     this.SceneObjects = new SceneObjects();
                     this.CameraController = new CameraController(this.SceneObjects);
+                    this.UiObjects = new UiObjects(this.CameraController, this);
                     this.ControlMode = ControlModeEnum.DebugMoveCar;
                     this.TrackSwitcher.FinishSwitchingTrack();
                     Debug.Log("Finished initializing track");
@@ -143,7 +145,7 @@ namespace ZoomTracks {
             }
 
             this.CameraController.UpdateCameraFollow();
-            this.UpdateUi();
+            this.UiObjects.Update();
         }
 
         private void UpdateControlMode() {
@@ -215,11 +217,6 @@ namespace ZoomTracks {
             if (isPrevTrack || isNextTrack) {
                 this.GameState = GameStateEnum.UnloadingOldTrack;
             }
-        }
-
-        private void UpdateUi() {
-            this.SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {this.CameraController.ShouldFollowCarLocation}";
-            this.SceneObjects.ControlModeLabel.text = $"Control mode: {this.ControlMode}";
         }
     }
 }
