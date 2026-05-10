@@ -38,7 +38,7 @@ namespace ZoomTracks {
         }
 
         private GameStateEnum GameState = GameStateEnum.Start;
-        private static int CurrentTrackIndex = Constants.InitialTrackSceneIndex;
+        private static int CurrentTrackIndex = -1;
         private static int OldTrackIndex = -1;
         private static int NewTrackIndex = Constants.InitialTrackSceneIndex;
 
