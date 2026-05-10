@@ -56,8 +56,6 @@ namespace ZoomTracks {
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
             this.Keyboard = null;
             this.Gamepad = null;
-
-            this.GameState = GameStateEnum.LoadingUiScene;
         }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
