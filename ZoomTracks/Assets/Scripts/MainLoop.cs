@@ -1,10 +1,18 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
+        private const string UiSceneName = "Ui";
+        private static readonly IReadOnlyList<string> TrackSceneNames = new List<string>() {
+            "Track1",
+            "Track2",
+        };
+        private const int InitialTrackSceneIndex = 1;
+
         private enum GameStateEnum {
             Start,
             LoadingUiScene,
@@ -52,7 +60,7 @@ namespace ZoomTracks {
 
                     this.GameState = GameStateEnum.Start;
                     this.ZtSceneManager = new ZtSceneManager(log: false);
-                    this.TrackSwitcher = new TrackSwitcher(Constants.InitialTrackSceneIndex);
+                    this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
                     this.Keyboard = null;
                     this.Gamepad = null;
 
@@ -61,14 +69,14 @@ namespace ZoomTracks {
 
                 case GameStateEnum.LoadingUiScene:
                     this.LoadUnloadOrWait(
-                        sceneName: Constants.UiSceneName,
+                        sceneName: UiSceneName,
                         isLoad: true,
                         nextState: GameStateEnum.LoadingNewTrack);
                     break;
 
                 case GameStateEnum.LoadingNewTrack:
                     this.LoadUnloadOrWait(
-                        sceneName: Constants.TrackSceneNames[this.TrackSwitcher.NewTrackIndex],
+                        sceneName: TrackSceneNames[this.TrackSwitcher.NewTrackIndex],
                         isLoad: true,
                         nextState: GameStateEnum.InitNewTrack);
                     break;
@@ -92,7 +100,7 @@ namespace ZoomTracks {
 
                 case GameStateEnum.UnloadingOldTrack:
                     this.LoadUnloadOrWait(
-                        sceneName: Constants.TrackSceneNames[this.TrackSwitcher.OldTrackIndex],
+                        sceneName: TrackSceneNames[this.TrackSwitcher.OldTrackIndex],
                         isLoad: false,
                         nextState: GameStateEnum.LoadingNewTrack);
                     break;

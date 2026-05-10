@@ -65,10 +65,6 @@ namespace ZoomTracks {
         }
 
         public void LoadScene(string sceneName) {
-            if (sceneName == Constants.MainSceneName) {
-                throw new Exception($"Should not load {Constants.MainSceneName}");
-            }
-
             if (!this.IsOperationRunning() && !this.SceneStates.ContainsKey(sceneName)) {
                 this.SceneStates[sceneName] = SceneStateEnum.Loading;
                 this.InProgressSceneAwaitable = this.LoadSceneAsync(sceneName);
@@ -77,10 +73,6 @@ namespace ZoomTracks {
         }
 
         public void UnloadScene(string sceneName) {
-            if (sceneName == Constants.MainSceneName) {
-                throw new Exception($"Should not load {Constants.MainSceneName}");
-            }
-
             if (!this.IsOperationRunning() && this.SceneStates.ContainsKey(sceneName) && this.SceneStates[sceneName] == SceneStateEnum.Loaded) {
                 this.SceneStates[sceneName] = SceneStateEnum.Unloading;
                 this.InProgressSceneAwaitable = this.UnloadSceneAsync(sceneName);
