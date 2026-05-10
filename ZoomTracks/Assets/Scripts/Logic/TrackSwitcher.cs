@@ -6,10 +6,10 @@ namespace ZoomTracks {
         public int OldTrackIndex { get; private set; }
         public int NewTrackIndex { get; private set; }
 
-        public TrackSwitcher() {
+        public TrackSwitcher(int initialTrackSceneIndex) {
             this.CurrentTrackIndex = -1;
             this.OldTrackIndex = -1;
-            this.NewTrackIndex = Constants.InitialTrackSceneIndex;
+            this.NewTrackIndex = initialTrackSceneIndex;
         }
 
         public bool SwitchTracks(Keyboard keyboard, Gamepad gamepad) {

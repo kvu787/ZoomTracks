@@ -52,7 +52,7 @@ namespace ZoomTracks {
 
                     this.GameState = GameStateEnum.Start;
                     this.ZtSceneManager = new ZtSceneManager(log: false);
-                    this.TrackSwitcher = new TrackSwitcher();
+                    this.TrackSwitcher = new TrackSwitcher(Constants.InitialTrackSceneIndex);
                     this.Keyboard = null;
                     this.Gamepad = null;
 
