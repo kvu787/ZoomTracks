@@ -39,12 +39,12 @@ namespace ZoomTracks {
         private string InProgressSceneName;
         private readonly bool Log;
 
-        public SceneManager(bool log) {
+        public SceneManager(bool enableLog) {
             this.SceneStates = new();
             this.InProgressSceneAwaitable = null;
             this.InProgressSceneName = null;
             this.WasOperationFinishedThisFrame = false;
-            this.Log = log;
+            this.Log = enableLog;
         }
 
         public void UpdateBeforeAll() {

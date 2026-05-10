@@ -54,11 +54,11 @@ namespace ZoomTracks {
                         throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnityEngine.SceneManagement.SceneManager.loadedSceneCount} loaded scenes.");
                     }
 
-                    Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
+                    Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.enableLog".Replace("/", "\\"));
                     Debug.Log("Initializing game...");
 
                     this.GameState = GameStateEnum.Start;
-                    this.SceneManager = new SceneManager(log: false);
+                    this.SceneManager = new SceneManager(enableLog: false);
                     this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
                     this.Keyboard = null;
                     this.Gamepad = null;
