@@ -5,6 +5,18 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
+        private enum GameStateEnum {
+            Start,
+            LoadingUiScene,
+            LoadingNewTrack,
+            InitNewTrack,
+            InGame,
+            UnloadingOldTrack,
+            DoNothing,
+        }
+
+        private GameStateEnum GameState;
+
         private ZtSceneManager ZtSceneManager;
         private TrackSwitcher TrackSwitcher;
 
@@ -24,54 +36,16 @@ namespace ZoomTracks {
             QualitySettings.vSyncCount = 1;
         }
 
-        private enum GameStateEnum {
-            Start,
-            LoadingUiScene,
-            LoadingNewTrack,
-            InitNewTrack,
-            InGame,
-            UnloadingOldTrack,
-            DoNothing,
-        }
-
-        private GameStateEnum GameState = GameStateEnum.Start;
-
-        private void UpdateBusyAnimation() {
-            Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}...");
-        }
-
-        private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
-            if (this.ZtSceneManager.IsOperationRunning()) {
-                this.UpdateBusyAnimation();
-            } else {
-                string verb = isLoad ? "loading" : "unloading";
-                if (this.ZtSceneManager.WasOperationFinishedThisFrame) {
-                    Debug.Log($"Finished {verb} {sceneName}");
-                    this.GameState = nextState;
-                } else {
-                    Debug.Log($"Started {verb} {sceneName}");
-                    if (isLoad) {
-                        this.ZtSceneManager.LoadScene(sceneName);
-                    } else {
-                        this.ZtSceneManager.UnloadScene(sceneName);
-                    }
-                }
-            }
-        }
-
+        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
         private void Start() {
+            this.GameState = GameStateEnum.Start;
             this.ZtSceneManager = new ZtSceneManager(log: false);
             this.TrackSwitcher = new TrackSwitcher();
             this.Keyboard = null;
             this.Gamepad = null;
         }
 
-        private void UpdateBeforeAll() {
-            this.Keyboard = Keyboard.current;
-            this.Gamepad = Gamepad.current;
-        }
-
-        // Update is called once per frame
+        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
         private void Update() {
             this.ZtSceneManager.UpdateBeforeAll();
             this.UpdateBeforeAll();
@@ -133,6 +107,34 @@ namespace ZoomTracks {
             }
 
             this.ZtSceneManager.UpdateAfterAll();
+        }
+
+        private void UpdateBeforeAll() {
+            this.Keyboard = Keyboard.current;
+            this.Gamepad = Gamepad.current;
+        }
+
+        private void UpdateBusyAnimation() {
+            Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}...");
+        }
+
+        private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
+            if (this.ZtSceneManager.IsOperationRunning()) {
+                this.UpdateBusyAnimation();
+            } else {
+                string verb = isLoad ? "loading" : "unloading";
+                if (this.ZtSceneManager.WasOperationFinishedThisFrame) {
+                    Debug.Log($"Finished {verb} {sceneName}");
+                    this.GameState = nextState;
+                } else {
+                    Debug.Log($"Started {verb} {sceneName}");
+                    if (isLoad) {
+                        this.ZtSceneManager.LoadScene(sceneName);
+                    } else {
+                        this.ZtSceneManager.UnloadScene(sceneName);
+                    }
+                }
+            }
         }
 
         private void ProcessInGameState() {
