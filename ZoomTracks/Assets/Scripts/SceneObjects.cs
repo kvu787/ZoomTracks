@@ -2,26 +2,26 @@ using TMPro;
 using UnityEngine;
 
 namespace ZoomTracks {
-    public static class SceneObjects {
-        public static GameObject Car;
-        public static Transform[] TireGroundContactPoints;
+    public class SceneObjects {
+        public GameObject Car;
+        public Transform[] TireGroundContactPoints;
 
-        public static TMP_Text ControlModeLabel;
-        public static TMP_Text CameraFollowCarLocationBoolLabel;
-        public static TMP_Text TestLabel;
+        public TMP_Text ControlModeLabel;
+        public TMP_Text CameraFollowCarLocationBoolLabel;
+        public TMP_Text TestLabel;
 
-        public static void Init() {
-            Car = GameObject.Find("SlopeCarPlaceholder");
-            TireGroundContactPoints = new Transform[] {
-                Car.transform.Find("CarFL"),
-                Car.transform.Find("CarFR"),
-                Car.transform.Find("CarRL"),
-                Car.transform.Find("CarRR"),
+        public SceneObjects() {
+            this.Car = GameObject.Find("SlopeCarPlaceholder");
+            this.TireGroundContactPoints = new Transform[] {
+                this.Car.transform.Find("CarFL"),
+                this.Car.transform.Find("CarFR"),
+                this.Car.transform.Find("CarRL"),
+                this.Car.transform.Find("CarRR"),
             };
 
-            ControlModeLabel = GameObject.Find(nameof(ControlModeLabel)).GetComponent<TMP_Text>();
-            CameraFollowCarLocationBoolLabel = GameObject.Find(nameof(CameraFollowCarLocationBoolLabel)).GetComponent<TMP_Text>();
-            TestLabel = GameObject.Find(nameof(TestLabel)).GetComponent<TMP_Text>();
+            this.ControlModeLabel = GameObject.Find(nameof(this.ControlModeLabel)).GetComponent<TMP_Text>();
+            this.CameraFollowCarLocationBoolLabel = GameObject.Find(nameof(this.CameraFollowCarLocationBoolLabel)).GetComponent<TMP_Text>();
+            this.TestLabel = GameObject.Find(nameof(this.TestLabel)).GetComponent<TMP_Text>();
         }
     }
 }

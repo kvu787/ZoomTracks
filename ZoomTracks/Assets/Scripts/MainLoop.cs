@@ -10,13 +10,14 @@ namespace ZoomTracks {
 
         private ZtSceneManager ZtSceneManager;
         private TrackSwitcher TrackSwitcher;
+        private SceneObjects SceneObjects;
 
-        private enum ControlModeEnum {
+        public enum ControlModeEnum {
             DebugMoveCar,
             Camera,
         }
 
-        private static ControlModeEnum ControlMode;
+        private ControlModeEnum ControlMode;
 
         private Keyboard Keyboard;
         private Gamepad Gamepad;
@@ -105,10 +106,9 @@ namespace ZoomTracks {
                 case GameStateEnum.InitNewTrack:
                     this.UpdateBusyAnimation();
                     Debug.Log("Started initializing track");
-                    SceneObjects.Init();
-                    SceneObjects.TestLabel.text = "Test passed";
+                    this.SceneObjects = new SceneObjects();
                     CameraController.Init();
-                    ControlMode = ControlModeEnum.DebugMoveCar;
+                    this.ControlMode = ControlModeEnum.DebugMoveCar;
                     this.TrackSwitcher.FinishSwitchingTrack();
                     Debug.Log("Finished initializing track");
                     this.GameState = GameStateEnum.InGame;
@@ -134,9 +134,9 @@ namespace ZoomTracks {
         private void HandleInGameState() {
             this.UpdateControlMode();
 
-            if (ControlMode == ControlModeEnum.Camera) {
+            if (this.ControlMode == ControlModeEnum.Camera) {
                 this.UpdateCameraSettings();
-            } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
+            } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
                 this.UpdateDebugMoveCar();
                 this.SwitchTracks();
             }
@@ -147,10 +147,10 @@ namespace ZoomTracks {
 
         private void UpdateControlMode() {
             if (this.Gamepad?.startButton.wasPressedThisFrame is true) {
-                if (ControlMode == ControlModeEnum.Camera) {
-                    ControlMode = ControlModeEnum.DebugMoveCar;
-                } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                    ControlMode = ControlModeEnum.Camera;
+                if (this.ControlMode == ControlModeEnum.Camera) {
+                    this.ControlMode = ControlModeEnum.DebugMoveCar;
+                } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
+                    this.ControlMode = ControlModeEnum.Camera;
                 }
             }
         }
@@ -177,22 +177,22 @@ namespace ZoomTracks {
 
         private void UpdateDebugMoveCar() {
             if (this.Keyboard.eKey.isPressed) {
-                SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
+                this.SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
             }
             if (this.Keyboard.dKey.isPressed) {
-                SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
+                this.SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
             }
             if (this.Keyboard.sKey.isPressed) {
-                SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
+                this.SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
             }
             if (this.Keyboard.fKey.isPressed) {
-                SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
+                this.SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
             }
 
             if (this.Gamepad != null) {
                 Vector2 leftStick = this.Gamepad.leftStick.ReadValue();
-                SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
-                SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
+                this.SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
+                this.SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
             }
         }
 
@@ -217,8 +217,8 @@ namespace ZoomTracks {
         }
 
         private void UpdateUi() {
-            SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {CameraController.ShouldFollowCarLocation}";
-            SceneObjects.ControlModeLabel.text = $"Control mode: {ControlMode}";
+            this.SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {CameraController.ShouldFollowCarLocation}";
+            this.SceneObjects.ControlModeLabel.text = $"Control mode: {this.ControlMode}";
         }
     }
 }
