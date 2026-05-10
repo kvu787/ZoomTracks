@@ -15,7 +15,7 @@ namespace ZoomTracks {
             this.tracksCount = tracksCount;
         }
 
-        public bool SwitchTracks(Keyboard keyboard, Gamepad gamepad) {
+        public bool ReadInputAndSwitchTracks(Keyboard keyboard, Gamepad gamepad) {
             bool isPrevTrack = false;
             bool isNextTrack = false;
 

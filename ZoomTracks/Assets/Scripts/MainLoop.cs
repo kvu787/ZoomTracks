@@ -113,16 +113,16 @@ namespace ZoomTracks {
         }
 
         private void ProcessInGameState() {
-            this.ControlModeSwitcher.UpdateControlMode(this.Keyboard, this.Gamepad);
+            this.ControlModeSwitcher.ReadInputAndToggleControlMode(this.Keyboard, this.Gamepad);
 
             switch (this.ControlModeSwitcher.ControlMode) {
                 case ControlModeEnum.Camera:
-                    this.CameraController.UpdateCameraSettings(this.Keyboard, this.Gamepad);
+                    this.CameraController.ReadInputAndChangeCameraSettings(this.Keyboard, this.Gamepad);
                     break;
 
                 case ControlModeEnum.Car:
-                    this.CarMover.UpdateCarPosition(this.Keyboard, this.Gamepad);
-                    if (this.TrackSwitcher.SwitchTracks(this.Keyboard, this.Gamepad)) {
+                    this.CarMover.ReadInputAndMoveCar(this.Keyboard, this.Gamepad);
+                    if (this.TrackSwitcher.ReadInputAndSwitchTracks(this.Keyboard, this.Gamepad)) {
                         this.GameState = GameStateEnum.UnloadingOldTrack;
                     }
                     break;

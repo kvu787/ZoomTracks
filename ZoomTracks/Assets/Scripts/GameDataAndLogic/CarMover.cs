@@ -12,7 +12,7 @@ namespace ZoomTracks {
             this.TrackObjects = trackObjects;
         }
 
-        public void UpdateCarPosition(Keyboard keyboard, Gamepad gamepad) {
+        public void ReadInputAndMoveCar(Keyboard keyboard, Gamepad gamepad) {
             if (keyboard != null) {
                 if (keyboard.eKey.isPressed) {
                     this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);

@@ -13,7 +13,7 @@ namespace ZoomTracks {
 
         public ControlModeEnum ControlMode { get; private set; }
 
-        public void UpdateControlMode(Keyboard keyboard, Gamepad gamepad) {
+        public void ReadInputAndToggleControlMode(Keyboard keyboard, Gamepad gamepad) {
             if (keyboard?.tabKey.wasPressedThisFrame is true || gamepad?.startButton.wasPressedThisFrame is true) {
                 if (this.ControlMode == ControlModeEnum.Camera) {
                     this.ControlMode = ControlModeEnum.Car;

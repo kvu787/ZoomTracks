@@ -37,7 +37,7 @@ namespace ZoomTracks {
             this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
         }
 
-        public void UpdateCameraSettings(Keyboard keyboard, Gamepad gamepad) {
+        public void ReadInputAndChangeCameraSettings(Keyboard keyboard, Gamepad gamepad) {
             if (keyboard != null) {
                 if (keyboard.ctrlKey.isPressed) {
                     // Ctrl-E reset pan offset
