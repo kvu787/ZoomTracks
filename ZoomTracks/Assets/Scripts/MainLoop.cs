@@ -15,6 +15,8 @@ namespace ZoomTracks {
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
+        private ZtSceneManager ZtSceneManager;
+
         private enum ControlModeEnum {
             DebugMoveCar,
             Camera,
@@ -52,27 +54,31 @@ namespace ZoomTracks {
         }
 
         private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
-            if (ZtSceneManager.IsOperationRunning()) {
+            if (this.ZtSceneManager.IsOperationRunning()) {
                 this.UpdateBusyAnimation();
             } else {
                 string verb = isLoad ? "loading" : "unloading";
-                if (ZtSceneManager.WasOperationFinishedThisFrame) {
+                if (this.ZtSceneManager.WasOperationFinishedThisFrame) {
                     Debug.Log($"Finished {verb} {sceneName}");
                     this.GameState = nextState;
                 } else {
                     Debug.Log($"Started {verb} {sceneName}");
                     if (isLoad) {
-                        ZtSceneManager.LoadScene(sceneName);
+                        this.ZtSceneManager.LoadScene(sceneName);
                     } else {
-                        ZtSceneManager.UnloadScene(sceneName);
+                        this.ZtSceneManager.UnloadScene(sceneName);
                     }
                 }
             }
         }
 
+        private void Start() {
+            this.ZtSceneManager = new ZtSceneManager(log: false);
+        }
+
         // Update is called once per frame
         private void Update() {
-            ZtSceneManager.UpdateBeforeAll();
+            this.ZtSceneManager.UpdateBeforeAll();
 
             switch (this.GameState) {
                 case GameStateEnum.Start:
@@ -124,7 +130,7 @@ namespace ZoomTracks {
                     throw new Exception();
             }
 
-            ZtSceneManager.UpdateAfterAll();
+            this.ZtSceneManager.UpdateAfterAll();
         }
 
         private void HandleInGameState() {

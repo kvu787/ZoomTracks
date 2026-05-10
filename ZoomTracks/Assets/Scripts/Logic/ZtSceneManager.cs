@@ -20,113 +20,123 @@ namespace ZoomTracks {
     ///   1. Call ZtSceneManager.UpdateBeforeAll and ZtSceneManager.UpdateAfterAll at the start and end of MainLoop.Update.
     ///   2. Call ZtSceneManager.Update anywhere in MainLoop.Update.
     /// </summary>
-    public static class ZtSceneManager {
+    public class ZtSceneManager {
         private const string MainSceneName = "Main";
 
-        private enum SceneState {
+        private enum SceneStateEnum {
             Loading,
             Loaded,
             Unloading,
         }
+        public bool WasOperationFinishedThisFrame { get; private set; }
 
-        /*
-         * Invariants:
-         * - SceneStates contains at most one scene that is in Loading or Unloading state
-         * - SceneStates contains a scene in Loading/Unloading state iff InProgressSceneAwaitable and InProgressSceneName match that scene
-         */
-        private static readonly Dictionary<string, SceneState> SceneStates = new();
-        private static Awaitable InProgressSceneAwaitable = null;
-        private static string InProgressSceneName = null;
+        /// <summary>
+        /// Invariants:
+        /// - SceneStates contains at most one scene that is in Loading or Unloading state
+        /// - If-and-only-if SceneStates contains a scene in Loading/Unloading state, then InProgressSceneAwaitable and InProgressSceneName match that scene
+        /// - If IsOperationRunning() is true, then WasOperationFinishedThisFrame is false
+        /// </summary>
+        private readonly Dictionary<string, SceneStateEnum> SceneStates;
+        private Awaitable InProgressSceneAwaitable;
+        private string InProgressSceneName;
+        private bool Log;
 
-        public static bool WasOperationFinishedThisFrame { get; private set; } = false;
 
-        public static void UpdateBeforeAll() {
-            if (IsOperationRunning() && InProgressSceneAwaitable.IsCompleted) {
-                WasOperationFinishedThisFrame = true;
+        public ZtSceneManager(bool log) {
+            this.SceneStates = new();
+            this.InProgressSceneAwaitable = null;
+            this.InProgressSceneName = null;
+            this.WasOperationFinishedThisFrame = false;
+            this.Log = log;
+        }
 
-                if (SceneStates[InProgressSceneName] == SceneState.Loading) {
-                    //Debug.Log($"Post-process loaded scene='{InProgressSceneName}'");
-                    SceneStates[InProgressSceneName] = SceneState.Loaded;
-                } else if (SceneStates[InProgressSceneName] == SceneState.Unloading) {
-                    //Debug.Log($"Post-process unloaded scene='{InProgressSceneName}'");
-                    _ = SceneStates.Remove(InProgressSceneName);
+        public void UpdateBeforeAll() {
+            if (this.IsOperationRunning() && this.InProgressSceneAwaitable.IsCompleted) {
+                this.WasOperationFinishedThisFrame = true;
+
+                if (this.SceneStates[this.InProgressSceneName] == SceneStateEnum.Loading) {
+                    if (this.Log) { Debug.Log($"Post-process loaded scene='{this.InProgressSceneName}'"); }
+                    this.SceneStates[this.InProgressSceneName] = SceneStateEnum.Loaded;
+                } else if (this.SceneStates[this.InProgressSceneName] == SceneStateEnum.Unloading) {
+                    if (this.Log) { Debug.Log($"Post-process unloaded scene='{this.InProgressSceneName}'"); }
+                    _ = this.SceneStates.Remove(this.InProgressSceneName);
                 }
-                InProgressSceneAwaitable.GetAwaiter().GetResult();
-                InProgressSceneAwaitable = null;
-                InProgressSceneName = null;
+                this.InProgressSceneAwaitable.GetAwaiter().GetResult();
+                this.InProgressSceneAwaitable = null;
+                this.InProgressSceneName = null;
             }
         }
 
-        public static void LoadScene(string sceneName) {
+        public void LoadScene(string sceneName) {
             if (sceneName == MainSceneName) {
                 throw new Exception($"Should not load {MainSceneName}");
             }
 
-            if (!IsOperationRunning() && !SceneStates.ContainsKey(sceneName)) {
-                SceneStates[sceneName] = SceneState.Loading;
-                InProgressSceneAwaitable = LoadSceneAsync(sceneName);
-                InProgressSceneName = sceneName;
+            if (!this.IsOperationRunning() && !this.SceneStates.ContainsKey(sceneName)) {
+                this.SceneStates[sceneName] = SceneStateEnum.Loading;
+                this.InProgressSceneAwaitable = this.LoadSceneAsync(sceneName);
+                this.InProgressSceneName = sceneName;
             }
         }
 
-        public static void UnloadScene(string sceneName) {
+        public void UnloadScene(string sceneName) {
             if (sceneName == MainSceneName) {
                 throw new Exception($"Should not load {MainSceneName}");
             }
 
-            if (!IsOperationRunning() && SceneStates.ContainsKey(sceneName) && SceneStates[sceneName] == SceneState.Loaded) {
-                SceneStates[sceneName] = SceneState.Unloading;
-                InProgressSceneAwaitable = UnloadSceneAsync(sceneName);
-                InProgressSceneName = sceneName;
+            if (!this.IsOperationRunning() && this.SceneStates.ContainsKey(sceneName) && this.SceneStates[sceneName] == SceneStateEnum.Loaded) {
+                this.SceneStates[sceneName] = SceneStateEnum.Unloading;
+                this.InProgressSceneAwaitable = this.UnloadSceneAsync(sceneName);
+                this.InProgressSceneName = sceneName;
             }
         }
-        public static bool IsOperationRunning() {
-            return InProgressSceneAwaitable != null;
+        public bool IsOperationRunning() {
+            return this.InProgressSceneAwaitable != null;
         }
 
 
-        public static void UpdateAfterAll() {
-            WasOperationFinishedThisFrame = false;
+        public void UpdateAfterAll() {
+            this.WasOperationFinishedThisFrame = false;
         }
 
-        private static async Awaitable LoadSceneAsync(string sceneName) {
+        private async Awaitable LoadSceneAsync(string sceneName) {
             DateTime startTime;
             AsyncOperation operation;
 
-            //Debug.Log($"Loading scene '{sceneName}'...");
+            if (this.Log) { Debug.Log($"Loading scene '{sceneName}'..."); }
             startTime = DateTime.Now;
             operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.1))) {
-                //Debug.Log($"{Time.frameCount}");
+                if (this.Log) { Debug.Log($"{Time.frameCount}"); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            //Debug.Log($"...Finished loading scene '{sceneName}'");
+            if (this.Log) { Debug.Log($"...Finished loading scene '{sceneName}'"); }
         }
 
-        private static async Awaitable UnloadSceneAsync(string sceneName) {
+        private async Awaitable UnloadSceneAsync(string sceneName) {
             DateTime startTime;
             AsyncOperation operation;
 
-            //Debug.Log($"Unloading scene '{sceneName}'...");
+            if (this.Log) { Debug.Log($"Unloading scene '{sceneName}'..."); }
             startTime = DateTime.Now;
             operation = SceneManager.UnloadSceneAsync(sceneName);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                //Debug.Log($"{Time.frameCount}");
+                if (this.Log) { Debug.Log($"{Time.frameCount}"); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            //Debug.Log($"...Finished unloading scene '{sceneName}'");
+            if (this.Log) { Debug.Log($"...Finished unloading scene '{sceneName}'"); }
 
-            //Debug.Log("Executing Resources.UnloadUnusedAssets()...");
+            if (this.Log) { Debug.Log("Executing Resources.UnloadUnusedAssets()..."); }
             startTime = DateTime.Now;
             operation = Resources.UnloadUnusedAssets();
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                //Debug.Log($"{Time.frameCount}");
+                if (this.Log) { Debug.Log($"{Time.frameCount}"); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            //Debug.Log("...Finished executing Resources.UnloadUnusedAssets()");
+            if (this.Log) { Debug.Log("...Finished executing Resources.UnloadUnusedAssets()"); }
         }
 
         //private static void ValidateState() {
