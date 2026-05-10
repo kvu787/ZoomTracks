@@ -25,7 +25,7 @@ namespace ZoomTracks {
             this.CurrentTrackIndex = -1;
         }
 
-        public void FinishSwitchingTrack() {
+        public void SwitchingTrackFinished() {
             this.CurrentTrackIndex = this.NewTrackIndex;
             this.OldTrackIndex = -1;
             this.NewTrackIndex = -1;

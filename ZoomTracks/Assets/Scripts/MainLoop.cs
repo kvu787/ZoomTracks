@@ -107,13 +107,13 @@ namespace ZoomTracks {
                     break;
                 case GameStateEnum.InitNewTrack:
                     this.UpdateBusyAnimation();
-                    Debug.Log("Started initializing track");
+                    Debug.Log("Start initializing track...");
                     this.SceneObjects = new SceneObjects();
                     this.CameraController = new CameraController(this.SceneObjects);
                     this.UiObjects = new UiObjects(this.CameraController, this);
                     this.ControlMode = ControlModeEnum.DebugMoveCar;
-                    this.TrackSwitcher.FinishSwitchingTrack();
-                    Debug.Log("Finished initializing track");
+                    this.TrackSwitcher.SwitchingTrackFinished();
+                    Debug.Log("...Finished initializing track");
                     this.GameState = GameStateEnum.InGame;
                     break;
                 case GameStateEnum.InGame:
