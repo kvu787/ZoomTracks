@@ -38,49 +38,49 @@ namespace ZoomTracks {
 
         public void ReadInputAndChangeCameraSettings(Keyboard keyboard, Gamepad gamepad) {
             if (keyboard != null) {
-                // ESDF pan offset
+                // ESDF: Pan
                 Vector2 vector2 = new(
                     keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue(),
                     keyboard.eKey.ReadValue() - keyboard.dKey.ReadValue());
                 this.PanOffset(vector2);
 
-                // W/R zoom
+                // W/R: Zoom
                 this.Zoom(keyboard.wKey.ReadValue(), keyboard.rKey.ReadValue());
 
-                // A toggle follow
+                // A: Toggle follow
                 if (keyboard.aKey.wasPressedThisFrame) {
                     this.ToggleFollowLocation();
                 }
 
-                // Z reset pan offset
+                // Z: Reset pan offset
                 if (keyboard.zKey.wasPressedThisFrame) {
                     this.ResetPanOffset();
                 }
 
-                // C reset zoom
+                // C: Reset zoom
                 if (keyboard.cKey.wasPressedThisFrame) {
                     this.ResetZoom();
                 }
             }
 
             if (gamepad != null) {
-                // Left stick pan offset
+                // Left stick: Pan offset
                 this.PanOffset(gamepad.leftStick.ReadValue());
 
-                // Left/right trigger zoom
+                // Left/right trigger: Zoom
                 this.Zoom(gamepad.leftTrigger.ReadValue(), gamepad.rightTrigger.ReadValue());
 
-                // Left shoulder toggle follow
+                // Left shoulder: Toggle follow
                 if (gamepad.leftShoulder.wasPressedThisFrame) {
                     this.ToggleFollowLocation();
                 }
 
-                // D-pad up reset pan offset
+                // D-pad up: Reset pan offset
                 if (gamepad.dpad.up.wasPressedThisFrame) {
                     this.ResetPanOffset();
                 }
 
-                // D-pad down reset zoom
+                // D-pad down: Reset zoom
                 if (gamepad.dpad.down.wasPressedThisFrame) {
                     this.ResetZoom();
                 }
