@@ -143,13 +143,13 @@ namespace ZoomTracks {
                     this.CameraController.UpdateCameraSettings(this.Gamepad);
                 }
             } else if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.DebugMoveCar) {
-                this.CarMover.UpdateDebugMoveCar(this.Keyboard, this.Gamepad);
+                this.CarMover.UpdateCarPosition(this.Keyboard, this.Gamepad);
                 if (this.TrackSwitcher.SwitchTracks(this.Keyboard, this.Gamepad)) {
                     this.GameState = GameStateEnum.UnloadingOldTrack;
                 }
             }
 
-            this.CameraController.UpdateCameraFollow();
+            this.CameraController.UpdateCameraPosition();
             this.UiManager.Update();
         }
     }
