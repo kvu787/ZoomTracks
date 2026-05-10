@@ -12,18 +12,18 @@ namespace ZoomTracks {
             this.NewTrackIndex = Constants.InitialTrackSceneIndex;
         }
 
-        public bool SwitchTracks(Keyboard Keyboard, Gamepad Gamepad) {
+        public bool SwitchTracks(Keyboard keyboard, Gamepad gamepad) {
             bool isPrevTrack = false;
             bool isNextTrack = false;
 
-            if (Keyboard != null) {
-                isPrevTrack = isPrevTrack || Keyboard.leftArrowKey.wasPressedThisFrame;
-                isNextTrack = isNextTrack || Keyboard.rightArrowKey.wasPressedThisFrame;
+            if (keyboard != null) {
+                isPrevTrack = isPrevTrack || keyboard.leftArrowKey.wasPressedThisFrame;
+                isNextTrack = isNextTrack || keyboard.rightArrowKey.wasPressedThisFrame;
             }
 
-            if (Gamepad != null) {
-                isPrevTrack = isPrevTrack || Gamepad.leftShoulder.wasPressedThisFrame;
-                isNextTrack = isNextTrack || Gamepad.rightShoulder.wasPressedThisFrame;
+            if (gamepad != null) {
+                isPrevTrack = isPrevTrack || gamepad.leftShoulder.wasPressedThisFrame;
+                isNextTrack = isNextTrack || gamepad.rightShoulder.wasPressedThisFrame;
             }
 
             if (isPrevTrack) {
