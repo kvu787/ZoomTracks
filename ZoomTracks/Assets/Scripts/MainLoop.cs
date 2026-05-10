@@ -9,6 +9,7 @@ namespace ZoomTracks {
         private const float CarRotateSpeed = 540;
 
         private ZtSceneManager ZtSceneManager;
+        private TrackSwitcher TrackSwitcher;
 
         private enum ControlModeEnum {
             DebugMoveCar,
@@ -38,9 +39,6 @@ namespace ZoomTracks {
         }
 
         private GameStateEnum GameState = GameStateEnum.Start;
-        private static int CurrentTrackIndex = -1;
-        private static int OldTrackIndex = -1;
-        private static int NewTrackIndex = Constants.InitialTrackSceneIndex;
 
         private void UpdateBusyAnimation() {
             Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}...");
@@ -67,6 +65,7 @@ namespace ZoomTracks {
 
         private void Start() {
             this.ZtSceneManager = new ZtSceneManager(log: false);
+            this.TrackSwitcher = new TrackSwitcher();
             this.Keyboard = null;
             this.Gamepad = null;
         }
@@ -99,7 +98,7 @@ namespace ZoomTracks {
                     break;
                 case GameStateEnum.LoadingNewTrack:
                     this.LoadUnloadOrWait(
-                        sceneName: Constants.TrackSceneNames[NewTrackIndex],
+                        sceneName: Constants.TrackSceneNames[this.TrackSwitcher.NewTrackIndex],
                         isLoad: true,
                         nextState: GameStateEnum.InitNewTrack);
                     break;
@@ -110,9 +109,7 @@ namespace ZoomTracks {
                     SceneObjects.TestLabel.text = "Test passed";
                     CameraController.Init();
                     ControlMode = ControlModeEnum.DebugMoveCar;
-                    CurrentTrackIndex = NewTrackIndex;
-                    OldTrackIndex = -1;
-                    NewTrackIndex = -1;
+                    this.TrackSwitcher.FinishSwitchingTrack();
                     Debug.Log("Finished initializing track");
                     this.GameState = GameStateEnum.InGame;
                     break;
@@ -121,7 +118,7 @@ namespace ZoomTracks {
                     break;
                 case GameStateEnum.UnloadingOldTrack:
                     this.LoadUnloadOrWait(
-                        sceneName: Constants.TrackSceneNames[OldTrackIndex],
+                        sceneName: Constants.TrackSceneNames[this.TrackSwitcher.OldTrackIndex],
                         isLoad: false,
                         nextState: GameStateEnum.LoadingNewTrack);
                     break;
@@ -141,7 +138,7 @@ namespace ZoomTracks {
                 this.UpdateCameraSettings();
             } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
                 this.UpdateDebugMoveCar();
-                this.TriggerSwitchTracks();
+                this.SwitchTracks();
             }
 
             CameraController.UpdateCameraFollow();
@@ -199,22 +196,22 @@ namespace ZoomTracks {
             }
         }
 
-        private void TriggerSwitchTracks() {
+        private void SwitchTracks() {
             bool isPrevTrack = this.Keyboard.leftArrowKey.wasPressedThisFrame;
             bool isNextTrack = this.Keyboard.rightArrowKey.isPressed;
+
             if (this.Gamepad != null) {
                 isPrevTrack = isPrevTrack || this.Gamepad.leftShoulder.isPressed;
                 isNextTrack = isNextTrack || this.Gamepad.rightShoulder.isPressed;
             }
 
+            if (isPrevTrack) {
+                this.TrackSwitcher.PrevTrack();
+            } else if (isNextTrack) {
+                this.TrackSwitcher.NextTrack();
+            }
+
             if (isPrevTrack || isNextTrack) {
-                OldTrackIndex = CurrentTrackIndex;
-                if (isPrevTrack) {
-                    NewTrackIndex = (CurrentTrackIndex - 1 + Constants.TrackSceneNames.Count) % Constants.TrackSceneNames.Count;
-                } else if (isNextTrack) {
-                    NewTrackIndex = (CurrentTrackIndex + 1) % Constants.TrackSceneNames.Count;
-                }
-                CurrentTrackIndex = -1;
                 this.GameState = GameStateEnum.UnloadingOldTrack;
             }
         }
