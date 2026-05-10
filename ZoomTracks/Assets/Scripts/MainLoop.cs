@@ -17,7 +17,6 @@ namespace ZoomTracks {
         private CameraController CameraController;
         private UiManager UiManager;
 
-
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
         private void Awake() {
             Debug.Log($"GameLoop Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
