@@ -39,7 +39,7 @@ namespace ZoomTracks {
         private readonly Dictionary<string, SceneStateEnum> SceneStates;
         private Awaitable InProgressSceneAwaitable;
         private string InProgressSceneName;
-        private bool Log;
+        private readonly bool Log;
 
 
         public ZtSceneManager(bool log) {
