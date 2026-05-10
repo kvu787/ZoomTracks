@@ -37,7 +37,30 @@ namespace ZoomTracks {
             this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
         }
 
-        public void UpdateCameraSettings(Gamepad gamepad) {
+        public void UpdateCameraSettings(Keyboard keyboard, Gamepad gamepad) {
+            if (keyboard != null) {
+                if (keyboard.ctrlKey.isPressed) {
+                    // Ctrl-E reset pan offset
+                    if (keyboard.eKey.wasPressedThisFrame) {
+                        this.ResetPanOffset();
+                    }
+
+                    // Ctrl-W toggle follow
+                    if (keyboard.wKey.wasPressedThisFrame) {
+                        this.ToggleFollowLocation();
+                    }
+                } else {
+                    // ESDF pan offset
+                    Vector2 vector2 = new(
+                        keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue(),
+                        keyboard.eKey.ReadValue() - keyboard.dKey.ReadValue());
+                    this.PanOffset(vector2);
+
+                    // W/R zoom
+                    this.Zoom(keyboard.wKey.ReadValue(), keyboard.rKey.ReadValue());
+                }
+            }
+
             if (gamepad != null) {
                 // Left stick pan offset
                 this.PanOffset(gamepad.leftStick.ReadValue());
