@@ -38,20 +38,22 @@ namespace ZoomTracks {
         }
 
         public void UpdateCameraSettings(Gamepad gamepad) {
-            // Left stick pan offset
-            this.PanOffset(gamepad.leftStick.ReadValue());
+            if (gamepad != null) {
+                // Left stick pan offset
+                this.PanOffset(gamepad.leftStick.ReadValue());
 
-            // Left/right trigger zoom
-            this.Zoom(gamepad.leftTrigger.ReadValue(), gamepad.rightTrigger.ReadValue());
+                // Left/right trigger zoom
+                this.Zoom(gamepad.leftTrigger.ReadValue(), gamepad.rightTrigger.ReadValue());
 
-            // D-pad up reset pan offset
-            if (gamepad.dpad.up.wasPressedThisFrame) {
-                this.ResetPanOffset();
-            }
+                // D-pad up reset pan offset
+                if (gamepad.dpad.up.wasPressedThisFrame) {
+                    this.ResetPanOffset();
+                }
 
-            // Left shoulder toggle follow
-            if (gamepad.leftShoulder.wasPressedThisFrame) {
-                this.ToggleFollowLocation();
+                // Left shoulder toggle follow
+                if (gamepad.leftShoulder.wasPressedThisFrame) {
+                    this.ToggleFollowLocation();
+                }
             }
         }
 
