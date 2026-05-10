@@ -1,11 +1,11 @@
 using UnityEngine;
 
 namespace ZoomTracks {
-    public class SceneObjects {
+    public class TrackObjects {
         public GameObject Car;
         public Transform[] TireGroundContactPoints;
 
-        public SceneObjects() {
+        public TrackObjects() {
             this.Car = GameObject.Find("SlopeCarPlaceholder");
             this.TireGroundContactPoints = new Transform[] {
                 this.Car.transform.Find("CarFL"),
