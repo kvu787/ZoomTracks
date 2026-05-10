@@ -12,7 +12,7 @@ namespace ZoomTracks {
         private TrackSwitcher TrackSwitcher;
         private SceneObjects SceneObjects;
         private CameraController CameraController;
-        private UiObjects UiObjects;
+        private UiManager UiManager;
 
         public enum ControlModeEnum {
             DebugMoveCar,
@@ -110,7 +110,7 @@ namespace ZoomTracks {
                     Debug.Log("Start initializing track...");
                     this.SceneObjects = new SceneObjects();
                     this.CameraController = new CameraController(this.SceneObjects);
-                    this.UiObjects = new UiObjects(this.CameraController, this);
+                    this.UiManager = new UiManager(this.CameraController, this);
                     this.ControlMode = ControlModeEnum.DebugMoveCar;
                     this.TrackSwitcher.SwitchingTrackFinished();
                     Debug.Log("...Finished initializing track");
@@ -145,7 +145,7 @@ namespace ZoomTracks {
             }
 
             this.CameraController.UpdateCameraFollow();
-            this.UiObjects.Update();
+            this.UiManager.Update();
         }
 
         private void UpdateControlMode() {

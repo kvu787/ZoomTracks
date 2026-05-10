@@ -2,14 +2,14 @@ using TMPro;
 using UnityEngine;
 
 namespace ZoomTracks {
-    public class UiObjects {
+    public class UiManager {
         private readonly CameraController CameraController;
         private readonly MainLoop MainLoop;
         private readonly TMP_Text ControlModeLabel;
         private readonly TMP_Text CameraFollowCarLocationBoolLabel;
         private readonly TMP_Text TestLabel;
 
-        public UiObjects(CameraController cameraController, MainLoop mainLoop) {
+        public UiManager(CameraController cameraController, MainLoop mainLoop) {
             this.CameraController = cameraController;
             this.MainLoop = mainLoop;
 
