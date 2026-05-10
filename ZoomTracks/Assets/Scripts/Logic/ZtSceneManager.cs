@@ -39,7 +39,6 @@ namespace ZoomTracks {
         private string InProgressSceneName;
         private readonly bool Log;
 
-
         public ZtSceneManager(bool log) {
             this.SceneStates = new();
             this.InProgressSceneAwaitable = null;
@@ -88,10 +87,10 @@ namespace ZoomTracks {
                 this.InProgressSceneName = sceneName;
             }
         }
+
         public bool IsOperationRunning() {
             return this.InProgressSceneAwaitable != null;
         }
-
 
         public void UpdateAfterAll() {
             this.WasOperationFinishedThisFrame = false;
