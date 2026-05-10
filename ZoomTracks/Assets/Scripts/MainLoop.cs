@@ -186,9 +186,9 @@ namespace ZoomTracks {
                 if (isPrevTrack || isNextTrack) {
                     OldTrackIndex = CurrentTrackIndex;
                     if (isPrevTrack) {
-                        NewTrackIndex = (CurrentTrackIndex - 1 + Constants.TrackSceneNames.Length) % Constants.TrackSceneNames.Length;
+                        NewTrackIndex = (CurrentTrackIndex - 1 + Constants.TrackSceneNames.Count) % Constants.TrackSceneNames.Count;
                     } else if (isNextTrack) {
-                        NewTrackIndex = (CurrentTrackIndex + 1) % Constants.TrackSceneNames.Length;
+                        NewTrackIndex = (CurrentTrackIndex + 1) % Constants.TrackSceneNames.Count;
                     }
                     CurrentTrackIndex = -1;
                     this.GameState = GameStateEnum.UnloadingOldTrack;
