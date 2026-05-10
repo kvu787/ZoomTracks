@@ -63,20 +63,20 @@ namespace ZoomTracks {
             }
         }
 
-        public void PanOffset(Vector2 vector2) {
+        private void PanOffset(Vector2 vector2) {
             this.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
         }
 
-        public void Zoom(float a, float b) {
+        private void Zoom(float a, float b) {
             this.Camera.orthographicSize += Time.deltaTime * CameraZoomSpeed * (a - b);
             this.Camera.orthographicSize = Mathf.Clamp(this.Camera.orthographicSize, MinCameraOrthographicSize, MaxCameraOrthographicSize);
         }
 
-        public void ResetPanOffset() {
+        private void ResetPanOffset() {
             this.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
         }
 
-        public void ToggleFollowLocation() {
+        private void ToggleFollowLocation() {
             this.ShouldFollowCarLocation = !this.ShouldFollowCarLocation;
         }
 
