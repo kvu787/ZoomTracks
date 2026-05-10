@@ -55,7 +55,7 @@ namespace ZoomTracks {
                     }
 
                     Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
-                    Debug.Log("Starting game...");
+                    Debug.Log("Initializing game...");
 
                     this.GameState = GameStateEnum.Start;
                     this.SceneManager = new SceneManager(log: false);
@@ -120,7 +120,7 @@ namespace ZoomTracks {
         }
 
         private void UpdateBusyAnimation() {
-            Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}...");
+            Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}");
         }
 
         private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
@@ -129,10 +129,10 @@ namespace ZoomTracks {
             } else {
                 string verb = isLoad ? "loading" : "unloading";
                 if (this.SceneManager.WasOperationFinishedThisFrame) {
-                    Debug.Log($"Finished {verb} {sceneName}");
+                    Debug.Log($"...Finished {verb} {sceneName}");
                     this.GameState = nextState;
                 } else {
-                    Debug.Log($"Started {verb} {sceneName}");
+                    Debug.Log($"Started {verb} {sceneName}...");
                     if (isLoad) {
                         this.SceneManager.LoadScene(sceneName);
                     } else {
