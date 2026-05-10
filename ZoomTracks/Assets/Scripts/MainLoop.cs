@@ -16,7 +16,7 @@ namespace ZoomTracks {
             LoadingUiScene,
             LoadingNewTrack,
             InitNewTrack,
-            InGame,
+            RunGame,
             UnloadingOldTrack,
             DoNothing,
         }
@@ -88,11 +88,11 @@ namespace ZoomTracks {
                     this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
                     this.TrackSwitcher.SwitchingTrackFinished();
                     Debug.Log("...Finish initializing track");
-                    this.GameState = GameStateEnum.InGame;
+                    this.GameState = GameStateEnum.RunGame;
                     break;
 
-                case GameStateEnum.InGame:
-                    this.ProcessInGameState();
+                case GameStateEnum.RunGame:
+                    this.RunGame();
                     break;
 
                 case GameStateEnum.UnloadingOldTrack:
@@ -112,7 +112,7 @@ namespace ZoomTracks {
             this.SceneManager.UpdateAfterAll();
         }
 
-        private void ProcessInGameState() {
+        private void RunGame() {
             this.ControlModeSwitcher.ReadInputAndToggleControlMode(this.Keyboard, this.Gamepad);
 
             switch (this.ControlModeSwitcher.ControlMode) {
