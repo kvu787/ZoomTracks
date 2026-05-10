@@ -52,10 +52,10 @@ namespace ZoomTracks {
                 this.WasOperationFinishedThisFrame = true;
 
                 if (this.SceneStates[this.InProgressSceneName] == SceneStateEnum.Loading) {
-                    if (this.Log) { Debug.Log($"Post-process loaded scene='{this.InProgressSceneName}'"); }
+                    if (this.Log) { Debug.Log($"ZtSceneManager: Post-process loaded scene='{this.InProgressSceneName}'"); }
                     this.SceneStates[this.InProgressSceneName] = SceneStateEnum.Loaded;
                 } else if (this.SceneStates[this.InProgressSceneName] == SceneStateEnum.Unloading) {
-                    if (this.Log) { Debug.Log($"Post-process unloaded scene='{this.InProgressSceneName}'"); }
+                    if (this.Log) { Debug.Log($"ZtSceneManager: Post-process unloaded scene='{this.InProgressSceneName}'"); }
                     _ = this.SceneStates.Remove(this.InProgressSceneName);
                 }
                 this.InProgressSceneAwaitable.GetAwaiter().GetResult();
@@ -100,40 +100,40 @@ namespace ZoomTracks {
             DateTime startTime;
             AsyncOperation operation;
 
-            if (this.Log) { Debug.Log($"Loading scene '{sceneName}'..."); }
+            if (this.Log) { Debug.Log($"ZtSceneManager: Loading scene '{sceneName}'..."); }
             startTime = DateTime.Now;
             operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.1))) {
-                if (this.Log) { Debug.Log($"{Time.frameCount}"); }
+                if (this.Log) { Debug.Log($"ZtSceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            if (this.Log) { Debug.Log($"...Finished loading scene '{sceneName}'"); }
+            if (this.Log) { Debug.Log($"ZtSceneManager: ...Finished loading scene '{sceneName}'"); }
         }
 
         private async Awaitable UnloadSceneAsync(string sceneName) {
             DateTime startTime;
             AsyncOperation operation;
 
-            if (this.Log) { Debug.Log($"Unloading scene '{sceneName}'..."); }
+            if (this.Log) { Debug.Log($"ZtSceneManager: Unloading scene '{sceneName}'..."); }
             startTime = DateTime.Now;
             operation = SceneManager.UnloadSceneAsync(sceneName);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                if (this.Log) { Debug.Log($"{Time.frameCount}"); }
+                if (this.Log) { Debug.Log($"ZtSceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            if (this.Log) { Debug.Log($"...Finished unloading scene '{sceneName}'"); }
+            if (this.Log) { Debug.Log($"ZtSceneManager: ...Finished unloading scene '{sceneName}'"); }
 
-            if (this.Log) { Debug.Log("Executing Resources.UnloadUnusedAssets()..."); }
+            if (this.Log) { Debug.Log("ZtSceneManager: Executing Resources.UnloadUnusedAssets()..."); }
             startTime = DateTime.Now;
             operation = Resources.UnloadUnusedAssets();
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                if (this.Log) { Debug.Log($"{Time.frameCount}"); }
+                if (this.Log) { Debug.Log($"ZtSceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            if (this.Log) { Debug.Log("...Finished executing Resources.UnloadUnusedAssets()"); }
+            if (this.Log) { Debug.Log("ZtSceneManager: ...Finished executing Resources.UnloadUnusedAssets()"); }
         }
 
         //private static void ValidateState() {

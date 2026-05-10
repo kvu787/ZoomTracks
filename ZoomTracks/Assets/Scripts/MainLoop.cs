@@ -43,7 +43,7 @@ namespace ZoomTracks {
         private static int NewTrackIndex = Constants.InitialTrackSceneIndex;
 
         private void UpdateBusyAnimation() {
-            Debug.Log($"Busy... frameCount={Time.frameCount}");
+            Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}...");
         }
 
         private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
