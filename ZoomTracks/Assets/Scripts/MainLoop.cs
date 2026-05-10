@@ -86,18 +86,21 @@ namespace ZoomTracks {
                     Debug.Log("Starting game...");
                     this.GameState = GameStateEnum.LoadingUiScene;
                     break;
+
                 case GameStateEnum.LoadingUiScene:
                     this.LoadUnloadOrWait(
                         sceneName: Constants.UiSceneName,
                         isLoad: true,
                         nextState: GameStateEnum.LoadingNewTrack);
                     break;
+
                 case GameStateEnum.LoadingNewTrack:
                     this.LoadUnloadOrWait(
                         sceneName: Constants.TrackSceneNames[this.TrackSwitcher.NewTrackIndex],
                         isLoad: true,
                         nextState: GameStateEnum.InitNewTrack);
                     break;
+
                 case GameStateEnum.InitNewTrack:
                     this.UpdateBusyAnimation();
                     Debug.Log("Start initializing track...");
@@ -110,25 +113,29 @@ namespace ZoomTracks {
                     Debug.Log("...Finished initializing track");
                     this.GameState = GameStateEnum.InGame;
                     break;
+
                 case GameStateEnum.InGame:
-                    this.HandleInGameState();
+                    this.ProcessInGameState();
                     break;
+
                 case GameStateEnum.UnloadingOldTrack:
                     this.LoadUnloadOrWait(
                         sceneName: Constants.TrackSceneNames[this.TrackSwitcher.OldTrackIndex],
                         isLoad: false,
                         nextState: GameStateEnum.LoadingNewTrack);
                     break;
+
                 case GameStateEnum.DoNothing:
                     break;
+
                 default:
-                    throw new Exception();
+                    throw new Exception($"Unhandled GameState: {this.GameState}");
             }
 
             this.ZtSceneManager.UpdateAfterAll();
         }
 
-        private void HandleInGameState() {
+        private void ProcessInGameState() {
             this.ControlModeSwitcher.UpdateControlMode(this.Keyboard, this.Gamepad);
 
             if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.Camera) {
@@ -137,17 +144,13 @@ namespace ZoomTracks {
                 }
             } else if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.DebugMoveCar) {
                 this.CarMover.UpdateDebugMoveCar(this.Keyboard, this.Gamepad);
-                this.SwitchTracks();
+                if (this.TrackSwitcher.SwitchTracks(this.Keyboard, this.Gamepad)) {
+                    this.GameState = GameStateEnum.UnloadingOldTrack;
+                }
             }
 
             this.CameraController.UpdateCameraFollow();
             this.UiManager.Update();
-        }
-
-        private void SwitchTracks() {
-            if (this.TrackSwitcher.SwitchTracks(this.Keyboard, this.Gamepad)) {
-                this.GameState = GameStateEnum.UnloadingOldTrack;
-            }
         }
     }
 }
