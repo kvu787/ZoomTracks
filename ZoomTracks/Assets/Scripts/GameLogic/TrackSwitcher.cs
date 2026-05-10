@@ -20,10 +20,8 @@ namespace ZoomTracks {
             bool isNextTrack = false;
 
             if (keyboard != null) {
-                if (keyboard.ctrlKey.isPressed) {
-                    isPrevTrack = isPrevTrack || keyboard.wKey.wasPressedThisFrame;
-                    isNextTrack = isNextTrack || keyboard.rKey.wasPressedThisFrame;
-                }
+                isPrevTrack = isPrevTrack || keyboard.aKey.wasPressedThisFrame;
+                isNextTrack = isNextTrack || keyboard.gKey.wasPressedThisFrame;
             }
 
             if (gamepad != null) {
