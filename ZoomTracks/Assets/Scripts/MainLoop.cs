@@ -17,8 +17,8 @@ namespace ZoomTracks {
 
         private static ControlModeEnum ControlMode;
 
-        private static Keyboard Keyboard = null;
-        private static Gamepad Gamepad = null;
+        private Keyboard Keyboard;
+        private Gamepad Gamepad;
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
         private void Awake() {
@@ -67,11 +67,19 @@ namespace ZoomTracks {
 
         private void Start() {
             this.ZtSceneManager = new ZtSceneManager(log: false);
+            this.Keyboard = null;
+            this.Gamepad = null;
+        }
+
+        private void UpdateBeforeAll() {
+            this.Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
+            this.Gamepad = Gamepad.current;
         }
 
         // Update is called once per frame
         private void Update() {
             this.ZtSceneManager.UpdateBeforeAll();
+            this.UpdateBeforeAll();
 
             switch (this.GameState) {
                 case GameStateEnum.Start:
@@ -127,27 +135,21 @@ namespace ZoomTracks {
         }
 
         private void HandleInGameState() {
-            // Update input convenience fields
-            Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
-            Gamepad = Gamepad.current;
-
             this.UpdateControlMode();
 
             if (ControlMode == ControlModeEnum.Camera) {
-                if (Gamepad != null) {
-                    this.UpdateCameraSettings();
-                }
+                this.UpdateCameraSettings();
             } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
                 this.UpdateDebugMoveCar();
                 this.TriggerSwitchTracks();
             }
 
             CameraController.UpdateCameraFollow();
-            UpdateUi();
+            this.UpdateUi();
         }
 
         private void UpdateControlMode() {
-            if (Gamepad?.startButton.wasPressedThisFrame is true) {
+            if (this.Gamepad?.startButton.wasPressedThisFrame is true) {
                 if (ControlMode == ControlModeEnum.Camera) {
                     ControlMode = ControlModeEnum.DebugMoveCar;
                 } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
@@ -157,47 +159,54 @@ namespace ZoomTracks {
         }
 
         private void UpdateCameraSettings() {
-            // Left stick pan offset
-            CameraController.PanOffset(Gamepad.leftStick.ReadValue());
+            if (this.Gamepad != null) {
+                // Left stick pan offset
+                CameraController.PanOffset(this.Gamepad.leftStick.ReadValue());
 
-            // Left/right trigger zoom
-            CameraController.Zoom(Gamepad.leftTrigger.ReadValue(), Gamepad.rightTrigger.ReadValue());
+                // Left/right trigger zoom
+                CameraController.Zoom(this.Gamepad.leftTrigger.ReadValue(), this.Gamepad.rightTrigger.ReadValue());
 
-            // D-pad up reset pan offset
-            if (Gamepad.dpad.up.wasPressedThisFrame) {
-                CameraController.ResetPanOffset();
-            }
+                // D-pad up reset pan offset
+                if (this.Gamepad.dpad.up.wasPressedThisFrame) {
+                    CameraController.ResetPanOffset();
+                }
 
-            // Left shoulder toggle follow
-            if (Gamepad.leftShoulder.wasPressedThisFrame) {
-                CameraController.ToggleFollowLocation();
+                // Left shoulder toggle follow
+                if (this.Gamepad.leftShoulder.wasPressedThisFrame) {
+                    CameraController.ToggleFollowLocation();
+                }
             }
         }
 
         private void UpdateDebugMoveCar() {
-            if (Keyboard.eKey.isPressed) {
+            if (this.Keyboard.eKey.isPressed) {
                 SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
             }
-            if (Keyboard.dKey.isPressed) {
+            if (this.Keyboard.dKey.isPressed) {
                 SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
             }
-            if (Keyboard.sKey.isPressed) {
+            if (this.Keyboard.sKey.isPressed) {
                 SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
             }
-            if (Keyboard.fKey.isPressed) {
+            if (this.Keyboard.fKey.isPressed) {
                 SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
             }
 
-            if (Gamepad != null) {
-                Vector2 leftStick = Gamepad.leftStick.ReadValue();
+            if (this.Gamepad != null) {
+                Vector2 leftStick = this.Gamepad.leftStick.ReadValue();
                 SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
                 SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
             }
         }
 
         private void TriggerSwitchTracks() {
-            bool isPrevTrack = (Keyboard.leftArrowKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true);
-            bool isNextTrack = (Keyboard.rightArrowKey.isPressed) || (Gamepad?.rightShoulder.isPressed is true);
+            bool isPrevTrack = this.Keyboard.leftArrowKey.wasPressedThisFrame;
+            bool isNextTrack = this.Keyboard.rightArrowKey.isPressed;
+            if (this.Gamepad != null) {
+                isPrevTrack = isPrevTrack || this.Gamepad.leftShoulder.isPressed;
+                isNextTrack = isNextTrack || this.Gamepad.rightShoulder.isPressed;
+            }
+
             if (isPrevTrack || isNextTrack) {
                 OldTrackIndex = CurrentTrackIndex;
                 if (isPrevTrack) {
@@ -210,7 +219,7 @@ namespace ZoomTracks {
             }
         }
 
-        private static void UpdateUi() {
+        private void UpdateUi() {
             SceneObjects.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {CameraController.ShouldFollowCarLocation}";
             SceneObjects.ControlModeLabel.text = $"Control mode: {ControlMode}";
         }
