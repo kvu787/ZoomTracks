@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CameraController {
@@ -34,6 +35,24 @@ namespace ZoomTracks {
 
             this.OriginalCameraPanAndYawTransform = new TransformStruct(this.CameraPanAndYaw.transform);
             this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
+        }
+
+        public void UpdateCameraSettings(Gamepad gamepad) {
+            // Left stick pan offset
+            this.PanOffset(gamepad.leftStick.ReadValue());
+
+            // Left/right trigger zoom
+            this.Zoom(gamepad.leftTrigger.ReadValue(), gamepad.rightTrigger.ReadValue());
+
+            // D-pad up reset pan offset
+            if (gamepad.dpad.up.wasPressedThisFrame) {
+                this.ResetPanOffset();
+            }
+
+            // Left shoulder toggle follow
+            if (gamepad.leftShoulder.wasPressedThisFrame) {
+                this.ToggleFollowLocation();
+            }
         }
 
         public void UpdateCameraFollow() {

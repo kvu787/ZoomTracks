@@ -138,7 +138,9 @@ namespace ZoomTracks {
             this.UpdateControlMode();
 
             if (this.ControlMode == ControlModeEnum.Camera) {
-                this.UpdateCameraSettings();
+                if (this.Gamepad != null) {
+                    this.CameraController.UpdateCameraSettings(this.Gamepad);
+                }
             } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
                 this.UpdateDebugMoveCar();
                 this.SwitchTracks();
@@ -154,26 +156,6 @@ namespace ZoomTracks {
                     this.ControlMode = ControlModeEnum.DebugMoveCar;
                 } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
                     this.ControlMode = ControlModeEnum.Camera;
-                }
-            }
-        }
-
-        private void UpdateCameraSettings() {
-            if (this.Gamepad != null) {
-                // Left stick pan offset
-                this.CameraController.PanOffset(this.Gamepad.leftStick.ReadValue());
-
-                // Left/right trigger zoom
-                this.CameraController.Zoom(this.Gamepad.leftTrigger.ReadValue(), this.Gamepad.rightTrigger.ReadValue());
-
-                // D-pad up reset pan offset
-                if (this.Gamepad.dpad.up.wasPressedThisFrame) {
-                    this.CameraController.ResetPanOffset();
-                }
-
-                // Left shoulder toggle follow
-                if (this.Gamepad.leftShoulder.wasPressedThisFrame) {
-                    this.CameraController.ToggleFollowLocation();
                 }
             }
         }
