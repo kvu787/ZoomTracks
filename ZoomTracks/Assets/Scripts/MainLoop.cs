@@ -7,14 +7,16 @@ namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
         private ZtSceneManager ZtSceneManager;
         private TrackSwitcher TrackSwitcher;
+
+        private Keyboard Keyboard;
+        private Gamepad Gamepad;
+
+        private ControlModeSwitcher ControlModeSwitcher;
         private TrackObjects TrackObjects;
         private CarMover CarMover;
         private CameraController CameraController;
         private UiManager UiManager;
-        private ControlModeSwitcher ControlModeSwitcher;
 
-        private Keyboard Keyboard;
-        private Gamepad Gamepad;
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
         private void Awake() {
@@ -100,9 +102,9 @@ namespace ZoomTracks {
                 case GameStateEnum.InitNewTrack:
                     this.UpdateBusyAnimation();
                     Debug.Log("Start initializing track...");
+                    this.ControlModeSwitcher = new ControlModeSwitcher();
                     this.TrackObjects = new TrackObjects();
                     this.CarMover = new CarMover(this.TrackObjects);
-                    this.ControlModeSwitcher = new ControlModeSwitcher();
                     this.CameraController = new CameraController(this.TrackObjects);
                     this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
                     this.TrackSwitcher.SwitchingTrackFinished();
