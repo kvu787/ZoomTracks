@@ -5,12 +5,10 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
-        private const float CarForwardBackwardSpeed = 150;
-        private const float CarRotateSpeed = 540;
-
         private ZtSceneManager ZtSceneManager;
         private TrackSwitcher TrackSwitcher;
         private TrackObjects TrackObjects;
+        private CarMover CarMover;
         private CameraController CameraController;
         private UiManager UiManager;
         private ControlModeSwitcher ControlModeSwitcher;
@@ -103,6 +101,7 @@ namespace ZoomTracks {
                     this.UpdateBusyAnimation();
                     Debug.Log("Start initializing track...");
                     this.TrackObjects = new TrackObjects();
+                    this.CarMover = new CarMover(this.TrackObjects);
                     this.ControlModeSwitcher = new ControlModeSwitcher();
                     this.CameraController = new CameraController(this.TrackObjects);
                     this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
@@ -136,33 +135,12 @@ namespace ZoomTracks {
                     this.CameraController.UpdateCameraSettings(this.Gamepad);
                 }
             } else if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.DebugMoveCar) {
-                this.UpdateDebugMoveCar();
+                this.CarMover.UpdateDebugMoveCar(this.Keyboard, this.Gamepad);
                 this.SwitchTracks();
             }
 
             this.CameraController.UpdateCameraFollow();
             this.UiManager.Update();
-        }
-
-        private void UpdateDebugMoveCar() {
-            if (this.Keyboard.eKey.isPressed) {
-                this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
-            }
-            if (this.Keyboard.dKey.isPressed) {
-                this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
-            }
-            if (this.Keyboard.sKey.isPressed) {
-                this.TrackObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
-            }
-            if (this.Keyboard.fKey.isPressed) {
-                this.TrackObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
-            }
-
-            if (this.Gamepad != null) {
-                Vector2 leftStick = this.Gamepad.leftStick.ReadValue();
-                this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
-                this.TrackObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
-            }
         }
 
         private void SwitchTracks() {
