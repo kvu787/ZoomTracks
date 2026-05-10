@@ -182,21 +182,7 @@ namespace ZoomTracks {
         }
 
         private void SwitchTracks() {
-            bool isPrevTrack = this.Keyboard.leftArrowKey.wasPressedThisFrame;
-            bool isNextTrack = this.Keyboard.rightArrowKey.isPressed;
-
-            if (this.Gamepad != null) {
-                isPrevTrack = isPrevTrack || this.Gamepad.leftShoulder.isPressed;
-                isNextTrack = isNextTrack || this.Gamepad.rightShoulder.isPressed;
-            }
-
-            if (isPrevTrack) {
-                this.TrackSwitcher.PrevTrack();
-            } else if (isNextTrack) {
-                this.TrackSwitcher.NextTrack();
-            }
-
-            if (isPrevTrack || isNextTrack) {
+            if (this.TrackSwitcher.SwitchTracks(this.Keyboard, this.Gamepad)) {
                 this.GameState = GameStateEnum.UnloadingOldTrack;
             }
         }

@@ -1,3 +1,5 @@
+using UnityEngine.InputSystem;
+
 namespace ZoomTracks {
     public class TrackSwitcher {
         public int CurrentTrackIndex { get; private set; }
@@ -10,12 +12,30 @@ namespace ZoomTracks {
             this.NewTrackIndex = Constants.InitialTrackSceneIndex;
         }
 
-        public void PrevTrack() {
+        public bool SwitchTracks(Keyboard Keyboard, Gamepad Gamepad) {
+            bool isPrevTrack = Keyboard.leftArrowKey.wasPressedThisFrame;
+            bool isNextTrack = Keyboard.rightArrowKey.isPressed;
+
+            if (Gamepad != null) {
+                isPrevTrack = isPrevTrack || Gamepad.leftShoulder.isPressed;
+                isNextTrack = isNextTrack || Gamepad.rightShoulder.isPressed;
+            }
+
+            if (isPrevTrack) {
+                this.PrevTrack();
+            } else if (isNextTrack) {
+                this.NextTrack();
+            }
+
+            return isPrevTrack || isNextTrack;
+        }
+
+        private void PrevTrack() {
             this.NewTrackIndex = (this.CurrentTrackIndex - 1 + Constants.TrackSceneNames.Count) % Constants.TrackSceneNames.Count;
             this.SwitchTrackShared();
         }
 
-        public void NextTrack() {
+        private void NextTrack() {
             this.NewTrackIndex = (this.CurrentTrackIndex + 1) % Constants.TrackSceneNames.Count;
             this.SwitchTrackShared();
         }
