@@ -13,11 +13,11 @@ namespace ZoomTracks {
         private const int InitialTrackSceneIndex = 1;
 
         private enum GameStateEnum {
-            LoadingUiScene,
-            LoadingNewTrack,
+            LoadUiScene,
+            LoadNewTrack,
             InitNewTrack,
             RunGame,
-            UnloadingOldTrack,
+            UnloadOldTrack,
             DoNothing,
         }
 
@@ -51,7 +51,7 @@ namespace ZoomTracks {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnityEngine.SceneManagement.SceneManager.loadedSceneCount} loaded scenes.");
             }
 
-            this.GameState = GameStateEnum.LoadingUiScene;
+            this.GameState = GameStateEnum.LoadUiScene;
             this.SceneManager = new SceneManager(enableLog: false);
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
             this.Keyboard = null;
@@ -65,14 +65,14 @@ namespace ZoomTracks {
             this.UpdateBeforeAll();
 
             switch (this.GameState) {
-                case GameStateEnum.LoadingUiScene:
+                case GameStateEnum.LoadUiScene:
                     this.LoadUnloadOrWait(
                         sceneName: UiSceneName,
                         isLoad: true,
-                        nextState: GameStateEnum.LoadingNewTrack);
+                        nextState: GameStateEnum.LoadNewTrack);
                     break;
 
-                case GameStateEnum.LoadingNewTrack:
+                case GameStateEnum.LoadNewTrack:
                     this.LoadUnloadOrWait(
                         sceneName: TrackSceneNames[this.TrackSwitcher.NewTrackIndex],
                         isLoad: true,
@@ -95,11 +95,11 @@ namespace ZoomTracks {
                     this.RunGame();
                     break;
 
-                case GameStateEnum.UnloadingOldTrack:
+                case GameStateEnum.UnloadOldTrack:
                     this.LoadUnloadOrWait(
                         sceneName: TrackSceneNames[this.TrackSwitcher.OldTrackIndex],
                         isLoad: false,
-                        nextState: GameStateEnum.LoadingNewTrack);
+                        nextState: GameStateEnum.LoadNewTrack);
                     break;
 
                 case GameStateEnum.DoNothing:
@@ -123,7 +123,7 @@ namespace ZoomTracks {
                 case ControlModeEnum.Car:
                     this.CarMover.ReadInputAndMoveCar(this.Keyboard, this.Gamepad);
                     if (this.TrackSwitcher.ReadInputAndSwitchTracks(this.Keyboard, this.Gamepad)) {
-                        this.GameState = GameStateEnum.UnloadingOldTrack;
+                        this.GameState = GameStateEnum.UnloadOldTrack;
                     }
                     break;
 
