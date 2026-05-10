@@ -13,13 +13,7 @@ namespace ZoomTracks {
         private TrackObjects TrackObjects;
         private CameraController CameraController;
         private UiManager UiManager;
-
-        public enum ControlModeEnum {
-            DebugMoveCar,
-            Camera,
-        }
-
-        public ControlModeEnum ControlMode;
+        private ControlModeSwitcher ControlModeSwitcher;
 
         private Keyboard Keyboard;
         private Gamepad Gamepad;
@@ -109,9 +103,9 @@ namespace ZoomTracks {
                     this.UpdateBusyAnimation();
                     Debug.Log("Start initializing track...");
                     this.TrackObjects = new TrackObjects();
+                    this.ControlModeSwitcher = new ControlModeSwitcher();
                     this.CameraController = new CameraController(this.TrackObjects);
-                    this.UiManager = new UiManager(this.CameraController, this);
-                    this.ControlMode = ControlModeEnum.DebugMoveCar;
+                    this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
                     this.TrackSwitcher.SwitchingTrackFinished();
                     Debug.Log("...Finished initializing track");
                     this.GameState = GameStateEnum.InGame;
@@ -135,29 +129,19 @@ namespace ZoomTracks {
         }
 
         private void HandleInGameState() {
-            this.UpdateControlMode();
+            this.ControlModeSwitcher.UpdateControlMode(this.Gamepad);
 
-            if (this.ControlMode == ControlModeEnum.Camera) {
+            if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.Camera) {
                 if (this.Gamepad != null) {
                     this.CameraController.UpdateCameraSettings(this.Gamepad);
                 }
-            } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
+            } else if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.DebugMoveCar) {
                 this.UpdateDebugMoveCar();
                 this.SwitchTracks();
             }
 
             this.CameraController.UpdateCameraFollow();
             this.UiManager.Update();
-        }
-
-        private void UpdateControlMode() {
-            if (this.Gamepad?.startButton.wasPressedThisFrame is true) {
-                if (this.ControlMode == ControlModeEnum.Camera) {
-                    this.ControlMode = ControlModeEnum.DebugMoveCar;
-                } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
-                    this.ControlMode = ControlModeEnum.Camera;
-                }
-            }
         }
 
         private void UpdateDebugMoveCar() {

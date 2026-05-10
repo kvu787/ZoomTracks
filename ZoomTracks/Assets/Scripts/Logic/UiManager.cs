@@ -4,14 +4,14 @@ using UnityEngine;
 namespace ZoomTracks {
     public class UiManager {
         private readonly CameraController CameraController;
-        private readonly MainLoop MainLoop;
+        private readonly ControlModeSwitcher ControlModeSwitcher;
         private readonly TMP_Text ControlModeLabel;
         private readonly TMP_Text CameraFollowCarLocationBoolLabel;
         private readonly TMP_Text TestLabel;
 
-        public UiManager(CameraController cameraController, MainLoop mainLoop) {
+        public UiManager(CameraController cameraController, ControlModeSwitcher controlModeSwitcher) {
             this.CameraController = cameraController;
-            this.MainLoop = mainLoop;
+            this.ControlModeSwitcher = controlModeSwitcher;
 
             this.ControlModeLabel = GameObject.Find(nameof(this.ControlModeLabel)).GetComponent<TMP_Text>();
             this.CameraFollowCarLocationBoolLabel = GameObject.Find(nameof(this.CameraFollowCarLocationBoolLabel)).GetComponent<TMP_Text>();
@@ -22,7 +22,7 @@ namespace ZoomTracks {
 
         public void Update() {
             this.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {this.CameraController.ShouldFollowCarLocation}";
-            this.ControlModeLabel.text = $"Control mode: {this.MainLoop.ControlMode}";
+            this.ControlModeLabel.text = $"Control mode: {this.ControlModeSwitcher.ControlMode}";
         }
     }
 }
