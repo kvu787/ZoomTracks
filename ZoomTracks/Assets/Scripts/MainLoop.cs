@@ -131,7 +131,22 @@ namespace ZoomTracks {
             Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
             Gamepad = Gamepad.current;
 
-            // Switch control mode
+            this.UpdateControlMode();
+
+            if (ControlMode == ControlModeEnum.Camera) {
+                if (Gamepad != null) {
+                    this.UpdateCameraSettings();
+                }
+            } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
+                this.UpdateDebugMoveCar();
+                this.TriggerSwitchTracks();
+            }
+
+            CameraController.UpdateCameraFollow();
+            UpdateUi();
+        }
+
+        private void UpdateControlMode() {
             if (Gamepad?.startButton.wasPressedThisFrame is true) {
                 if (ControlMode == ControlModeEnum.Camera) {
                     ControlMode = ControlModeEnum.DebugMoveCar;
@@ -139,64 +154,60 @@ namespace ZoomTracks {
                     ControlMode = ControlModeEnum.Camera;
                 }
             }
+        }
 
-            if (ControlMode == ControlModeEnum.Camera) {
-                if (Gamepad != null) {
-                    // Left stick pan offset
-                    CameraController.PanOffset(Gamepad.leftStick.ReadValue());
+        private void UpdateCameraSettings() {
+            // Left stick pan offset
+            CameraController.PanOffset(Gamepad.leftStick.ReadValue());
 
-                    // Left/right trigger zoom
-                    CameraController.Zoom(Gamepad.leftTrigger.ReadValue(), Gamepad.rightTrigger.ReadValue());
+            // Left/right trigger zoom
+            CameraController.Zoom(Gamepad.leftTrigger.ReadValue(), Gamepad.rightTrigger.ReadValue());
 
-                    // D-pad up reset pan offset
-                    if (Gamepad.dpad.up.wasPressedThisFrame) {
-                        CameraController.ResetPanOffset();
-                    }
-
-                    // Left shoulder toggle follow
-                    if (Gamepad.leftShoulder.wasPressedThisFrame) {
-                        CameraController.ToggleFollowLocation();
-                    }
-                }
-            } else if (ControlMode == ControlModeEnum.DebugMoveCar) {
-                // ESDF debug move car
-                if (Keyboard.eKey.isPressed) {
-                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
-                }
-                if (Keyboard.dKey.isPressed) {
-                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
-                }
-                if (Keyboard.sKey.isPressed) {
-                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
-                }
-                if (Keyboard.fKey.isPressed) {
-                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
-                }
-
-                if (Gamepad != null) {
-                    // Left stick debug move car
-                    Vector2 leftStick = Gamepad.leftStick.ReadValue();
-                    SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
-                    SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
-                }
-
-                // Switch tracks
-                bool isPrevTrack = (Keyboard.leftArrowKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true);
-                bool isNextTrack = (Keyboard.rightArrowKey.isPressed) || (Gamepad?.rightShoulder.isPressed is true);
-                if (isPrevTrack || isNextTrack) {
-                    OldTrackIndex = CurrentTrackIndex;
-                    if (isPrevTrack) {
-                        NewTrackIndex = (CurrentTrackIndex - 1 + Constants.TrackSceneNames.Count) % Constants.TrackSceneNames.Count;
-                    } else if (isNextTrack) {
-                        NewTrackIndex = (CurrentTrackIndex + 1) % Constants.TrackSceneNames.Count;
-                    }
-                    CurrentTrackIndex = -1;
-                    this.GameState = GameStateEnum.UnloadingOldTrack;
-                }
+            // D-pad up reset pan offset
+            if (Gamepad.dpad.up.wasPressedThisFrame) {
+                CameraController.ResetPanOffset();
             }
 
-            CameraController.UpdateCameraFollow();
-            UpdateUi();
+            // Left shoulder toggle follow
+            if (Gamepad.leftShoulder.wasPressedThisFrame) {
+                CameraController.ToggleFollowLocation();
+            }
+        }
+
+        private void UpdateDebugMoveCar() {
+            if (Keyboard.eKey.isPressed) {
+                SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
+            }
+            if (Keyboard.dKey.isPressed) {
+                SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
+            }
+            if (Keyboard.sKey.isPressed) {
+                SceneObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
+            }
+            if (Keyboard.fKey.isPressed) {
+                SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
+            }
+
+            if (Gamepad != null) {
+                Vector2 leftStick = Gamepad.leftStick.ReadValue();
+                SceneObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * Vector3.forward);
+                SceneObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * leftStick.x * CarRotateSpeed);
+            }
+        }
+
+        private void TriggerSwitchTracks() {
+            bool isPrevTrack = (Keyboard.leftArrowKey.wasPressedThisFrame) || (Gamepad?.leftShoulder.isPressed is true);
+            bool isNextTrack = (Keyboard.rightArrowKey.isPressed) || (Gamepad?.rightShoulder.isPressed is true);
+            if (isPrevTrack || isNextTrack) {
+                OldTrackIndex = CurrentTrackIndex;
+                if (isPrevTrack) {
+                    NewTrackIndex = (CurrentTrackIndex - 1 + Constants.TrackSceneNames.Count) % Constants.TrackSceneNames.Count;
+                } else if (isNextTrack) {
+                    NewTrackIndex = (CurrentTrackIndex + 1) % Constants.TrackSceneNames.Count;
+                }
+                CurrentTrackIndex = -1;
+                this.GameState = GameStateEnum.UnloadingOldTrack;
+            }
         }
 
         private static void UpdateUi() {
