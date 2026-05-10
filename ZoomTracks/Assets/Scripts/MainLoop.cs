@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
@@ -25,7 +24,7 @@ namespace ZoomTracks {
 
         private GameStateEnum GameState;
 
-        private ZtSceneManager ZtSceneManager;
+        private SceneManager SceneManager;
         private TrackSwitcher TrackSwitcher;
 
         private Keyboard Keyboard;
@@ -46,20 +45,20 @@ namespace ZoomTracks {
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
         private void Update() {
-            this.ZtSceneManager.UpdateBeforeAll();
+            this.SceneManager.UpdateBeforeAll();
             this.UpdateBeforeAll();
 
             switch (this.GameState) {
                 case GameStateEnum.Start:
-                    if (SceneManager.loadedSceneCount != 1) {
-                        throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
+                    if (UnityEngine.SceneManagement.SceneManager.loadedSceneCount != 1) {
+                        throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnityEngine.SceneManagement.SceneManager.loadedSceneCount} loaded scenes.");
                     }
 
                     Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
                     Debug.Log("Starting game...");
 
                     this.GameState = GameStateEnum.Start;
-                    this.ZtSceneManager = new ZtSceneManager(log: false);
+                    this.SceneManager = new SceneManager(log: false);
                     this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
                     this.Keyboard = null;
                     this.Gamepad = null;
@@ -112,7 +111,7 @@ namespace ZoomTracks {
                     throw new Exception($"Unhandled GameState: {this.GameState}");
             }
 
-            this.ZtSceneManager.UpdateAfterAll();
+            this.SceneManager.UpdateAfterAll();
         }
 
         private void UpdateBeforeAll() {
@@ -125,19 +124,19 @@ namespace ZoomTracks {
         }
 
         private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
-            if (this.ZtSceneManager.IsOperationRunning()) {
+            if (this.SceneManager.IsOperationRunning()) {
                 this.UpdateBusyAnimation();
             } else {
                 string verb = isLoad ? "loading" : "unloading";
-                if (this.ZtSceneManager.WasOperationFinishedThisFrame) {
+                if (this.SceneManager.WasOperationFinishedThisFrame) {
                     Debug.Log($"Finished {verb} {sceneName}");
                     this.GameState = nextState;
                 } else {
                     Debug.Log($"Started {verb} {sceneName}");
                     if (isLoad) {
-                        this.ZtSceneManager.LoadScene(sceneName);
+                        this.SceneManager.LoadScene(sceneName);
                     } else {
-                        this.ZtSceneManager.UnloadScene(sceneName);
+                        this.SceneManager.UnloadScene(sceneName);
                     }
                 }
             }

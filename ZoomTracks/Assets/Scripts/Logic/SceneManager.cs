@@ -7,7 +7,7 @@ namespace ZoomTracks {
     // Awaitable docs:
     // https://docs.unity3d.com/6000.3/Documentation/Manual/async-await-support.html
     /// <summary>
-    /// ZtSceneManager provides a simple and complete way to load/unload scenes by doing the following:
+    /// SceneManager provides a simple and complete way to load/unload scenes by doing the following:
     ///   1. Propagates any exceptions, including from async operations.
     ///   2. Throws an exception if you try to do any invalid operations, such as:
     ///      - Load/unload any special scenes, such as MainScene or UiScene
@@ -16,11 +16,11 @@ namespace ZoomTracks {
     ///      - Unload a scene that is not loaded
     ///      - Start a load/unload if there is an in-progress load/unload
     ///
-    /// To use ZtSceneManager:
-    ///   1. Call ZtSceneManager.UpdateBeforeAll and ZtSceneManager.UpdateAfterAll at the start and end of MainLoop.Update.
-    ///   2. Call ZtSceneManager.Update anywhere in MainLoop.Update.
+    /// To use SceneManager:
+    ///   1. Call SceneManager.UpdateBeforeAll and SceneManager.UpdateAfterAll at the start and end of MainLoop.Update.
+    ///   2. Call SceneManager.Update anywhere in MainLoop.Update.
     /// </summary>
-    public class ZtSceneManager {
+    public class SceneManager {
         private enum SceneStateEnum {
             Loading,
             Loaded,
@@ -39,7 +39,7 @@ namespace ZoomTracks {
         private string InProgressSceneName;
         private readonly bool Log;
 
-        public ZtSceneManager(bool log) {
+        public SceneManager(bool log) {
             this.SceneStates = new();
             this.InProgressSceneAwaitable = null;
             this.InProgressSceneName = null;
@@ -52,10 +52,10 @@ namespace ZoomTracks {
                 this.WasOperationFinishedThisFrame = true;
 
                 if (this.SceneStates[this.InProgressSceneName] == SceneStateEnum.Loading) {
-                    if (this.Log) { Debug.Log($"ZtSceneManager: Post-process loaded scene='{this.InProgressSceneName}'"); }
+                    if (this.Log) { Debug.Log($"SceneManager: Post-process loaded scene='{this.InProgressSceneName}'"); }
                     this.SceneStates[this.InProgressSceneName] = SceneStateEnum.Loaded;
                 } else if (this.SceneStates[this.InProgressSceneName] == SceneStateEnum.Unloading) {
-                    if (this.Log) { Debug.Log($"ZtSceneManager: Post-process unloaded scene='{this.InProgressSceneName}'"); }
+                    if (this.Log) { Debug.Log($"SceneManager: Post-process unloaded scene='{this.InProgressSceneName}'"); }
                     _ = this.SceneStates.Remove(this.InProgressSceneName);
                 }
                 this.InProgressSceneAwaitable.GetAwaiter().GetResult();
@@ -92,40 +92,40 @@ namespace ZoomTracks {
             DateTime startTime;
             AsyncOperation operation;
 
-            if (this.Log) { Debug.Log($"ZtSceneManager: Loading scene '{sceneName}'..."); }
+            if (this.Log) { Debug.Log($"SceneManager: Loading scene '{sceneName}'..."); }
             startTime = DateTime.Now;
-            operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            operation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.1))) {
-                if (this.Log) { Debug.Log($"ZtSceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
+                if (this.Log) { Debug.Log($"SceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            if (this.Log) { Debug.Log($"ZtSceneManager: ...Finished loading scene '{sceneName}'"); }
+            if (this.Log) { Debug.Log($"SceneManager: ...Finished loading scene '{sceneName}'"); }
         }
 
         private async Awaitable UnloadSceneAsync(string sceneName) {
             DateTime startTime;
             AsyncOperation operation;
 
-            if (this.Log) { Debug.Log($"ZtSceneManager: Unloading scene '{sceneName}'..."); }
+            if (this.Log) { Debug.Log($"SceneManager: Unloading scene '{sceneName}'..."); }
             startTime = DateTime.Now;
-            operation = SceneManager.UnloadSceneAsync(sceneName);
+            operation = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                if (this.Log) { Debug.Log($"ZtSceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
+                if (this.Log) { Debug.Log($"SceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            if (this.Log) { Debug.Log($"ZtSceneManager: ...Finished unloading scene '{sceneName}'"); }
+            if (this.Log) { Debug.Log($"SceneManager: ...Finished unloading scene '{sceneName}'"); }
 
-            if (this.Log) { Debug.Log("ZtSceneManager: Executing Resources.UnloadUnusedAssets()..."); }
+            if (this.Log) { Debug.Log("SceneManager: Executing Resources.UnloadUnusedAssets()..."); }
             startTime = DateTime.Now;
             operation = Resources.UnloadUnusedAssets();
             while (!operation.isDone || ((DateTime.Now - startTime) < TimeSpan.FromSeconds(0.05))) {
-                if (this.Log) { Debug.Log($"ZtSceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
+                if (this.Log) { Debug.Log($"SceneManager: Busy {Time.realtimeSinceStartupAsDouble:F3}..."); }
                 await Awaitable.NextFrameAsync();
             }
             await operation;
-            if (this.Log) { Debug.Log("ZtSceneManager: ...Finished executing Resources.UnloadUnusedAssets()"); }
+            if (this.Log) { Debug.Log("SceneManager: ...Finished executing Resources.UnloadUnusedAssets()"); }
         }
 
         //private static void ValidateState() {
