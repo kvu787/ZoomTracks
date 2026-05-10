@@ -38,20 +38,6 @@ namespace ZoomTracks {
 
         public void ReadInputAndChangeCameraSettings(Keyboard keyboard, Gamepad gamepad) {
             if (keyboard != null) {
-                // Z reset pan offset
-                if (keyboard.zKey.wasPressedThisFrame) {
-                    this.ResetPanOffset();
-                }
-
-                if (keyboard.cKey.wasPressedThisFrame) {
-                    this.ResetZoom();
-                }
-
-                // A toggle follow
-                if (keyboard.aKey.wasPressedThisFrame) {
-                    this.ToggleFollowLocation();
-                }
-
                 // ESDF pan offset
                 Vector2 vector2 = new(
                     keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue(),
@@ -60,6 +46,21 @@ namespace ZoomTracks {
 
                 // W/R zoom
                 this.Zoom(keyboard.wKey.ReadValue(), keyboard.rKey.ReadValue());
+
+                // A toggle follow
+                if (keyboard.aKey.wasPressedThisFrame) {
+                    this.ToggleFollowLocation();
+                }
+
+                // Z reset pan offset
+                if (keyboard.zKey.wasPressedThisFrame) {
+                    this.ResetPanOffset();
+                }
+
+                // C reset zoom
+                if (keyboard.cKey.wasPressedThisFrame) {
+                    this.ResetZoom();
+                }
             }
 
             if (gamepad != null) {
@@ -69,6 +70,11 @@ namespace ZoomTracks {
                 // Left/right trigger zoom
                 this.Zoom(gamepad.leftTrigger.ReadValue(), gamepad.rightTrigger.ReadValue());
 
+                // Left shoulder toggle follow
+                if (gamepad.leftShoulder.wasPressedThisFrame) {
+                    this.ToggleFollowLocation();
+                }
+
                 // D-pad up reset pan offset
                 if (gamepad.dpad.up.wasPressedThisFrame) {
                     this.ResetPanOffset();
@@ -77,11 +83,6 @@ namespace ZoomTracks {
                 // D-pad down reset zoom
                 if (gamepad.dpad.down.wasPressedThisFrame) {
                     this.ResetZoom();
-                }
-
-                // Left shoulder toggle follow
-                if (gamepad.leftShoulder.wasPressedThisFrame) {
-                    this.ToggleFollowLocation();
                 }
             }
         }
