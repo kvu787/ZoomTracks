@@ -13,17 +13,19 @@ namespace ZoomTracks {
         }
 
         public void UpdateCarPosition(Keyboard keyboard, Gamepad gamepad) {
-            if (keyboard.eKey.isPressed) {
-                this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
-            }
-            if (keyboard.dKey.isPressed) {
-                this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
-            }
-            if (keyboard.sKey.isPressed) {
-                this.TrackObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
-            }
-            if (keyboard.fKey.isPressed) {
-                this.TrackObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
+            if (keyboard != null) {
+                if (keyboard.eKey.isPressed) {
+                    this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.forward);
+                }
+                if (keyboard.dKey.isPressed) {
+                    this.TrackObjects.Car.transform.Translate(Time.deltaTime * CarForwardBackwardSpeed * Vector3.back);
+                }
+                if (keyboard.sKey.isPressed) {
+                    this.TrackObjects.Car.transform.Rotate(axis: Vector3.up, -1 * Time.deltaTime * CarRotateSpeed);
+                }
+                if (keyboard.fKey.isPressed) {
+                    this.TrackObjects.Car.transform.Rotate(axis: Vector3.up, Time.deltaTime * CarRotateSpeed);
+                }
             }
 
             if (gamepad != null) {

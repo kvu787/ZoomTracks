@@ -67,7 +67,7 @@ namespace ZoomTracks {
         }
 
         private void UpdateBeforeAll() {
-            this.Keyboard = Keyboard.current ?? throw new Exception("No keyboard connected");
+            this.Keyboard = Keyboard.current;
             this.Gamepad = Gamepad.current;
         }
 

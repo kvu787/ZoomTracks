@@ -13,8 +13,13 @@ namespace ZoomTracks {
         }
 
         public bool SwitchTracks(Keyboard Keyboard, Gamepad Gamepad) {
-            bool isPrevTrack = Keyboard.leftArrowKey.wasPressedThisFrame;
-            bool isNextTrack = Keyboard.rightArrowKey.wasPressedThisFrame;
+            bool isPrevTrack = false;
+            bool isNextTrack = false;
+
+            if (Keyboard != null) {
+                isPrevTrack = isPrevTrack || Keyboard.leftArrowKey.wasPressedThisFrame;
+                isNextTrack = isNextTrack || Keyboard.rightArrowKey.wasPressedThisFrame;
+            }
 
             if (Gamepad != null) {
                 isPrevTrack = isPrevTrack || Gamepad.leftShoulder.wasPressedThisFrame;
