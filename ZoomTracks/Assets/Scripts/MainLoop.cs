@@ -129,7 +129,7 @@ namespace ZoomTracks {
         }
 
         private void HandleInGameState() {
-            this.ControlModeSwitcher.UpdateControlMode(this.Gamepad);
+            this.ControlModeSwitcher.UpdateControlMode(this.Keyboard, this.Gamepad);
 
             if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.Camera) {
                 if (this.Gamepad != null) {
