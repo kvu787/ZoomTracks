@@ -21,8 +21,6 @@ namespace ZoomTracks {
     ///   2. Call ZtSceneManager.Update anywhere in MainLoop.Update.
     /// </summary>
     public class ZtSceneManager {
-        private const string MainSceneName = "Main";
-
         private enum SceneStateEnum {
             Loading,
             Loaded,
@@ -68,8 +66,8 @@ namespace ZoomTracks {
         }
 
         public void LoadScene(string sceneName) {
-            if (sceneName == MainSceneName) {
-                throw new Exception($"Should not load {MainSceneName}");
+            if (sceneName == Constants.MainSceneName) {
+                throw new Exception($"Should not load {Constants.MainSceneName}");
             }
 
             if (!this.IsOperationRunning() && !this.SceneStates.ContainsKey(sceneName)) {
@@ -80,8 +78,8 @@ namespace ZoomTracks {
         }
 
         public void UnloadScene(string sceneName) {
-            if (sceneName == MainSceneName) {
-                throw new Exception($"Should not load {MainSceneName}");
+            if (sceneName == Constants.MainSceneName) {
+                throw new Exception($"Should not load {Constants.MainSceneName}");
             }
 
             if (!this.IsOperationRunning() && this.SceneStates.ContainsKey(sceneName) && this.SceneStates[sceneName] == SceneStateEnum.Loaded) {

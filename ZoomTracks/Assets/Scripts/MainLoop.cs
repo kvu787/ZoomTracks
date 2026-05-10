@@ -5,13 +5,6 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
-        private const string TestSceneName = "Test";
-        private const string UiSceneName = "Ui";
-        private static readonly string[] TrackSceneNames = {
-            "Track1",
-            "Track2",
-        };
-        private const int InitialTrackSceneIndex = 1;
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
@@ -45,9 +38,9 @@ namespace ZoomTracks {
         }
 
         private GameStateEnum GameState = GameStateEnum.Start;
-        private static int CurrentTrackIndex = InitialTrackSceneIndex;
+        private static int CurrentTrackIndex = Constants.InitialTrackSceneIndex;
         private static int OldTrackIndex = -1;
-        private static int NewTrackIndex = InitialTrackSceneIndex;
+        private static int NewTrackIndex = Constants.InitialTrackSceneIndex;
 
         private void UpdateBusyAnimation() {
             Debug.Log($"Busy... frameCount={Time.frameCount}");
@@ -92,13 +85,13 @@ namespace ZoomTracks {
                     break;
                 case GameStateEnum.LoadingUiScene:
                     this.LoadUnloadOrWait(
-                        sceneName: UiSceneName,
+                        sceneName: Constants.UiSceneName,
                         isLoad: true,
                         nextState: GameStateEnum.LoadingNewTrack);
                     break;
                 case GameStateEnum.LoadingNewTrack:
                     this.LoadUnloadOrWait(
-                        sceneName: TrackSceneNames[NewTrackIndex],
+                        sceneName: Constants.TrackSceneNames[NewTrackIndex],
                         isLoad: true,
                         nextState: GameStateEnum.InitNewTrack);
                     break;
@@ -120,7 +113,7 @@ namespace ZoomTracks {
                     break;
                 case GameStateEnum.UnloadingOldTrack:
                     this.LoadUnloadOrWait(
-                        sceneName: TrackSceneNames[OldTrackIndex],
+                        sceneName: Constants.TrackSceneNames[OldTrackIndex],
                         isLoad: false,
                         nextState: GameStateEnum.LoadingNewTrack);
                     break;
@@ -193,9 +186,9 @@ namespace ZoomTracks {
                 if (isPrevTrack || isNextTrack) {
                     OldTrackIndex = CurrentTrackIndex;
                     if (isPrevTrack) {
-                        NewTrackIndex = (CurrentTrackIndex - 1 + TrackSceneNames.Length) % TrackSceneNames.Length;
+                        NewTrackIndex = (CurrentTrackIndex - 1 + Constants.TrackSceneNames.Length) % Constants.TrackSceneNames.Length;
                     } else if (isNextTrack) {
-                        NewTrackIndex = (CurrentTrackIndex + 1) % TrackSceneNames.Length;
+                        NewTrackIndex = (CurrentTrackIndex + 1) % Constants.TrackSceneNames.Length;
                     }
                     CurrentTrackIndex = -1;
                     this.GameState = GameStateEnum.UnloadingOldTrack;
