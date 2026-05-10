@@ -13,7 +13,6 @@ namespace ZoomTracks {
         private const int InitialTrackSceneIndex = 1;
 
         private enum GameStateEnum {
-            Start,
             LoadingUiScene,
             LoadingNewTrack,
             InitNewTrack,
@@ -43,29 +42,30 @@ namespace ZoomTracks {
             QualitySettings.vSyncCount = 1;
         }
 
+        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
+        private void Start() {
+            if (UnityEngine.SceneManagement.SceneManager.loadedSceneCount != 1) {
+                throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnityEngine.SceneManagement.SceneManager.loadedSceneCount} loaded scenes.");
+            }
+
+            Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.enableLog".Replace("/", "\\"));
+            Debug.Log("Start game");
+
+            this.GameState = GameStateEnum.LoadingUiScene;
+            this.SceneManager = new SceneManager(enableLog: false);
+            this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
+            this.Keyboard = null;
+            this.Gamepad = null;
+
+            this.GameState = GameStateEnum.LoadingUiScene;
+        }
+
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
         private void Update() {
             this.SceneManager.UpdateBeforeAll();
             this.UpdateBeforeAll();
 
             switch (this.GameState) {
-                case GameStateEnum.Start:
-                    if (UnityEngine.SceneManagement.SceneManager.loadedSceneCount != 1) {
-                        throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnityEngine.SceneManagement.SceneManager.loadedSceneCount} loaded scenes.");
-                    }
-
-                    Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.enableLog".Replace("/", "\\"));
-                    Debug.Log("Initializing game...");
-
-                    this.GameState = GameStateEnum.Start;
-                    this.SceneManager = new SceneManager(enableLog: false);
-                    this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
-                    this.Keyboard = null;
-                    this.Gamepad = null;
-
-                    this.GameState = GameStateEnum.LoadingUiScene;
-                    break;
-
                 case GameStateEnum.LoadingUiScene:
                     this.LoadUnloadOrWait(
                         sceneName: UiSceneName,
