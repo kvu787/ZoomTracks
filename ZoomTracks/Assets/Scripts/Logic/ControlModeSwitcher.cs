@@ -2,13 +2,13 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public enum ControlModeEnum {
-        DebugMoveCar,
+        Car,
         Camera,
     }
 
     public class ControlModeSwitcher {
         public ControlModeSwitcher() {
-            this.ControlMode = ControlModeEnum.DebugMoveCar;
+            this.ControlMode = ControlModeEnum.Car;
         }
 
         public ControlModeEnum ControlMode { get; private set; }
@@ -16,8 +16,8 @@ namespace ZoomTracks {
         public void UpdateControlMode(Keyboard keyboard, Gamepad gamepad) {
             if (keyboard?.tabKey.wasPressedThisFrame is true || gamepad?.startButton.wasPressedThisFrame is true) {
                 if (this.ControlMode == ControlModeEnum.Camera) {
-                    this.ControlMode = ControlModeEnum.DebugMoveCar;
-                } else if (this.ControlMode == ControlModeEnum.DebugMoveCar) {
+                    this.ControlMode = ControlModeEnum.Car;
+                } else if (this.ControlMode == ControlModeEnum.Car) {
                     this.ControlMode = ControlModeEnum.Camera;
                 }
             }
