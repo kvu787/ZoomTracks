@@ -37,25 +37,26 @@ namespace ZoomTracks {
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
         private void Awake() {
-            Debug.Log($"GameLoop Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+            Debug.Log($"BEGIN: MainLoop.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+            Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.enableLog".Replace("/", "\\"));
             QualitySettings.maxQueuedFrames = 0;
             QualitySettings.vSyncCount = 1;
+            Debug.Log($"END: MainLoop.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
         private void Start() {
+            Debug.Log($"BEGIN: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             if (UnityEngine.SceneManagement.SceneManager.loadedSceneCount != 1) {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnityEngine.SceneManagement.SceneManager.loadedSceneCount} loaded scenes.");
             }
-
-            Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.enableLog".Replace("/", "\\"));
-            Debug.Log("Start game");
 
             this.GameState = GameStateEnum.LoadingUiScene;
             this.SceneManager = new SceneManager(enableLog: false);
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
             this.Keyboard = null;
             this.Gamepad = null;
+            Debug.Log($"END: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
@@ -79,7 +80,6 @@ namespace ZoomTracks {
                     break;
 
                 case GameStateEnum.InitNewTrack:
-                    this.UpdateBusyAnimation();
                     Debug.Log("Start initializing track...");
                     this.ControlModeSwitcher = new ControlModeSwitcher();
                     this.TrackObjects = new TrackObjects();
@@ -87,7 +87,7 @@ namespace ZoomTracks {
                     this.CameraController = new CameraController(this.TrackObjects);
                     this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
                     this.TrackSwitcher.SwitchingTrackFinished();
-                    Debug.Log("...Finished initializing track");
+                    Debug.Log("...Finish initializing track");
                     this.GameState = GameStateEnum.InGame;
                     break;
 
@@ -143,10 +143,10 @@ namespace ZoomTracks {
             } else {
                 string verb = isLoad ? "loading" : "unloading";
                 if (this.SceneManager.WasOperationFinishedThisFrame) {
-                    Debug.Log($"...Finished {verb} {sceneName}");
+                    Debug.Log($"...Finish {verb} {sceneName}");
                     this.GameState = nextState;
                 } else {
-                    Debug.Log($"Started {verb} {sceneName}...");
+                    Debug.Log($"Start {verb} {sceneName}...");
                     if (isLoad) {
                         this.SceneManager.LoadScene(sceneName);
                     } else {
