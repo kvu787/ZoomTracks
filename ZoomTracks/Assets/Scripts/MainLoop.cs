@@ -115,13 +115,20 @@ namespace ZoomTracks {
         private void ProcessInGameState() {
             this.ControlModeSwitcher.UpdateControlMode(this.Keyboard, this.Gamepad);
 
-            if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.Camera) {
-                this.CameraController.UpdateCameraSettings(this.Keyboard, this.Gamepad);
-            } else if (this.ControlModeSwitcher.ControlMode == ControlModeEnum.Car) {
-                this.CarMover.UpdateCarPosition(this.Keyboard, this.Gamepad);
-                if (this.TrackSwitcher.SwitchTracks(this.Keyboard, this.Gamepad)) {
-                    this.GameState = GameStateEnum.UnloadingOldTrack;
-                }
+            switch (this.ControlModeSwitcher.ControlMode) {
+                case ControlModeEnum.Camera:
+                    this.CameraController.UpdateCameraSettings(this.Keyboard, this.Gamepad);
+                    break;
+
+                case ControlModeEnum.Car:
+                    this.CarMover.UpdateCarPosition(this.Keyboard, this.Gamepad);
+                    if (this.TrackSwitcher.SwitchTracks(this.Keyboard, this.Gamepad)) {
+                        this.GameState = GameStateEnum.UnloadingOldTrack;
+                    }
+                    break;
+
+                default:
+                    throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.ControlMode}'");
             }
 
             this.CameraController.UpdateCameraPosition();
