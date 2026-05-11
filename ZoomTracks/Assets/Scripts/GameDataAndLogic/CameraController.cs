@@ -11,7 +11,7 @@ namespace ZoomTracks {
 
         public bool ShouldFollowCarLocation { get; private set; } = false;
 
-        private readonly TrackObjects TrackObjects;
+        private readonly CarSwitcher CarSwitcher;
 
         private readonly Transform CameraPanAndYaw;
         private readonly Transform CameraYawOffset;
@@ -21,9 +21,9 @@ namespace ZoomTracks {
         private readonly TransformStruct OriginalCameraPanAndYawTransform;
         private readonly float OriginalCameraOrthographicSize;
 
-        public CameraController(TrackObjects trackObjects) {
+        public CameraController(CarSwitcher carSwitcher) {
             this.ShouldFollowCarLocation = false;
-            this.TrackObjects = trackObjects;
+            this.CarSwitcher = carSwitcher;
 
             this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
@@ -89,7 +89,7 @@ namespace ZoomTracks {
 
         public void UpdateCameraPosition() {
             if (this.ShouldFollowCarLocation) {
-                this.CameraPanAndYaw.transform.position = this.TrackObjects.PlaceholderCar.transform.position;
+                this.CameraPanAndYaw.transform.position = this.CarSwitcher.CurrentCar.GameObject.transform.position;
             } else {
                 this.CameraPanAndYaw.transform.position = this.OriginalCameraPanAndYawTransform.Position;
             }
