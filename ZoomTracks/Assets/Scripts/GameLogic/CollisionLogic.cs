@@ -1,0 +1,41 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Assertions;
+
+namespace ZoomTracks {
+    public static class CollisionLogic {
+        private static IEnumerable<Collider> NonCarColliders;
+
+        public static void Init() {
+            throw new NotImplementedException();
+            List<GameObject> barriersAndCones = new();
+            barriersAndCones.AddRange(GameObject.FindGameObjectsWithTag("todo"));
+            barriersAndCones.AddRange(GameObject.FindGameObjectsWithTag("todo"));
+            NonCarColliders = barriersAndCones.Select(x => x.GetComponent<Collider>());
+            Assert.IsFalse(NonCarColliders.Any(x => x == null));
+        }
+
+        public static bool HasCollided(Collider a, Collider b) {
+            // I use Physics.ComputePenetration because I was having issues with the more commonly used Collider.OnTriggerEnter.
+            // When the car collided with a barrier right next to its reset position and the reset timeout was too low, OnTriggerEnter
+            // would fail to trigger because the collisions happened too frequently (within 10 ms or less) and collision checking was tied
+            // to the 50 Hz FixedUpdate. This meant OnTriggerEnter wouldn't always trigger. Increasing the FixedUpdate frequency resolved this,
+            // but I think it's more straightforward to do inline collision checking with ComputePenetration.
+            return Physics.ComputePenetration(
+                a, a.transform.position, a.transform.rotation,
+                b, b.transform.position, b.transform.rotation,
+                out _, out _);
+        }
+
+        public static bool HasCarCollided() {
+            foreach (Collider collider in NonCarColliders) {
+                if (HasCollided(CarSwitcher.CurrentCar.Collider, collider)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+}
