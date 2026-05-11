@@ -5,7 +5,10 @@ using UnityEngine;
 namespace ZoomTracks {
     [Serializable]
     public class Garage {
+        [SerializeField]
         public int StartCarIndex;
+
+        [SerializeField]
         public List<Car> Cars;
 
         public Garage(string jsonString, Transform placeholderCarTransform) {

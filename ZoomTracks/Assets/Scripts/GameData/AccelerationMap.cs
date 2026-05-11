@@ -1,11 +1,19 @@
 using System;
+using UnityEngine;
 
 namespace ZoomTracks {
     [Serializable]
     public struct AccelerationMap {
+        [SerializeField]
         public float Forward;
+
+        [SerializeField]
         public float Reverse;
+
+        [SerializeField]
         public float Left;
+
+        [SerializeField]
         public float Right;
 
         public AccelerationMap(float forward, float reverse, float left, float right) {

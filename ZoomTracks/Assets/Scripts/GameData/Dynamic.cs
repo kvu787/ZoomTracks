@@ -1,9 +1,13 @@
 using System;
+using UnityEngine;
 
 namespace ZoomTracks {
     [Serializable]
     public struct Dynamic {
+        [SerializeField]
         public float VelocityLimiter;
+
+        [SerializeField]
         public AccelerationMap AccelerationMap;
 
         public Dynamic(float velocityLimiter, AccelerationMap accelerationMap) {
