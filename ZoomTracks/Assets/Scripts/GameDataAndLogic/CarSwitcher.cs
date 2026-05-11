@@ -11,11 +11,9 @@ namespace ZoomTracks {
 
         private readonly List<Car> Cars;
         private const string GarageFileName = "Garage.json";
-        private TrackObjects TrackObjects;
 
         public CarSwitcher(TrackObjects trackObjects) {
             trackObjects.PlaceholderCar.SetActive(false);
-
             string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
             Assert.IsTrue(File.Exists(filePath), $"Garage JSON file does not exist at {filePath}");
             string fileContents = File.ReadAllText(filePath); // TODO: Use async file read
