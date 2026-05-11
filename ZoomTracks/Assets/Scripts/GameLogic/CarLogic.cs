@@ -2,6 +2,11 @@ using UnityEngine;
 
 namespace ZoomTracks {
     public class CarLogic {
+        private readonly CarSwitcher CarSwitcher;
+        public CarLogic(CarSwitcher carSwitcher) {
+            this.CarSwitcher = carSwitcher;
+        }
+
         public static CarState CreateNewCarState(GameObject placeholderCar) {
             return new CarState {
                 Position = placeholderCar.transform.position,
@@ -10,8 +15,8 @@ namespace ZoomTracks {
             };
         }
 
-        public static void ProcessCarInputAndPhysics(ref CarState carState, float brake, Vector2 accel, Transform cameraYawTransform) {
-            Dynamic dynamic = CarSwitcher.CurrentCar.Dynamic;
+        public void ProcessCarInputAndPhysics(ref CarState carState, float brake, Vector2 accel, Transform cameraYawTransform) {
+            Dynamic dynamic = this.CarSwitcher.CurrentCar.Dynamic;
             if (brake == 0) {
                 if (accel.magnitude > 0) {
                     // Map XY input onto XZ world plane

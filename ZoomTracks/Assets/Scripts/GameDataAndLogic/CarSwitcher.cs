@@ -2,41 +2,54 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarSwitcher {
-        public static CarGameObject CurrentCar => Cars[CurrentCarIndex];
-        private static int CurrentCarIndex = 1;
+        public CarGameObject CurrentCar => this.Cars[this.CurrentCarIndex];
+        private int CurrentCarIndex = 1;
 
-        private static List<CarGameObject> Cars;
+        private readonly List<CarGameObject> Cars;
+        private const string GarageFileName = "Garage.json";
 
-        public CarSwitcher(GameObject placeholderCarGameObject, string filePath) {
+        public CarSwitcher(GameObject placeholderCarGameObject) {
             placeholderCarGameObject.SetActive(false);
-            Assert.IsTrue(File.Exists(filePath), $"Garage does not exist at {filePath}");
+
+            string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
+            Assert.IsTrue(File.Exists(filePath), $"Garage JSON file does not exist at {filePath}");
             string fileContents = File.ReadAllText(filePath); // TODO: Use async file read
             Garage garage = new(fileContents, placeholderCarGameObject.transform);
-            CurrentCarIndex = garage.StartCarIndex;
-            Cars = garage.Cars;
-            CurrentCar.GameObject.SetActive(true);
+            this.CurrentCarIndex = garage.StartCarIndex;
+            this.Cars = garage.Cars;
+            this.CurrentCar.GameObject.SetActive(true);
         }
 
-        //public static bool ProcessCarSwitch() {
-        //    if (!Input.NextCarEvent && !Input.PrevCarEvent) {
-        //        return false;
-        //    }
-        //    CurrentCar.GameObject.SetActive(false);
-        //    if (Input.NextCarEvent) {
-        //        CurrentCarIndex += 1;
-        //        CurrentCarIndex %= Cars.Count;
-        //    } else if (Input.PrevCarEvent) {
-        //        if (CurrentCarIndex == 0) {
-        //            CurrentCarIndex = Cars.Count - 1;
-        //        } else {
-        //            CurrentCarIndex -= 1;
-        //        }
-        //    }
-        //    CurrentCar.GameObject.SetActive(true);
-        //    return true;
-        //}
+        public bool ReadInputAndSwitchCar(Keyboard keyboard, Gamepad gamepad) {
+            bool isPrevCar = false;
+            bool isNextCar = false;
+            if (keyboard != null) {
+                isPrevCar = isPrevCar || keyboard.cKey.wasPressedThisFrame;
+                isNextCar = isNextCar || keyboard.vKey.wasPressedThisFrame;
+            }
+            if (gamepad != null) {
+                isPrevCar = isPrevCar || gamepad.dpad.left.wasPressedThisFrame;
+                isNextCar = isNextCar || gamepad.dpad.right.wasPressedThisFrame;
+            }
+
+            if (!isPrevCar && !isNextCar) {
+                return false;
+            }
+
+            this.CurrentCar.GameObject.SetActive(false);
+            int i = this.CurrentCarIndex;
+            if (isNextCar) {
+                i = (i - 1 + this.Cars.Count) % this.Cars.Count;
+            } else if (isPrevCar) {
+                i = (i + 1) % this.Cars.Count;
+            }
+            this.CurrentCarIndex = i;
+            this.CurrentCar.GameObject.SetActive(true);
+            return true;
+        }
     }
 }

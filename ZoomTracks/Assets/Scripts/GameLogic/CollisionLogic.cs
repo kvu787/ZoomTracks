@@ -29,9 +29,9 @@ namespace ZoomTracks {
                 out _, out _);
         }
 
-        public static bool HasCarCollided() {
+        public static bool HasCarCollided(Collider carCollider) {
             foreach (Collider collider in NonCarColliders) {
-                if (HasCollided(CarSwitcher.CurrentCar.Collider, collider)) {
+                if (HasCollided(carCollider, collider)) {
                     return true;
                 }
             }
