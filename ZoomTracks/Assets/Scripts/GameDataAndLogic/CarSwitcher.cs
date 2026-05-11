@@ -42,13 +42,11 @@ namespace ZoomTracks {
             }
 
             this.CurrentCar.GameObject.SetActive(false);
-            int i = this.CurrentCarIndex;
             if (isNextCar) {
-                i = (i + 1) % this.Cars.Count;
+                this.CurrentCarIndex = this.CurrentCarIndex.CycleNext(this.Cars.Count);
             } else if (isPrevCar) {
-                i = (i - 1 + this.Cars.Count) % this.Cars.Count;
+                this.CurrentCarIndex = this.CurrentCarIndex.CyclePrev(this.Cars.Count);
             }
-            this.CurrentCarIndex = i;
             this.CurrentCar.GameObject.SetActive(true);
             this.CurrentCar.GameObject.transform.SetFrom(this.TrackObjects.PlaceholderCar.transform);
             return true;

@@ -46,12 +46,12 @@ namespace ZoomTracks {
         }
 
         private void PrevTrack() {
-            this.NewTrackIndex = (this.CurrentTrackIndex - 1 + this.tracksCount) % this.tracksCount;
+            this.NewTrackIndex = this.NewTrackIndex.CyclePrev(this.tracksCount);
             this.SwitchTrackShared();
         }
 
         private void NextTrack() {
-            this.NewTrackIndex = (this.CurrentTrackIndex + 1) % this.tracksCount;
+            this.NewTrackIndex = this.NewTrackIndex.CycleNext(this.tracksCount);
             this.SwitchTrackShared();
         }
 
