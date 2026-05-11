@@ -36,13 +36,16 @@ namespace ZoomTracks {
                 isNextTrack = isNextTrack || gamepad.rightShoulder.wasPressedThisFrame;
             }
 
-            if (isPrevTrack) {
-                this.PrevTrack();
-            } else if (isNextTrack) {
-                this.NextTrack();
+            if (isPrevTrack == isNextTrack) {
+                return false;
+            } else {
+                if (isPrevTrack) {
+                    this.PrevTrack();
+                } else if (isNextTrack) {
+                    this.NextTrack();
+                }
+                return true;
             }
-
-            return isPrevTrack || isNextTrack;
         }
 
         private void PrevTrack() {

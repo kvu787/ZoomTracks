@@ -37,19 +37,20 @@ namespace ZoomTracks {
                 isNextCar = isNextCar || gamepad.dpad.right.wasPressedThisFrame;
             }
 
-            if (!isPrevCar && !isNextCar) {
+            if (isPrevCar == isNextCar) {
                 return false;
+            } else {
+                this.CurrentCar.GameObject.SetActive(false);
+                if (isNextCar) {
+                    this.CurrentCarIndex = this.CurrentCarIndex.CycleNext(this.Cars.Count);
+                } else if (isPrevCar) {
+                    this.CurrentCarIndex = this.CurrentCarIndex.CyclePrev(this.Cars.Count);
+                }
+                this.CurrentCar.GameObject.SetActive(true);
+                this.CurrentCar.GameObject.transform.SetFrom(this.TrackObjects.PlaceholderCar.transform);
+                return true;
             }
 
-            this.CurrentCar.GameObject.SetActive(false);
-            if (isNextCar) {
-                this.CurrentCarIndex = this.CurrentCarIndex.CycleNext(this.Cars.Count);
-            } else if (isPrevCar) {
-                this.CurrentCarIndex = this.CurrentCarIndex.CyclePrev(this.Cars.Count);
-            }
-            this.CurrentCar.GameObject.SetActive(true);
-            this.CurrentCar.GameObject.transform.SetFrom(this.TrackObjects.PlaceholderCar.transform);
-            return true;
         }
     }
 }
