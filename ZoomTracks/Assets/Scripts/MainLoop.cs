@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
@@ -23,11 +22,9 @@ namespace ZoomTracks {
 
         private GameStateEnum GameState;
 
+        private InputManager InputManager;
         private SceneManager SceneManager;
         private TrackSwitcher TrackSwitcher;
-
-        private Keyboard Keyboard;
-        private Gamepad Gamepad;
 
         private ControlModeSwitcher ControlModeSwitcher;
         private TrackObjects TrackObjects;
@@ -53,17 +50,16 @@ namespace ZoomTracks {
             }
 
             this.GameState = GameStateEnum.LoadUiScene;
+            this.InputManager = new InputManager();
             this.SceneManager = new SceneManager(enableLog: false);
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count, TrackSceneNames);
-            this.Keyboard = null;
-            this.Gamepad = null;
             Debug.Log($"END: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
         private void Update() {
+            this.InputManager.UpdateBeforeAll();
             this.SceneManager.UpdateBeforeAll();
-            this.UpdateBeforeAll();
 
             switch (this.GameState) {
                 case GameStateEnum.LoadUiScene:
@@ -115,18 +111,18 @@ namespace ZoomTracks {
         }
 
         private void RunGame() {
-            this.ControlModeSwitcher.ReadInputAndToggleControlMode(this.Keyboard, this.Gamepad);
+            this.ControlModeSwitcher.ReadInputAndToggleControlMode(this.InputManager.Keyboard, this.InputManager.Gamepad);
 
             switch (this.ControlModeSwitcher.ControlMode) {
                 case ControlModeEnum.Camera:
-                    this.CameraController.ReadInputAndChangeCameraSettings(this.Keyboard, this.Gamepad);
+                    this.CameraController.ReadInputAndChangeCameraSettings(this.InputManager.Keyboard, this.InputManager.Gamepad);
                     break;
 
                 case ControlModeEnum.Car:
-                    if (!this.CarSwitcher.ReadInputAndSwitchCar(this.Keyboard, this.Gamepad)) {
-                        this.CarMover.ReadInputAndMoveCar(this.Keyboard, this.Gamepad);
+                    if (!this.CarSwitcher.ReadInputAndSwitchCar(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
+                        this.CarMover.ReadInputAndMoveCar(this.InputManager.Keyboard, this.InputManager.Gamepad);
                     }
-                    if (this.TrackSwitcher.ReadInputAndSwitchTracks(this.Keyboard, this.Gamepad)) {
+                    if (this.TrackSwitcher.ReadInputAndSwitchTracks(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
                         this.GameState = GameStateEnum.UnloadOldTrack;
                     }
                     break;
@@ -137,11 +133,6 @@ namespace ZoomTracks {
 
             this.CameraController.UpdateCameraPosition();
             this.UiManager.Update();
-        }
-
-        private void UpdateBeforeAll() {
-            this.Keyboard = Keyboard.current;
-            this.Gamepad = Gamepad.current;
         }
 
         private void UpdateBusyAnimation() {
