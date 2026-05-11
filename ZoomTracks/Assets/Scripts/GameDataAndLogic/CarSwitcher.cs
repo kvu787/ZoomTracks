@@ -6,19 +6,20 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarSwitcher {
-        public CarGameObject CurrentCar => this.Cars[this.CurrentCarIndex];
+        public Car CurrentCar => this.Cars[this.CurrentCarIndex];
         private int CurrentCarIndex = 1;
 
-        private readonly List<CarGameObject> Cars;
+        private readonly List<Car> Cars;
         private const string GarageFileName = "Garage.json";
+        private TrackObjects TrackObjects;
 
-        public CarSwitcher(GameObject placeholderCarGameObject) {
-            placeholderCarGameObject.SetActive(false);
+        public CarSwitcher(TrackObjects trackObjects) {
+            trackObjects.PlaceholderCar.SetActive(false);
 
             string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
             Assert.IsTrue(File.Exists(filePath), $"Garage JSON file does not exist at {filePath}");
             string fileContents = File.ReadAllText(filePath); // TODO: Use async file read
-            Garage garage = new(fileContents, placeholderCarGameObject.transform);
+            Garage garage = new(fileContents, trackObjects.PlaceholderCar.transform);
             this.CurrentCarIndex = garage.StartCarIndex;
             this.Cars = garage.Cars;
             this.CurrentCar.GameObject.SetActive(true);

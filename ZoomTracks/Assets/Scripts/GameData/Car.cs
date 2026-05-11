@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     [Serializable]
-    public class CarGameObject {
+    public class Car {
         [SerializeField]
         private string GameObjectName;
 

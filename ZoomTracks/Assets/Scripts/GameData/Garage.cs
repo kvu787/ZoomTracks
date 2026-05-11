@@ -6,12 +6,12 @@ namespace ZoomTracks {
     [Serializable]
     public class Garage {
         public int StartCarIndex;
-        public List<CarGameObject> Cars;
+        public List<Car> Cars;
 
-        public Garage(string jsonString, Transform transform) {
+        public Garage(string jsonString, Transform placeholderCarTransform) {
             Garage garage = JsonUtility.FromJson<Garage>(jsonString);
-            foreach (CarGameObject car in garage.Cars) {
-                car.Init(transform);
+            foreach (Car car in garage.Cars) {
+                car.Init(placeholderCarTransform);
             }
         }
     }

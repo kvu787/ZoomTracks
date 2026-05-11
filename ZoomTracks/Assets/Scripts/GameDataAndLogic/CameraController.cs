@@ -89,7 +89,7 @@ namespace ZoomTracks {
 
         public void UpdateCameraPosition() {
             if (this.ShouldFollowCarLocation) {
-                this.CameraPanAndYaw.transform.position = this.TrackObjects.Car.transform.position;
+                this.CameraPanAndYaw.transform.position = this.TrackObjects.PlaceholderCar.transform.position;
             } else {
                 this.CameraPanAndYaw.transform.position = this.OriginalCameraPanAndYawTransform.Position;
             }
