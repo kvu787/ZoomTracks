@@ -13,8 +13,10 @@ namespace ZoomTracks {
 
         public Garage(string jsonString, Transform placeholderCarTransform) {
             Garage garage = JsonUtility.FromJson<Garage>(jsonString);
+            this.StartCarIndex = garage.StartCarIndex;
+            this.Cars = garage.Cars;
             foreach (Car car in garage.Cars) {
-                car.Init(placeholderCarTransform);
+                car.InitAfterCreateFromJson(placeholderCarTransform);
             }
         }
     }
