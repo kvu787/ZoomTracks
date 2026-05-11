@@ -2,7 +2,7 @@
     "StartCarIndex": 1,
     "Cars": [
         {
-            "GameObjectName": "PerchaGreen",
+            "GameObjectName": "SlopeCarGreen",
             "Dynamic": {
                 "VelocityLimiter": 75.0,
                 "AccelerationMap": {
@@ -14,7 +14,7 @@
             }
         },
         {
-            "GameObjectName": "PerchaBlue",
+            "GameObjectName": "SlopeCarBlue",
             "Dynamic": {
                 "VelocityLimiter": -1.0,
                 "AccelerationMap": {
@@ -26,7 +26,7 @@
             }
         },
         {
-            "GameObjectName": "PerchaRed",
+            "GameObjectName": "SlopeCarRed",
             "Dynamic": {
                 "VelocityLimiter": -1.0,
                 "AccelerationMap": {
@@ -38,7 +38,7 @@
             }
         },
         {
-            "GameObjectName": "PerchaYellow",
+            "GameObjectName": "SlopeCarYellow",
             "Dynamic": {
                 "VelocityLimiter": -1.0,
                 "AccelerationMap": {
@@ -50,7 +50,7 @@
             }
         },
         {
-            "GameObjectName": "PerchaCyan",
+            "GameObjectName": "SlopeCarCyan",
             "Dynamic": {
                 "VelocityLimiter": -1.0,
                 "AccelerationMap": {
@@ -62,7 +62,7 @@
             }
         },
         {
-            "GameObjectName": "PerchaMagenta",
+            "GameObjectName": "SlopeCarMagenta",
             "Dynamic": {
                 "VelocityLimiter": -1.0,
                 "AccelerationMap": {
