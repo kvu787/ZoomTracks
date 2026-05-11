@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class TrackSwitcher {
@@ -8,11 +10,16 @@ namespace ZoomTracks {
 
         private readonly int tracksCount;
 
-        public TrackSwitcher(int initialTrackSceneIndex, int tracksCount) {
+        public Scene CurrentTrackScene;
+        private readonly IReadOnlyList<string> TrackSceneNames;
+
+        public TrackSwitcher(int initialTrackSceneIndex, int tracksCount, IReadOnlyList<string> trackSceneNames) {
             this.CurrentTrackIndex = -1;
             this.OldTrackIndex = -1;
             this.NewTrackIndex = initialTrackSceneIndex;
+
             this.tracksCount = tracksCount;
+            this.TrackSceneNames = trackSceneNames;
         }
 
         public bool ReadInputAndSwitchTracks(Keyboard keyboard, Gamepad gamepad) {
@@ -57,6 +64,7 @@ namespace ZoomTracks {
             this.CurrentTrackIndex = this.NewTrackIndex;
             this.OldTrackIndex = -1;
             this.NewTrackIndex = -1;
+            this.CurrentTrackScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
         }
     }
 }

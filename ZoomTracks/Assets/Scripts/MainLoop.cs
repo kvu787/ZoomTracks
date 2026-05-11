@@ -54,7 +54,7 @@ namespace ZoomTracks {
 
             this.GameState = GameStateEnum.LoadUiScene;
             this.SceneManager = new SceneManager(enableLog: false);
-            this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count);
+            this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count, TrackSceneNames);
             this.Keyboard = null;
             this.Gamepad = null;
             Debug.Log($"END: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
@@ -81,14 +81,14 @@ namespace ZoomTracks {
                     break;
 
                 case GameStateEnum.InitNewTrack:
+                    this.TrackSwitcher.SwitchingTrackFinished();
                     Debug.Log("Start initializing track...");
                     this.ControlModeSwitcher = new ControlModeSwitcher();
                     this.TrackObjects = new TrackObjects();
-                    this.CarSwitcher = new CarSwitcher(this.TrackObjects);
+                    this.CarSwitcher = new CarSwitcher(this.TrackObjects, this.TrackSwitcher);
                     this.CarMover = new CarMover(this.CarSwitcher);
                     this.CameraController = new CameraController(this.TrackObjects);
                     this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
-                    this.TrackSwitcher.SwitchingTrackFinished();
                     Debug.Log("...Finish initializing track");
                     this.GameState = GameStateEnum.RunGame;
                     break;

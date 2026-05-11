@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     [Serializable]
@@ -17,12 +18,16 @@ namespace ZoomTracks {
         [NonSerialized]
         public Collider Collider;
 
-        public void InitAfterCreateFromJson(Transform placeholderCarTransform) {
+        public void InitAfterCreateFromJson(Transform placeholderCarTransform, Scene trackScene) {
             Assert.IsTrue(!string.IsNullOrEmpty(this.GameObjectName));
             GameObject decorativeGameObject = GameObject.Find(this.GameObjectName);
             Assert.IsNotNull(decorativeGameObject);
 
-            this.GameObject = UnityEngine.Object.Instantiate(decorativeGameObject, Vector3.zero, Quaternion.identity);
+            this.GameObject = UnityEngine.Object.Instantiate(
+                original: decorativeGameObject,
+                position: Vector3.zero,
+                rotation: Quaternion.identity,
+                parameters: new InstantiateParameters() { scene = trackScene });
             this.GameObject.transform.SetFrom(placeholderCarTransform);
             this.GameObject.SetActive(false);
 
