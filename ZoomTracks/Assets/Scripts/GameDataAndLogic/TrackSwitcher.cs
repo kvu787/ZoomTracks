@@ -40,27 +40,14 @@ namespace ZoomTracks {
                 return false;
             } else {
                 if (isPrevTrack) {
-                    this.PrevTrack();
+                    this.NewTrackIndex = this.NewTrackIndex.CyclePrev(this.tracksCount);
                 } else if (isNextTrack) {
-                    this.NextTrack();
+                    this.NewTrackIndex = this.NewTrackIndex.CycleNext(this.tracksCount);
                 }
+                this.OldTrackIndex = this.CurrentTrackIndex;
+                this.CurrentTrackIndex = -1;
                 return true;
             }
-        }
-
-        private void PrevTrack() {
-            this.NewTrackIndex = this.NewTrackIndex.CyclePrev(this.tracksCount);
-            this.SwitchTrackShared();
-        }
-
-        private void NextTrack() {
-            this.NewTrackIndex = this.NewTrackIndex.CycleNext(this.tracksCount);
-            this.SwitchTrackShared();
-        }
-
-        private void SwitchTrackShared() {
-            this.OldTrackIndex = this.CurrentTrackIndex;
-            this.CurrentTrackIndex = -1;
         }
 
         public void SwitchingTrackFinished() {
