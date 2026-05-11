@@ -123,7 +123,9 @@ namespace ZoomTracks {
                     break;
 
                 case ControlModeEnum.Car:
-                    this.CarMover.ReadInputAndMoveCar(this.Keyboard, this.Gamepad);
+                    if (!this.CarSwitcher.ReadInputAndSwitchCar(this.Keyboard, this.Gamepad)) {
+                        this.CarMover.ReadInputAndMoveCar(this.Keyboard, this.Gamepad);
+                    }
                     if (this.TrackSwitcher.ReadInputAndSwitchTracks(this.Keyboard, this.Gamepad)) {
                         this.GameState = GameStateEnum.UnloadOldTrack;
                     }
