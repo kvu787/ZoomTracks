@@ -104,6 +104,7 @@ namespace ZoomTracks {
             this.CameraController.UpdateCameraPosition();
             this.UiManager.Update();
         }
+
         private async Awaitable PrintBusy(CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested) {
                 Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}");
