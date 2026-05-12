@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
         private const string UiSceneName = "Ui";
+        private const int InitialTrackSceneIndex = 1;
         private static readonly IReadOnlyList<string> TrackSceneNames = new List<string>() {
             "Track1",
             "Track2",
         };
-        private const int InitialTrackSceneIndex = 1;
 
         private InputManager InputManager { get; set; }
         private TrackSwitcher TrackSwitcher { get; set; }
