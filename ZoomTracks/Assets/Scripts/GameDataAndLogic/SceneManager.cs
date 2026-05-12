@@ -17,8 +17,8 @@ namespace ZoomTracks {
     ///      - Start a load/unload if there is an in-progress load/unload
     ///
     /// To use SceneManager:
-    ///   1. Call SceneManager.UpdateBeforeAll and SceneManager.UpdateAfterAll at the start and end of MainLoop.Update.
-    ///   2. Call SceneManager.Update anywhere in MainLoop.Update.
+    ///   1. Call SceneManager.UpdateBeforeAll and SceneManager.UpdateAfterAll at the start and end of MainLoop.UpdateBeforeAll.
+    ///   2. Call SceneManager.UpdateBeforeAll anywhere in MainLoop.UpdateBeforeAll.
     /// </summary>
     public class SceneManager {
         private enum SceneStateEnum {

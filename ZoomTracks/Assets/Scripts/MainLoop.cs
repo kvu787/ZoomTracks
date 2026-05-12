@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace ZoomTracks {
     public class MainLoop : MonoBehaviour {
@@ -12,16 +14,15 @@ namespace ZoomTracks {
         private const int InitialTrackSceneIndex = 1;
 
         private enum GameStateEnum {
-            LoadUiScene,
+            Start,
             LoadNewTrack,
-            InitNewTrack,
             RunGame,
             UnloadOldTrack,
             DoNothing,
         }
 
         private GameStateEnum GameState;
-
+        private bool IsStartFinished;
         private InputManager InputManager;
         private SceneManager SceneManager;
         private TrackSwitcher TrackSwitcher;
@@ -43,66 +44,57 @@ namespace ZoomTracks {
         }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
-        private void Start() {
+        private async void Start() {
             Debug.Log($"BEGIN: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
-            if (UnityEngine.SceneManagement.SceneManager.loadedSceneCount != 1) {
-                throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnityEngine.SceneManagement.SceneManager.loadedSceneCount} loaded scenes.");
+            Debug.Log($"Start initializing game...");
+            if (UnitySceneManager.loadedSceneCount != 1) {
+                throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {UnitySceneManager.loadedSceneCount} loaded scenes.");
             }
 
-            this.GameState = GameStateEnum.LoadUiScene;
+            this.GameState = GameStateEnum.LoadNewTrack;
+            this.IsStartFinished = false;
             this.InputManager = new InputManager();
             this.SceneManager = new SceneManager(enableLog: false);
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count, TrackSceneNames);
+            await UnitySceneManager.LoadSceneAsync(UiSceneName, LoadSceneMode.Additive);
+            this.IsStartFinished = true;
             Debug.Log($"END: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
-        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Update.html
+        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.UpdateBeforeAll.html
         private void Update() {
             this.InputManager.UpdateBeforeAll();
             this.SceneManager.UpdateBeforeAll();
 
             switch (this.GameState) {
-                case GameStateEnum.LoadUiScene:
-                    this.LoadUnloadOrWait(
-                        sceneName: UiSceneName,
-                        isLoad: true,
-                        nextState: GameStateEnum.LoadNewTrack);
+                case GameStateEnum.Start:
+                    if (this.IsStartFinished) {
+                        Debug.Log($"...Finish initializing game...");
+                        // TODO: Trigger loading of new track
+                    } else {
+                        this.UpdateBusyAnimation();
+                    }
                     break;
-
                 case GameStateEnum.LoadNewTrack:
-                    this.LoadUnloadOrWait(
-                        sceneName: TrackSceneNames[this.TrackSwitcher.NewTrackIndex],
-                        isLoad: true,
-                        nextState: GameStateEnum.InitNewTrack);
+                    if (this.TrackSwitcher.WasOperationFinishedThisFrame) {
+                        this.GameState = GameStateEnum.RunGame;
+                        this.TrackSwitcher.UnloadTrack();
+                    } else {
+                        Debug.Log($"Loading new track {Time.frameCount}");
+                    }
                     break;
-
-                case GameStateEnum.InitNewTrack:
-                    this.TrackSwitcher.SwitchingTrackFinished();
-                    Debug.Log("Start initializing track...");
-                    this.ControlModeSwitcher = new ControlModeSwitcher();
-                    this.TrackObjects = new TrackObjects();
-                    this.CarSwitcher = new CarSwitcher(this.TrackObjects, this.TrackSwitcher);
-                    this.CarMover = new CarMover(this.CarSwitcher);
-                    this.CameraController = new CameraController(this.CarSwitcher);
-                    this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
-                    Debug.Log("...Finish initializing track");
-                    this.GameState = GameStateEnum.RunGame;
-                    break;
-
                 case GameStateEnum.RunGame:
                     this.RunGame();
                     break;
-
                 case GameStateEnum.UnloadOldTrack:
-                    this.LoadUnloadOrWait(
-                        sceneName: TrackSceneNames[this.TrackSwitcher.OldTrackIndex],
-                        isLoad: false,
-                        nextState: GameStateEnum.LoadNewTrack);
+                    if (this.TrackSwitcher.WasOperationFinishedThisFrame) {
+                        this.GameState = GameStateEnum.LoadNewTrack;
+                    } else {
+                        Debug.Log($"Unloading old track {Time.frameCount}");
+                    }
                     break;
-
                 case GameStateEnum.DoNothing:
                     break;
-
                 default:
                     throw new Exception($"Unhandled GameState: {this.GameState}");
             }
@@ -137,25 +129,6 @@ namespace ZoomTracks {
 
         private void UpdateBusyAnimation() {
             Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}");
-        }
-
-        private void LoadUnloadOrWait(string sceneName, bool isLoad, GameStateEnum nextState) {
-            if (this.SceneManager.IsOperationRunning()) {
-                this.UpdateBusyAnimation();
-            } else {
-                string verb = isLoad ? "loading" : "unloading";
-                if (this.SceneManager.WasOperationFinishedThisFrame) {
-                    Debug.Log($"...Finish {verb} {sceneName}");
-                    this.GameState = nextState;
-                } else {
-                    Debug.Log($"Start {verb} {sceneName}...");
-                    if (isLoad) {
-                        this.SceneManager.LoadScene(sceneName);
-                    } else {
-                        this.SceneManager.UnloadScene(sceneName);
-                    }
-                }
-            }
         }
     }
 }

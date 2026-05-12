@@ -53,7 +53,7 @@ namespace ZoomTracks {
                     // The result is the change in velocity for this frame
                     Vector3 velocityDelta = f;
 
-                    // Update car velocity
+                    // UpdateBeforeAll car velocity
                     carState.Velocity += velocityDelta;
                 }
             } else if (carState.Velocity != Vector3.zero) {
