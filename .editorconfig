@@ -94,6 +94,9 @@ dotnet_diagnostic.IDE0052.severity = suggestion
 # Remove unnecessary value assignment
 dotnet_diagnostic.IDE0059.severity = suggestion
 
+# Use simple 'using' statement
+dotnet_diagnostic.IDE0063.severity = none
+
 # Use pattern matching
 dotnet_diagnostic.IDE0078.severity = none
 
