@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,21 +38,8 @@ namespace ZoomTracks {
             }
 
             this.InputManager = new InputManager();
-
-            using (CancellationTokenSource printBusyCts = new()) {
-                Awaitable printBusyAwaitable = this.PrintBusy(printBusyCts.Token);
-                await SceneManager.LoadSceneAsync(UiSceneName, LoadSceneMode.Additive);
-                printBusyCts.Cancel();
-                await printBusyAwaitable;
-            }
-
-            using (CancellationTokenSource printBusyCts = new()) {
-                Awaitable printBusyAwaitable = this.PrintBusy(printBusyCts.Token);
-                await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive);
-                printBusyCts.Cancel();
-                await printBusyAwaitable;
-            }
-
+            await AwaitableUtils.RunWithPrintBusy(async () => await SceneManager.LoadSceneAsync(UiSceneName, LoadSceneMode.Additive));
+            await AwaitableUtils.RunWithPrintBusy(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames);
             this.InitTrack();
 
@@ -102,15 +88,6 @@ namespace ZoomTracks {
             this.CameraController = new CameraController(this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
             Debug.Log("...Finish initializing track");
-        }
-
-        private async Awaitable PrintBusy(CancellationToken cancellationToken) {
-            while (!cancellationToken.IsCancellationRequested) {
-                Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}");
-                try {
-                    await Awaitable.NextFrameAsync(cancellationToken);
-                } catch (OperationCanceledException) { }
-            }
         }
     }
 }
