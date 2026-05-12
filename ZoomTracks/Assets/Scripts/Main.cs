@@ -49,7 +49,7 @@ namespace ZoomTracks {
             Debug.Log($"...done");
 
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames);
-            this.InitTrack();
+            this.InitNewlyLoadedTrack();
 
             Debug.Log($"END: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             await this.UpdateLoopAsync();
@@ -72,7 +72,7 @@ namespace ZoomTracks {
                             this.CarMover.ReadInputAndMoveCar(this.InputManager.Keyboard, this.InputManager.Gamepad);
                         }
                         if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
-                            this.InitTrack();
+                            this.InitNewlyLoadedTrack();
                         }
                         break;
                     }
@@ -88,7 +88,7 @@ namespace ZoomTracks {
             }
         }
 
-        private void InitTrack() {
+        private void InitNewlyLoadedTrack() {
             Debug.Log("Initialize track...");
             this.ControlModeSwitcher = new ControlModeSwitcher();
             this.TrackObjects = new TrackObjects();
