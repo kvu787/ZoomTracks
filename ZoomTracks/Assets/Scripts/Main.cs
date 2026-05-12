@@ -64,7 +64,31 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoop() {
             while (true) {
                 this.InputManager.UpdateBeforeAll();
-                await this.RunGame();
+
+                this.ControlModeSwitcher.ReadInputAndToggleControlMode(this.InputManager.Keyboard, this.InputManager.Gamepad);
+
+                switch (this.ControlModeSwitcher.ControlMode) {
+                    case ControlModeEnum.Camera: {
+                        this.CameraController.ReadInputAndChangeCameraSettings(this.InputManager.Keyboard, this.InputManager.Gamepad);
+                        break;
+                    }
+                    case ControlModeEnum.Car: {
+                        if (!this.CarSwitcher.ReadInputAndSwitchCar(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
+                            this.CarMover.ReadInputAndMoveCar(this.InputManager.Keyboard, this.InputManager.Gamepad);
+                        }
+                        if (await this.TrackSwitcher.ReadInputAndSwitchTracks(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
+                            this.InitTrack();
+                        }
+                        break;
+                    }
+                    default: {
+                        throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.ControlMode}'");
+                    }
+                }
+
+                this.CameraController.UpdateCameraPosition();
+                this.UiManager.Update();
+
                 await Awaitable.NextFrameAsync();
             }
         }
@@ -78,31 +102,6 @@ namespace ZoomTracks {
             this.CameraController = new CameraController(this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
             Debug.Log("...Finish initializing track");
-        }
-
-        private async Awaitable RunGame() {
-            this.ControlModeSwitcher.ReadInputAndToggleControlMode(this.InputManager.Keyboard, this.InputManager.Gamepad);
-            switch (this.ControlModeSwitcher.ControlMode) {
-                case ControlModeEnum.Camera: {
-                    this.CameraController.ReadInputAndChangeCameraSettings(this.InputManager.Keyboard, this.InputManager.Gamepad);
-                    break;
-                }
-                case ControlModeEnum.Car: {
-                    if (!this.CarSwitcher.ReadInputAndSwitchCar(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
-                        this.CarMover.ReadInputAndMoveCar(this.InputManager.Keyboard, this.InputManager.Gamepad);
-                    }
-                    if (await this.TrackSwitcher.ReadInputAndSwitchTracks(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
-                        this.InitTrack();
-                    }
-                    break;
-                }
-                default: {
-                    throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.ControlMode}'");
-                }
-            }
-
-            this.CameraController.UpdateCameraPosition();
-            this.UiManager.Update();
         }
 
         private async Awaitable PrintBusy(CancellationToken cancellationToken) {
