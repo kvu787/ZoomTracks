@@ -40,9 +40,9 @@ namespace ZoomTracks {
                 return false;
             } else {
                 if (isPrevTrack) {
-                    this.NewTrackIndex = this.NewTrackIndex.CyclePrev(this.tracksCount);
+                    this.NewTrackIndex = this.CurrentTrackIndex.CyclePrev(this.tracksCount);
                 } else if (isNextTrack) {
-                    this.NewTrackIndex = this.NewTrackIndex.CycleNext(this.tracksCount);
+                    this.NewTrackIndex = this.CurrentTrackIndex.CycleNext(this.tracksCount);
                 }
                 this.OldTrackIndex = this.CurrentTrackIndex;
                 this.CurrentTrackIndex = -1;
