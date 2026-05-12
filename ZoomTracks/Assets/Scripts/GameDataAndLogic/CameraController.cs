@@ -9,27 +9,25 @@ namespace ZoomTracks {
         private const float MinCameraOrthographicSize = 1;
         private const float MaxCameraOrthographicSize = 281.25f;
 
-        public bool ShouldFollowCarLocation { get; private set; } = false;
+        public bool FollowsCarLocation { get; private set; }
 
-        private readonly CarSwitcher CarSwitcher;
+        private CarSwitcher CarSwitcher { get; }
+        private Transform CameraPanAndYaw { get; }
+        private Transform CameraYawOffset { get; }
+        private Transform CameraPanOffsetAndPitch { get; }
+        private Camera Camera { get; }
 
-        private readonly Transform CameraPanAndYaw;
-        private readonly Transform CameraYawOffset;
-        private readonly Transform CameraPanOffsetAndPitch;
-        private readonly Camera Camera;
-
-        private readonly TransformStruct OriginalCameraPanAndYawTransform;
-        private readonly float OriginalCameraOrthographicSize;
+        private TransformStruct OriginalCameraPanAndYawTransform { get; }
+        private float OriginalCameraOrthographicSize { get; }
 
         public CameraController(CarSwitcher carSwitcher) {
-            this.ShouldFollowCarLocation = false;
+            this.FollowsCarLocation = false;
             this.CarSwitcher = carSwitcher;
 
             this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
             this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
-
             this.ValidateCameraParameters();
 
             this.OriginalCameraPanAndYawTransform = new TransformStruct(this.CameraPanAndYaw.transform);
@@ -88,19 +86,16 @@ namespace ZoomTracks {
         }
 
         public void UpdateCameraPosition() {
-            if (this.ShouldFollowCarLocation) {
-                this.CameraPanAndYaw.transform.position = this.CarSwitcher.CurrentCar.GameObject.transform.position;
-            } else {
-                this.CameraPanAndYaw.transform.position = this.OriginalCameraPanAndYawTransform.Position;
-            }
+            Vector3 newPosition = this.FollowsCarLocation ? this.CarSwitcher.CurrentCar.GameObject.transform.position : this.OriginalCameraPanAndYawTransform.Position;
+            this.CameraPanAndYaw.transform.position = newPosition;
         }
 
         private void PanOffset(Vector2 vector2) {
             this.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
         }
 
-        private void Zoom(float a, float b) {
-            this.Camera.orthographicSize += Time.deltaTime * CameraZoomSpeed * (a - b);
+        private void Zoom(float zoomOut, float zoomIn) {
+            this.Camera.orthographicSize += Time.deltaTime * CameraZoomSpeed * (zoomOut - zoomIn);
             this.Camera.orthographicSize = Mathf.Clamp(this.Camera.orthographicSize, MinCameraOrthographicSize, MaxCameraOrthographicSize);
         }
 
@@ -113,7 +108,7 @@ namespace ZoomTracks {
         }
 
         private void ToggleFollowLocation() {
-            this.ShouldFollowCarLocation = !this.ShouldFollowCarLocation;
+            this.FollowsCarLocation = !this.FollowsCarLocation;
         }
 
         private void ValidateCameraParameters() {
