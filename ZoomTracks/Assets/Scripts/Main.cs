@@ -30,6 +30,8 @@ namespace ZoomTracks {
             Debug.Log($"END: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
+        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html
+        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/Awaitable.html
         private async void Start() {
             Debug.Log($"BEGIN: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             if (SceneManager.loadedSceneCount != 1) {
