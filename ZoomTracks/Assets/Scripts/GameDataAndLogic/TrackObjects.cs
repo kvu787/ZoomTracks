@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace ZoomTracks {
     public class TrackObjects {
-        public GameObject PlaceholderCar;
-        public Transform[] TireGroundContactPoints;
+        public GameObject PlaceholderCar { get; }
+        public Transform[] TireGroundContactPoints { get; }
 
         public TrackObjects() {
             this.PlaceholderCar = GameObject.Find("SlopeCarPlaceholder");
