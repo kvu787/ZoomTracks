@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
-    public class MainLoop : MonoBehaviour {
+    public class Main : MonoBehaviour {
         private const string UiSceneName = "Ui";
         private static readonly IReadOnlyList<string> TrackSceneNames = new List<string>() {
             "Track1",
@@ -25,15 +25,15 @@ namespace ZoomTracks {
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
         private void Awake() {
-            Debug.Log($"BEGIN: MainLoop.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+            Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.enableLog".Replace("/", "\\"));
             QualitySettings.maxQueuedFrames = 0;
             QualitySettings.vSyncCount = 1;
-            Debug.Log($"END: MainLoop.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+            Debug.Log($"END: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
         private async void Start() {
-            Debug.Log($"BEGIN: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+            Debug.Log($"BEGIN: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             if (SceneManager.loadedSceneCount != 1) {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
@@ -57,7 +57,7 @@ namespace ZoomTracks {
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames);
             this.InitTrack();
 
-            Debug.Log($"END: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+            Debug.Log($"END: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             await this.UpdateLoop();
         }
 
