@@ -16,7 +16,7 @@ namespace ZoomTracks {
             this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
         }
 
-        public async Awaitable<bool> ReadInputAndSwitchTracks(Keyboard keyboard, Gamepad gamepad) {
+        public async Awaitable<bool> ReadInputAndSwitchTracksAsync(Keyboard keyboard, Gamepad gamepad) {
             bool isPrevTrack = false;
             bool isNextTrack = false;
 
@@ -44,9 +44,9 @@ namespace ZoomTracks {
 
                 this.CurrentTrackIndex = -1;
                 this.CurrentTrackScene = default;
-                await AwaitableUtils.RunWithPrintBusy(async () => await UnitySceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]));
-                await AwaitableUtils.RunWithPrintBusy(async () => await Resources.UnloadUnusedAssets());
-                await AwaitableUtils.RunWithPrintBusy(async () => await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
+                await AwaitableUtils.RunWithPrintBusyAsync(async () => await UnitySceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]));
+                await AwaitableUtils.RunWithPrintBusyAsync(async () => await Resources.UnloadUnusedAssets());
+                await AwaitableUtils.RunWithPrintBusyAsync(async () => await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
                 this.CurrentTrackIndex = newTrackIndex;
                 this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
 

@@ -38,16 +38,16 @@ namespace ZoomTracks {
             }
 
             this.InputManager = new InputManager();
-            await AwaitableUtils.RunWithPrintBusy(async () => await SceneManager.LoadSceneAsync(UiSceneName, LoadSceneMode.Additive));
-            await AwaitableUtils.RunWithPrintBusy(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
+            await AwaitableUtils.RunWithPrintBusyAsync(async () => await SceneManager.LoadSceneAsync(UiSceneName, LoadSceneMode.Additive));
+            await AwaitableUtils.RunWithPrintBusyAsync(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
             this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames);
             this.InitTrack();
 
             Debug.Log($"END: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
-            await this.UpdateLoop();
+            await this.UpdateLoopAsync();
         }
 
-        private async Awaitable UpdateLoop() {
+        private async Awaitable UpdateLoopAsync() {
             while (true) {
                 this.InputManager.UpdateBeforeAll();
 
@@ -62,7 +62,7 @@ namespace ZoomTracks {
                         if (!this.CarSwitcher.ReadInputAndSwitchCar(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
                             this.CarMover.ReadInputAndMoveCar(this.InputManager.Keyboard, this.InputManager.Gamepad);
                         }
-                        if (await this.TrackSwitcher.ReadInputAndSwitchTracks(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
+                        if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
                             this.InitTrack();
                         }
                         break;
