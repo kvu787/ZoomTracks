@@ -89,14 +89,14 @@ namespace ZoomTracks {
         }
 
         private void InitTrack() {
-            Debug.Log("Start initializing track...");
+            Debug.Log("Initialize track...");
             this.ControlModeSwitcher = new ControlModeSwitcher();
             this.TrackObjects = new TrackObjects();
             this.CarSwitcher = new CarSwitcher(this.TrackObjects, this.TrackSwitcher);
             this.CarMover = new CarMover(this.CarSwitcher);
             this.CameraController = new CameraController(this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
-            Debug.Log("...Finish initializing track");
+            Debug.Log("...done");
         }
     }
 }
