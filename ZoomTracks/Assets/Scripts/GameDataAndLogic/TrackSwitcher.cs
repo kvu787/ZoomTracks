@@ -7,22 +7,12 @@ using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 namespace ZoomTracks {
     public class TrackSwitcher {
         public int CurrentTrackIndex { get; private set; }
-        public int OldTrackIndex { get; private set; }
-        public int NewTrackIndex { get; private set; }
-
-        private readonly int tracksCount;
-
-        public Scene CurrentTrackScene;
         private readonly IReadOnlyList<string> TrackSceneNames;
+        public Scene CurrentTrackScene { get; private set; }
 
-        public TrackSwitcher(int currentTrackSceneIndex, int tracksCount, IReadOnlyList<string> trackSceneNames) {
+        public TrackSwitcher(int currentTrackSceneIndex, IReadOnlyList<string> trackSceneNames) {
             this.CurrentTrackIndex = currentTrackSceneIndex;
-            this.OldTrackIndex = -1;
-            this.NewTrackIndex = -1;
-
-            this.tracksCount = tracksCount;
             this.TrackSceneNames = trackSceneNames;
-
             this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
         }
 
@@ -43,20 +33,20 @@ namespace ZoomTracks {
             if (isPrevTrack == isNextTrack) {
                 return false;
             } else {
+                int newTrackIndex;
                 if (isPrevTrack) {
-                    this.NewTrackIndex = this.CurrentTrackIndex.CyclePrev(this.tracksCount);
-                } else if (isNextTrack) {
-                    this.NewTrackIndex = this.CurrentTrackIndex.CycleNext(this.tracksCount);
+                    newTrackIndex = this.CurrentTrackIndex.CyclePrev(this.TrackSceneNames.Count);
+                } else /* if (isNextTrack) */ {
+                    newTrackIndex = this.CurrentTrackIndex.CycleNext(this.TrackSceneNames.Count);
                 }
-                this.OldTrackIndex = this.CurrentTrackIndex;
+
+                int oldTrackIndex = this.CurrentTrackIndex;
+
                 this.CurrentTrackIndex = -1;
-
-                await UnitySceneManager.UnloadSceneAsync(this.TrackSceneNames[this.OldTrackIndex]);
-                await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[this.NewTrackIndex], LoadSceneMode.Additive);
-
-                this.CurrentTrackIndex = this.NewTrackIndex;
-                this.OldTrackIndex = -1;
-                this.NewTrackIndex = -1;
+                this.CurrentTrackScene = default;
+                await UnitySceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]);
+                await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive);
+                this.CurrentTrackIndex = newTrackIndex;
                 this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
 
                 return true;

@@ -54,7 +54,7 @@ namespace ZoomTracks {
                 await printBusyAwaitable;
             }
 
-            this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames.Count, TrackSceneNames);
+            this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames);
             this.InitTrack();
 
             Debug.Log($"END: MainLoop.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
