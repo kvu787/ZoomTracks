@@ -6,22 +6,25 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarSwitcher {
-        public Car CurrentCar => this.Cars[this.CurrentCarIndex];
-        private int CurrentCarIndex = 1;
-
-        private readonly List<Car> Cars;
         private const string GarageFileName = "Garage.json";
-        private readonly TrackObjects TrackObjects;
+
+        public Car CurrentCar => this.Cars[this.CurrentCarIndex];
+
+        private int CurrentCarIndex { get; set; }
+        private List<Car> Cars { get; }
+        private TrackObjects TrackObjects { get; }
 
         public CarSwitcher(TrackObjects trackObjects, TrackSwitcher trackSwitcher) {
             this.TrackObjects = trackObjects;
+
             string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
             Assert.IsTrue(File.Exists(filePath), $"Garage JSON file does not exist at {filePath}");
             string fileContents = File.ReadAllText(filePath); // TODO: Use async file read
             Garage garage = new(fileContents, this.TrackObjects.PlaceholderCar.transform, trackSwitcher.CurrentTrackScene);
+
             this.CurrentCarIndex = garage.StartCarIndex;
             this.Cars = garage.Cars;
-            trackObjects.PlaceholderCar.SetActive(false);
+            this.TrackObjects.PlaceholderCar.SetActive(false);
             this.CurrentCar.GameObject.SetActive(true);
         }
 
@@ -43,14 +46,13 @@ namespace ZoomTracks {
                 this.CurrentCar.GameObject.SetActive(false);
                 if (isNextCar) {
                     this.CurrentCarIndex = this.CurrentCarIndex.CycleNext(this.Cars.Count);
-                } else if (isPrevCar) {
+                } else /* if (isPrevCar) */ {
                     this.CurrentCarIndex = this.CurrentCarIndex.CyclePrev(this.Cars.Count);
                 }
                 this.CurrentCar.GameObject.SetActive(true);
                 this.CurrentCar.GameObject.transform.SetFrom(this.TrackObjects.PlaceholderCar.transform);
                 return true;
             }
-
         }
     }
 }
