@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace ZoomTracks {
     public class TrackSwitcher {
@@ -13,16 +15,18 @@ namespace ZoomTracks {
         public Scene CurrentTrackScene;
         private readonly IReadOnlyList<string> TrackSceneNames;
 
-        public TrackSwitcher(int initialTrackSceneIndex, int tracksCount, IReadOnlyList<string> trackSceneNames) {
-            this.CurrentTrackIndex = -1;
+        public TrackSwitcher(int currentTrackSceneIndex, int tracksCount, IReadOnlyList<string> trackSceneNames) {
+            this.CurrentTrackIndex = currentTrackSceneIndex;
             this.OldTrackIndex = -1;
-            this.NewTrackIndex = initialTrackSceneIndex;
+            this.NewTrackIndex = -1;
 
             this.tracksCount = tracksCount;
             this.TrackSceneNames = trackSceneNames;
+
+            this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
         }
 
-        public bool ReadInputAndSwitchTracks(Keyboard keyboard, Gamepad gamepad) {
+        public async Awaitable<bool> ReadInputAndSwitchTracks(Keyboard keyboard, Gamepad gamepad) {
             bool isPrevTrack = false;
             bool isNextTrack = false;
 
@@ -46,15 +50,17 @@ namespace ZoomTracks {
                 }
                 this.OldTrackIndex = this.CurrentTrackIndex;
                 this.CurrentTrackIndex = -1;
+
+                await UnitySceneManager.UnloadSceneAsync(this.TrackSceneNames[this.OldTrackIndex]);
+                await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[this.NewTrackIndex], LoadSceneMode.Additive);
+
+                this.CurrentTrackIndex = this.NewTrackIndex;
+                this.OldTrackIndex = -1;
+                this.NewTrackIndex = -1;
+                this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
+
                 return true;
             }
-        }
-
-        public void SwitchingTrackFinished() {
-            this.CurrentTrackIndex = this.NewTrackIndex;
-            this.OldTrackIndex = -1;
-            this.NewTrackIndex = -1;
-            this.CurrentTrackScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
         }
     }
 }
