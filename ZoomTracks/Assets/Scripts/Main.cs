@@ -55,6 +55,7 @@ namespace ZoomTracks {
         }
 
         private async Awaitable UpdateLoopAsync() {
+            Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 this.InputManager.UpdateBeforeAll();
 
