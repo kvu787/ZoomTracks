@@ -12,15 +12,14 @@ namespace ZoomTracks {
         };
         private const int InitialTrackSceneIndex = 1;
 
-        private InputManager InputManager;
-        private TrackSwitcher TrackSwitcher;
-
-        private ControlModeSwitcher ControlModeSwitcher;
-        private TrackObjects TrackObjects;
-        private CarSwitcher CarSwitcher;
-        private CarMover CarMover;
-        private CameraController CameraController;
-        private UiManager UiManager;
+        private InputManager InputManager { get; set; }
+        private TrackSwitcher TrackSwitcher { get; set; }
+        private ControlModeSwitcher ControlModeSwitcher { get; set; }
+        private TrackObjects TrackObjects { get; set; }
+        private CarSwitcher CarSwitcher { get; set; }
+        private CarMover CarMover { get; set; }
+        private CameraController CameraController { get; set; }
+        private UiManager UiManager { get; set; }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
         private void Awake() {
