@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace ZoomTracks {
     public class UiManager {
-        private readonly CameraController CameraController;
-        private readonly ControlModeSwitcher ControlModeSwitcher;
-        private readonly TMP_Text ControlModeLabel;
-        private readonly TMP_Text CameraFollowCarLocationBoolLabel;
-        private readonly TMP_Text TestLabel;
+        private CameraController CameraController { get; }
+        private ControlModeSwitcher ControlModeSwitcher { get; }
+        private TMP_Text ControlModeLabel { get; }
+        private TMP_Text CameraFollowCarLocationBoolLabel { get; }
+        private TMP_Text TestLabel { get; }
 
         public UiManager(CameraController cameraController, ControlModeSwitcher controlModeSwitcher) {
             this.CameraController = cameraController;

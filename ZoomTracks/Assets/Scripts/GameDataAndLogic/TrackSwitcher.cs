@@ -7,7 +7,7 @@ using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 namespace ZoomTracks {
     public class TrackSwitcher {
         public int CurrentTrackIndex { get; private set; }
-        private readonly IReadOnlyList<string> TrackSceneNames;
+        private IReadOnlyList<string> TrackSceneNames { get; }
         public Scene CurrentTrackScene { get; private set; }
 
         public TrackSwitcher(int currentTrackSceneIndex, IReadOnlyList<string> trackSceneNames) {
