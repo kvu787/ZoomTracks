@@ -45,6 +45,7 @@ namespace ZoomTracks {
                 this.CurrentTrackIndex = -1;
                 this.CurrentTrackScene = default;
                 await AwaitableUtils.RunWithPrintBusy(async () => await UnitySceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]));
+                await AwaitableUtils.RunWithPrintBusy(async () => await Resources.UnloadUnusedAssets());
                 await AwaitableUtils.RunWithPrintBusy(async () => await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
                 this.CurrentTrackIndex = newTrackIndex;
                 this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
