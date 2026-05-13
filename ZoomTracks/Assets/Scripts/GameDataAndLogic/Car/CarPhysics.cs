@@ -15,8 +15,7 @@ namespace ZoomTracks {
             };
         }
 
-        public void UpdateCarState(CarState carState, float brakeInput, Vector2 accelerationInput, Transform cameraYawTransform) {
-            Dynamic dynamic = this.CarSwitcher.CurrentCar.Dynamic;
+        public static void UpdateCarState(CarState carState, Dynamic dynamic, float brakeInput, Vector2 accelerationInput, Transform cameraYawTransform) {
             if (brakeInput == 0) {
                 if (accelerationInput.magnitude > 0) {
                     // Map XY input onto XZ world plane
