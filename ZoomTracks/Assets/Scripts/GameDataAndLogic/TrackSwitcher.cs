@@ -6,14 +6,14 @@ using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace ZoomTracks {
     public class TrackSwitcher {
-        public int CurrentTrackIndex { get; private set; }
+        public int CurrentTrackSceneIndex { get; private set; }
         private IReadOnlyList<string> TrackSceneNames { get; }
         public Scene CurrentTrackScene { get; private set; }
 
         public TrackSwitcher(int currentTrackSceneIndex, IReadOnlyList<string> trackSceneNames) {
-            this.CurrentTrackIndex = currentTrackSceneIndex;
+            this.CurrentTrackSceneIndex = currentTrackSceneIndex;
             this.TrackSceneNames = trackSceneNames;
-            this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
+            this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackSceneIndex]);
         }
 
         public async Awaitable<bool> ReadInputAndSwitchTracksAsync(Keyboard keyboard, Gamepad gamepad) {
@@ -35,14 +35,14 @@ namespace ZoomTracks {
             } else {
                 int newTrackIndex;
                 if (isPrevTrack) {
-                    newTrackIndex = this.CurrentTrackIndex.CyclePrev(this.TrackSceneNames.Count);
+                    newTrackIndex = this.CurrentTrackSceneIndex.CyclePrev(this.TrackSceneNames.Count);
                 } else /* if (isNextTrack) */ {
-                    newTrackIndex = this.CurrentTrackIndex.CycleNext(this.TrackSceneNames.Count);
+                    newTrackIndex = this.CurrentTrackSceneIndex.CycleNext(this.TrackSceneNames.Count);
                 }
 
-                int oldTrackIndex = this.CurrentTrackIndex;
+                int oldTrackIndex = this.CurrentTrackSceneIndex;
 
-                this.CurrentTrackIndex = -1;
+                this.CurrentTrackSceneIndex = -1;
                 this.CurrentTrackScene = default;
 
                 Debug.Log($"Unload old track scene...");
@@ -57,8 +57,8 @@ namespace ZoomTracks {
                 await AwaitableUtils.RunWithPrintBusyEachFrameAsync(async () => await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
                 Debug.Log($"...done");
 
-                this.CurrentTrackIndex = newTrackIndex;
-                this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackIndex]);
+                this.CurrentTrackSceneIndex = newTrackIndex;
+                this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackSceneIndex]);
 
                 return true;
             }
