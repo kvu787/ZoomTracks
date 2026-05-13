@@ -4,19 +4,25 @@ using UnityEngine;
 
 namespace ZoomTracks {
     public static class AwaitableUtils {
-        public static async Awaitable RunWithPrintBusyAsync(Func<Awaitable> awaitableOperation) {
-            using (CancellationTokenSource printBusyCts = new()) {
-                Awaitable printBusyAwaitable = PrintBusyAsync(printBusyCts.Token);
-                await awaitableOperation();
-                printBusyCts.Cancel();
-                await printBusyAwaitable;
+        public static async Awaitable RunWithPrintBusyEachFrameAsync(Func<Awaitable> awaitableOperation) {
+            using (CancellationTokenSource printBusyEachFrameCts = new()) {
+                Awaitable printBusyEachFrameAwaitable = PrintBusyEachFrameAsync(printBusyEachFrameCts.Token);
+                try {
+                    await awaitableOperation();
+                } finally {
+                    printBusyEachFrameCts.Cancel();
+                    await printBusyEachFrameAwaitable;
+                }
             }
         }
 
-        private static async Awaitable PrintBusyAsync(CancellationToken cancellationToken) {
+        private static async Awaitable PrintBusyEachFrameAsync(CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested) {
+                try {
+                    await Awaitable.NextFrameAsync(cancellationToken);
+                } catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
+                }
                 Debug.Log($"Busy {Time.realtimeSinceStartupAsDouble:F3}");
-                await Awaitable.NextFrameAsync();
             }
         }
     }
