@@ -92,7 +92,7 @@ namespace ZoomTracks {
         }
 
         public void UpdateCameraPosition() {
-            Vector3 newPosition = this.FollowsCarLocation ? this.CarSwitcher.CurrentCar.GameObject.transform.position : this.OriginalCameraPanAndYawTransform.Position;
+            Vector3 newPosition = this.FollowsCarLocation ? this.CarSwitcher.CurrentCarGameObject.transform.position : this.OriginalCameraPanAndYawTransform.Position;
             this.CameraPanAndYaw.transform.position = newPosition;
         }
 

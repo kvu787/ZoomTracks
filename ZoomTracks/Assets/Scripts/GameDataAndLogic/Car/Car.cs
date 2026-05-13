@@ -18,7 +18,7 @@ namespace ZoomTracks {
         [NonSerialized]
         public Collider Collider;
 
-        public void InitAfterCreateFromJson(Transform placeholderCarTransform, Scene trackScene) {
+        public void InitAfterCreateFromJson(Scene trackScene) {
             Assert.IsTrue(!string.IsNullOrEmpty(this.GameObjectName));
             GameObject decorativeGameObject = GameObject.Find(this.GameObjectName);
             Assert.IsNotNull(decorativeGameObject);
@@ -28,7 +28,6 @@ namespace ZoomTracks {
                 position: Vector3.zero,
                 rotation: Quaternion.identity,
                 parameters: new InstantiateParameters() { scene = trackScene });
-            this.GameObject.transform.SetFrom(placeholderCarTransform);
             this.GameObject.SetActive(false);
 
             //this.Collider = this.GameObject.GetComponentInChildren<Collider>();

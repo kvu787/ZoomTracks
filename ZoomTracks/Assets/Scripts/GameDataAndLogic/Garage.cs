@@ -12,12 +12,12 @@ namespace ZoomTracks {
         [SerializeField]
         public List<Car> Cars;
 
-        public Garage(string jsonString, Transform placeholderCarTransform, Scene trackScene) {
+        public Garage(string jsonString, Scene trackScene) {
             Garage garage = JsonUtility.FromJson<Garage>(jsonString);
             this.StartCarIndex = garage.StartCarIndex;
             this.Cars = garage.Cars;
             foreach (Car car in garage.Cars) {
-                car.InitAfterCreateFromJson(placeholderCarTransform, trackScene);
+                car.InitAfterCreateFromJson(trackScene);
             }
         }
     }

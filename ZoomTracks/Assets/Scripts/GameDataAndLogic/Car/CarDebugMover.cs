@@ -8,7 +8,7 @@ namespace ZoomTracks {
 
         private InputManager InputManager { get; }
         private CarSwitcher CarSwitcher { get; }
-        private Transform CurrentCarTransform => this.CarSwitcher.CurrentCar.GameObject.transform;
+        private Transform CurrentCarTransform => this.CarSwitcher.CurrentCarGameObject.transform;
 
         public CarDebugMover(InputManager inputManager, CarSwitcher carSwitcher) {
             this.InputManager = inputManager;

@@ -97,7 +97,8 @@ namespace ZoomTracks {
             Debug.Log("Initialize track...");
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.TrackObjects = new TrackObjects();
-            this.CarSwitcher = new CarSwitcher(this.InputManager, this.TrackObjects, this.TrackSwitcher);
+            this.TrackObjects.PlaceholderCar.SetActive(false);
+            this.CarSwitcher = new CarSwitcher(this.InputManager, this.TrackSwitcher, this.TrackObjects.PlaceholderCar.transform);
             this.CarDebugMover = new CarDebugMover(this.InputManager, this.CarSwitcher);
             this.CameraController = new CameraController(this.InputManager, this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
