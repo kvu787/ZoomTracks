@@ -10,11 +10,13 @@ namespace ZoomTracks {
 
         public Car CurrentCar => this.Cars[this.CurrentCarIndex];
 
+        private InputManager InputManager { get; }
         private int CurrentCarIndex { get; set; }
         private List<Car> Cars { get; }
         private TrackObjects TrackObjects { get; }
 
-        public CarSwitcher(TrackObjects trackObjects, TrackSwitcher trackSwitcher) {
+        public CarSwitcher(InputManager inputManager, TrackObjects trackObjects, TrackSwitcher trackSwitcher) {
+            this.InputManager = inputManager;
             this.TrackObjects = trackObjects;
 
             string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
@@ -28,14 +30,16 @@ namespace ZoomTracks {
             this.CurrentCar.GameObject.SetActive(true);
         }
 
-        public bool ReadInputAndSwitchCar(Keyboard keyboard, Gamepad gamepad) {
+        public bool ReadInputAndSwitchCar() {
             bool isPrevCar = false;
             bool isNextCar = false;
-            if (keyboard != null) {
+            if (this.InputManager.Keyboard != null) {
+                Keyboard keyboard = this.InputManager.Keyboard;
                 isPrevCar = isPrevCar || keyboard.cKey.wasPressedThisFrame;
                 isNextCar = isNextCar || keyboard.vKey.wasPressedThisFrame;
             }
-            if (gamepad != null) {
+            if (this.InputManager.Gamepad != null) {
+                Gamepad gamepad = this.InputManager.Gamepad;
                 isPrevCar = isPrevCar || gamepad.dpad.left.wasPressedThisFrame;
                 isNextCar = isNextCar || gamepad.dpad.right.wasPressedThisFrame;
             }

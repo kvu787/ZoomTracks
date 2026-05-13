@@ -6,26 +6,30 @@ using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace ZoomTracks {
     public class TrackSwitcher {
+        private InputManager InputManager { get; }
         public int CurrentTrackSceneIndex { get; private set; }
         private IReadOnlyList<string> TrackSceneNames { get; }
         public Scene CurrentTrackScene { get; private set; }
 
-        public TrackSwitcher(int currentTrackSceneIndex, IReadOnlyList<string> trackSceneNames) {
+        public TrackSwitcher(InputManager inputManager, int currentTrackSceneIndex, IReadOnlyList<string> trackSceneNames) {
+            this.InputManager = inputManager;
             this.CurrentTrackSceneIndex = currentTrackSceneIndex;
             this.TrackSceneNames = trackSceneNames;
             this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackSceneIndex]);
         }
 
-        public async Awaitable<bool> ReadInputAndSwitchTracksAsync(Keyboard keyboard, Gamepad gamepad) {
+        public async Awaitable<bool> ReadInputAndSwitchTracksAsync() {
             bool isPrevTrack = false;
             bool isNextTrack = false;
 
-            if (keyboard != null) {
+            if (this.InputManager.Keyboard != null) {
+                Keyboard keyboard = this.InputManager.Keyboard;
                 isPrevTrack = isPrevTrack || keyboard.aKey.wasPressedThisFrame;
                 isNextTrack = isNextTrack || keyboard.gKey.wasPressedThisFrame;
             }
 
-            if (gamepad != null) {
+            if (this.InputManager.Gamepad != null) {
+                Gamepad gamepad = this.InputManager.Gamepad;
                 isPrevTrack = isPrevTrack || gamepad.leftShoulder.wasPressedThisFrame;
                 isNextTrack = isNextTrack || gamepad.rightShoulder.wasPressedThisFrame;
             }

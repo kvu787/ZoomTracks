@@ -48,7 +48,7 @@ namespace ZoomTracks {
             await AwaitableUtils.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
             Debug.Log($"...done");
 
-            this.TrackSwitcher = new TrackSwitcher(InitialTrackSceneIndex, TrackSceneNames);
+            this.TrackSwitcher = new TrackSwitcher(this.InputManager, InitialTrackSceneIndex, TrackSceneNames);
             this.InitNewlyLoadedTrack();
 
             Debug.Log($"END: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
@@ -60,18 +60,18 @@ namespace ZoomTracks {
             while (true) {
                 this.InputManager.UpdateBeforeAll();
 
-                this.ControlModeSwitcher.ReadInputAndToggleControlMode(this.InputManager.Keyboard, this.InputManager.Gamepad);
+                this.ControlModeSwitcher.ReadInputAndToggleControlMode();
 
                 switch (this.ControlModeSwitcher.ControlMode) {
                     case ControlModeEnum.Camera: {
-                        this.CameraController.ReadInputAndChangeCameraSettings(this.InputManager.Keyboard, this.InputManager.Gamepad);
+                        this.CameraController.ReadInputAndChangeCameraSettings();
                         break;
                     }
                     case ControlModeEnum.Car: {
-                        if (!this.CarSwitcher.ReadInputAndSwitchCar(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
-                            this.CarMover.ReadInputAndMoveCar(this.InputManager.Keyboard, this.InputManager.Gamepad);
+                        if (!this.CarSwitcher.ReadInputAndSwitchCar()) {
+                            this.CarMover.ReadInputAndMoveCar();
                         }
-                        if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync(this.InputManager.Keyboard, this.InputManager.Gamepad)) {
+                        if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                             this.InitNewlyLoadedTrack();
                         }
                         break;
@@ -90,11 +90,11 @@ namespace ZoomTracks {
 
         private void InitNewlyLoadedTrack() {
             Debug.Log("Initialize track...");
-            this.ControlModeSwitcher = new ControlModeSwitcher();
+            this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.TrackObjects = new TrackObjects();
-            this.CarSwitcher = new CarSwitcher(this.TrackObjects, this.TrackSwitcher);
-            this.CarMover = new CarMover(this.CarSwitcher);
-            this.CameraController = new CameraController(this.CarSwitcher);
+            this.CarSwitcher = new CarSwitcher(this.InputManager, this.TrackObjects, this.TrackSwitcher);
+            this.CarMover = new CarMover(this.InputManager, this.CarSwitcher);
+            this.CameraController = new CameraController(this.InputManager, this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
             Debug.Log("...done");
         }

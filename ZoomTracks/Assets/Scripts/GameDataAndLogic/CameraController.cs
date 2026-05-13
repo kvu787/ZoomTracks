@@ -11,6 +11,7 @@ namespace ZoomTracks {
 
         public bool FollowsCarLocation { get; private set; }
 
+        private InputManager InputManager { get; }
         private CarSwitcher CarSwitcher { get; }
         private Transform CameraPanAndYaw { get; }
         private Transform CameraYawOffset { get; }
@@ -20,8 +21,9 @@ namespace ZoomTracks {
         private TransformStruct OriginalCameraPanAndYawTransform { get; }
         private float OriginalCameraOrthographicSize { get; }
 
-        public CameraController(CarSwitcher carSwitcher) {
+        public CameraController(InputManager inputManager, CarSwitcher carSwitcher) {
             this.FollowsCarLocation = false;
+            this.InputManager = inputManager;
             this.CarSwitcher = carSwitcher;
 
             this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
@@ -34,8 +36,10 @@ namespace ZoomTracks {
             this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
         }
 
-        public void ReadInputAndChangeCameraSettings(Keyboard keyboard, Gamepad gamepad) {
-            if (keyboard != null) {
+        public void ReadInputAndChangeCameraSettings() {
+            if (this.InputManager.Keyboard != null) {
+                Keyboard keyboard = this.InputManager.Keyboard;
+
                 // ESDF: Pan
                 Vector2 vector2 = new(
                     keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue(),
@@ -61,7 +65,9 @@ namespace ZoomTracks {
                 }
             }
 
-            if (gamepad != null) {
+            if (this.InputManager.Gamepad != null) {
+                Gamepad gamepad = this.InputManager.Gamepad;
+
                 // Left stick: Pan offset
                 this.PanOffset(gamepad.leftStick.ReadValue());
 
