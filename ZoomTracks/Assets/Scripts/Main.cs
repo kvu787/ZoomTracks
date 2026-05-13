@@ -67,6 +67,7 @@ namespace ZoomTracks {
                         this.CameraController.ReadInputAndChangeCameraSettings();
                         break;
                     }
+
                     case ControlModeEnum.Car: {
                         if (!this.CarSwitcher.ReadInputAndSwitchCar()) {
                             this.CarDebugMover.ReadInputAndMoveCar();
@@ -76,6 +77,7 @@ namespace ZoomTracks {
                         }
                         break;
                     }
+
                     default: {
                         throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.ControlMode}'");
                     }
