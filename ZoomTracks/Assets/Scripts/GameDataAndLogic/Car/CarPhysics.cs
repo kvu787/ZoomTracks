@@ -1,9 +1,9 @@
 using UnityEngine;
 
 namespace ZoomTracks {
-    public class CarLogic {
+    public class CarPhysics {
         private readonly CarSwitcher CarSwitcher;
-        public CarLogic(CarSwitcher carSwitcher) {
+        public CarPhysics(CarSwitcher carSwitcher) {
             this.CarSwitcher = carSwitcher;
         }
 
@@ -15,12 +15,12 @@ namespace ZoomTracks {
             };
         }
 
-        public void ProcessCarInputAndPhysics(CarState carState, float brake, Vector2 accel, Transform cameraYawTransform) {
+        public void UpdateCarState(CarState carState, float brakeInput, Vector2 accelerationInput, Transform cameraYawTransform) {
             Dynamic dynamic = this.CarSwitcher.CurrentCar.Dynamic;
-            if (brake == 0) {
-                if (accel.magnitude > 0) {
+            if (brakeInput == 0) {
+                if (accelerationInput.magnitude > 0) {
                     // Map XY input onto XZ world plane
-                    Vector3 a = new(accel.x, 0, accel.y);
+                    Vector3 a = new(accelerationInput.x, 0, accelerationInput.y);
 
                     // Adjust for camera rotation
                     Vector3 b = Quaternion.Euler(0, cameraYawTransform.eulerAngles.y, 0) * a;
@@ -58,7 +58,7 @@ namespace ZoomTracks {
                 }
             } else if (carState.Velocity != Vector3.zero) {
                 Vector3 opposingVec = (-1 * carState.Velocity).normalized;
-                Vector3 velocityDelta = dynamic.AccelerationMap.Reverse * brake * Time.deltaTime * opposingVec;
+                Vector3 velocityDelta = dynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * opposingVec;
                 if (velocityDelta.magnitude >= carState.Velocity.magnitude) {
                     carState.Velocity = Vector3.zero;
                 } else {
