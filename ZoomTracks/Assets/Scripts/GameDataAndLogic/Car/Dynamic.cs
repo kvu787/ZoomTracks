@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ZoomTracks {
     [Serializable]
-    public struct Dynamic {
+    public class Dynamic {
         [SerializeField]
         public float VelocityLimiter;
 

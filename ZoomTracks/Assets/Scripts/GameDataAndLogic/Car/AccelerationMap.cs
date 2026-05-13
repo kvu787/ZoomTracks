@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ZoomTracks {
     [Serializable]
-    public struct AccelerationMap {
+    public class AccelerationMap {
         [SerializeField]
         public float Forward;
 

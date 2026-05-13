@@ -15,7 +15,7 @@ namespace ZoomTracks {
             };
         }
 
-        public void ProcessCarInputAndPhysics(ref CarState carState, float brake, Vector2 accel, Transform cameraYawTransform) {
+        public void ProcessCarInputAndPhysics(CarState carState, float brake, Vector2 accel, Transform cameraYawTransform) {
             Dynamic dynamic = this.CarSwitcher.CurrentCar.Dynamic;
             if (brake == 0) {
                 if (accel.magnitude > 0) {
