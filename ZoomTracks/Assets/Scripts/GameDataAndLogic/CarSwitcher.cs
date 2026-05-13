@@ -8,27 +8,26 @@ namespace ZoomTracks {
     public class CarSwitcher {
         private const string GarageFileName = "Garage.json";
 
-        public GameObject CurrentCarGameObject => this.Cars[this.CurrentCarIndex].GameObject;
-
         private InputManager InputManager { get; }
         private int CurrentCarIndex { get; set; }
         private List<Car> Cars { get; }
         private Transform PlaceholderCarTransform { get; }
 
         public CarSwitcher(InputManager inputManager, TrackSwitcher trackSwitcher, Transform placeholderCarTransform) {
-            this.InputManager = inputManager;
-
             string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
             Assert.IsTrue(File.Exists(filePath), $"Garage JSON file does not exist at {filePath}");
             string fileContents = File.ReadAllText(filePath); // TODO: Use async file read
             Garage garage = new(fileContents, trackSwitcher.CurrentTrackScene);
 
+            this.InputManager = inputManager;
             this.CurrentCarIndex = garage.StartCarIndex;
             this.Cars = garage.Cars;
             this.PlaceholderCarTransform = placeholderCarTransform;
 
             this.ActivateCarAndMoveToStartingPosition();
         }
+
+        public GameObject CurrentCarGameObject => this.Cars[this.CurrentCarIndex].GameObject;
 
         public bool ReadInputAndSwitchCar() {
             bool isPrevCar = false;
