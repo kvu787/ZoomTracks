@@ -1,12 +1,7 @@
 using UnityEngine;
 
 namespace ZoomTracks {
-    public class CarPhysics {
-        private readonly CarSwitcher CarSwitcher;
-        public CarPhysics(CarSwitcher carSwitcher) {
-            this.CarSwitcher = carSwitcher;
-        }
-
+    public static class CarPhysics {
         public static CarState CreateNewCarState(GameObject placeholderCar) {
             return new CarState {
                 Position = placeholderCar.transform.position,
