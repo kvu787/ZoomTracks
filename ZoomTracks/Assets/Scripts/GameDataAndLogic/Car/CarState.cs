@@ -18,6 +18,8 @@ namespace ZoomTracks {
         }
 
         public void ReadInputAndUpdateDebug() {
+            this.Velocity = Vector3.zero;
+
             Vector3 positionDelta = Vector3.zero;
             float rotationDelta = 0;
             Vector3 positionTerm = Time.deltaTime * CarForwardBackwardSpeed * (this.RotationQuaternion * Vector3.forward);
