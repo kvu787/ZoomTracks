@@ -49,7 +49,7 @@ namespace ZoomTracks {
             Debug.Log($"...done");
 
             this.TrackSwitcher = new TrackSwitcher(this.InputManager, InitialTrackSceneIndex, TrackSceneNames);
-            this.InitializeNewlyLoadedTrack();
+            this.InitializeTrack();
 
             Debug.Log($"END: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             await this.UpdateLoopAsync();
@@ -71,7 +71,7 @@ namespace ZoomTracks {
                     case ControlModeEnum.Car: {
                         bool switchedTracks = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
                         if (switchedTracks) {
-                            this.InitializeNewlyLoadedTrack();
+                            this.InitializeTrack();
                         } else {
                             bool switchedCars = this.CarSwitcher.ReadInputAndSwitchCar();
                             if (!switchedCars) {
@@ -93,7 +93,7 @@ namespace ZoomTracks {
             }
         }
 
-        private void InitializeNewlyLoadedTrack() {
+        private void InitializeTrack() {
             Debug.Log("Initialize track...");
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.TrackObjects = new TrackObjects();
