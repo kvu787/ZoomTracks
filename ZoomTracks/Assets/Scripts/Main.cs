@@ -69,11 +69,13 @@ namespace ZoomTracks {
                     }
 
                     case ControlModeEnum.Car: {
-                        if (!this.CarSwitcher.ReadInputAndSwitchCar()) {
-                            this.CarDebugMover.ReadInputAndMoveCar();
-                        }
                         if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                             this.InitNewlyLoadedTrack();
+                        } else {
+                            if (this.CarSwitcher.ReadInputAndSwitchCar()) {
+                            } else {
+                                this.CarDebugMover.ReadInputAndMoveCar();
+                            }
                         }
                         break;
                     }
