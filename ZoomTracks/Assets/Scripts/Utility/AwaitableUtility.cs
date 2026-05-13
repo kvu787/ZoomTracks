@@ -3,7 +3,7 @@ using System.Threading;
 using UnityEngine;
 
 namespace ZoomTracks {
-    public static class AwaitableUtils {
+    public static class AwaitableUtility {
         public static async Awaitable RunWithPrintBusyEachFrameAsync(Func<Awaitable> awaitableOperation) {
             using (CancellationTokenSource printBusyEachFrameCts = new()) {
                 Awaitable printBusyEachFrameAwaitable = PrintBusyEachFrameAsync(printBusyEachFrameCts.Token);

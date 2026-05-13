@@ -41,11 +41,11 @@ namespace ZoomTracks {
             this.InputManager = new InputManager();
 
             Debug.Log($"Load UI scene...");
-            await AwaitableUtils.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(UiSceneName, LoadSceneMode.Additive));
+            await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(UiSceneName, LoadSceneMode.Additive));
             Debug.Log($"...done");
 
             Debug.Log($"Load initial track scene...");
-            await AwaitableUtils.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
+            await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
             Debug.Log($"...done");
 
             this.TrackSwitcher = new TrackSwitcher(this.InputManager, InitialTrackSceneIndex, TrackSceneNames);
