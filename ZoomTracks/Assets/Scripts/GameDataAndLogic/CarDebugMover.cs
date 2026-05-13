@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
-    public class CarMover {
+    public class CarDebugMover {
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
@@ -10,7 +10,7 @@ namespace ZoomTracks {
         private CarSwitcher CarSwitcher { get; }
         private Transform CurrentCarTransform => this.CarSwitcher.CurrentCar.GameObject.transform;
 
-        public CarMover(InputManager inputManager, CarSwitcher carSwitcher) {
+        public CarDebugMover(InputManager inputManager, CarSwitcher carSwitcher) {
             this.InputManager = inputManager;
             this.CarSwitcher = carSwitcher;
         }

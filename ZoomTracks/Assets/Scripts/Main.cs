@@ -17,7 +17,7 @@ namespace ZoomTracks {
         private ControlModeSwitcher ControlModeSwitcher { get; set; }
         private TrackObjects TrackObjects { get; set; }
         private CarSwitcher CarSwitcher { get; set; }
-        private CarMover CarMover { get; set; }
+        private CarDebugMover CarDebugMover { get; set; }
         private CameraController CameraController { get; set; }
         private UiManager UiManager { get; set; }
 
@@ -69,7 +69,7 @@ namespace ZoomTracks {
                     }
                     case ControlModeEnum.Car: {
                         if (!this.CarSwitcher.ReadInputAndSwitchCar()) {
-                            this.CarMover.ReadInputAndMoveCar();
+                            this.CarDebugMover.ReadInputAndMoveCar();
                         }
                         if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                             this.InitNewlyLoadedTrack();
@@ -93,7 +93,7 @@ namespace ZoomTracks {
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.TrackObjects = new TrackObjects();
             this.CarSwitcher = new CarSwitcher(this.InputManager, this.TrackObjects, this.TrackSwitcher);
-            this.CarMover = new CarMover(this.InputManager, this.CarSwitcher);
+            this.CarDebugMover = new CarDebugMover(this.InputManager, this.CarSwitcher);
             this.CameraController = new CameraController(this.InputManager, this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
             Debug.Log("...done");
