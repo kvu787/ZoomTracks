@@ -41,7 +41,7 @@ namespace ZoomTracks {
                 //Assert.IsNotNull(this.Collider);
             }
 
-            this.InitCurrentCar();
+            this.InitializeCurrentCar();
         }
 
         public GameObject CurrentCarGameObject => this.Cars[this.CurrentCarIndex].GameObject;
@@ -69,12 +69,12 @@ namespace ZoomTracks {
                 } else /* if (isPrevCar) */ {
                     this.CurrentCarIndex = this.CurrentCarIndex.CyclePrev(this.Cars.Count);
                 }
-                this.InitCurrentCar();
+                this.InitializeCurrentCar();
                 return true;
             }
         }
 
-        private void InitCurrentCar() {
+        private void InitializeCurrentCar() {
             this.CurrentCarGameObject.SetActive(true);
             this.CurrentCarGameObject.transform.SetFrom(this.PlaceholderCarTransform);
         }

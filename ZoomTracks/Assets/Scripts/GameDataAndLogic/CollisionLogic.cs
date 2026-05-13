@@ -8,7 +8,7 @@ namespace ZoomTracks {
     public static class CollisionLogic {
         private static IEnumerable<Collider> NonCarColliders;
 
-        public static void Init() {
+        public static void Initialize() {
             throw new NotImplementedException();
             List<GameObject> barriersAndCones = new();
             barriersAndCones.AddRange(GameObject.FindGameObjectsWithTag("todo"));

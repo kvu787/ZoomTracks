@@ -5,7 +5,7 @@ namespace ZoomTracks {
     internal static class QuitOnException {
         // This attribute ensures the method runs automatically at startup
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Init() {
+        private static void Initialize() {
             RemoveHandlers();
 
             // Catch Unity-logged exceptions (Main thread and Unity-managed worker threads)
