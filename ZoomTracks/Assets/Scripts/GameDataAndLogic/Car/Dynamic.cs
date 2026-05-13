@@ -9,10 +9,5 @@ namespace ZoomTracks {
 
         [SerializeField]
         public AccelerationMap AccelerationMap;
-
-        public Dynamic(float velocityLimiter, AccelerationMap accelerationMap) {
-            this.VelocityLimiter = velocityLimiter;
-            this.AccelerationMap = accelerationMap;
-        }
     }
 }

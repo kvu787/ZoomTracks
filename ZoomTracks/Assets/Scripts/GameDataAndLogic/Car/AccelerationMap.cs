@@ -15,12 +15,5 @@ namespace ZoomTracks {
 
         [SerializeField]
         public float Right;
-
-        public AccelerationMap(float forward, float reverse, float left, float right) {
-            this.Forward = forward;
-            this.Reverse = reverse;
-            this.Left = left;
-            this.Right = right;
-        }
     }
 }
