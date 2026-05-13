@@ -8,30 +8,39 @@ namespace ZoomTracks {
 
         private InputManager InputManager { get; }
 
+        private Vector3 Position { get; set; }
+        private float Rotation { get; set; }
+        private Quaternion RotationQuaternion => Quaternion.Euler(0f, this.Rotation, 0f);
+        private Vector3 Velocity { get; set; }
+
         public CarState(InputManager inputManager) {
             this.InputManager = inputManager;
         }
 
-        public Vector3 Position { get; set; }
-        public float Rotation { get; set; }
-        public Vector3 Velocity { get; set; }
-
         public void ReadInputAndUpdateDebug() {
+            Vector3 positionDelta = Vector3.zero;
+            float rotationDelta = 0;
+            Vector3 positionTerm = Time.deltaTime * CarForwardBackwardSpeed * (this.RotationQuaternion * Vector3.forward);
+            float rotationTerm = Time.deltaTime * CarRotateSpeed;
+
             if (this.InputManager.Keyboard != null) {
                 Keyboard keyboard = this.InputManager.Keyboard;
-                this.Position += Time.deltaTime * CarForwardBackwardSpeed * (keyboard.eKey.ReadValue() - keyboard.dKey.ReadValue()) * (Quaternion.Euler(0f, this.Rotation, 0f) * Vector3.forward);
-                this.Rotation += Time.deltaTime * CarRotateSpeed * (keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue());
+                positionDelta += positionTerm * (keyboard.eKey.ReadValue() - keyboard.dKey.ReadValue());
+                rotationDelta += rotationTerm * (keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue());
             }
 
             if (this.InputManager.Gamepad != null) {
                 Vector2 leftStick = this.InputManager.Gamepad.leftStick.ReadValue();
-                this.Position += Time.deltaTime * CarForwardBackwardSpeed * leftStick.y * (Quaternion.Euler(0f, this.Rotation, 0f) * Vector3.forward);
-                this.Rotation += Time.deltaTime * CarRotateSpeed * leftStick.x;
+                positionDelta += positionTerm * leftStick.y;
+                rotationDelta += rotationTerm * leftStick.x;
             }
+
+            this.Position += positionDelta;
+            this.Rotation += rotationDelta;
         }
 
         public void ApplyToGameObject(GameObject gameObject) {
-            gameObject.transform.SetPositionAndRotation(this.Position, Quaternion.Euler(0f, this.Rotation, 0f));
+            gameObject.transform.SetPositionAndRotation(this.Position, this.RotationQuaternion);
         }
 
         public void Reset(Transform placeholderCarTransform) {
