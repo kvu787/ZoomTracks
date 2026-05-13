@@ -13,6 +13,7 @@ namespace ZoomTracks {
                 this.PlaceholderCar.transform.Find("CarRL"),
                 this.PlaceholderCar.transform.Find("CarRR"),
             };
+            this.PlaceholderCar.SetActive(false);
         }
     }
 }
