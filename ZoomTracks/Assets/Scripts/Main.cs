@@ -63,27 +63,22 @@ namespace ZoomTracks {
                 this.ControlModeSwitcher.ReadInputAndToggleControlMode();
 
                 switch (this.ControlModeSwitcher.ControlMode) {
-                    case ControlModeEnum.Camera: {
-                        this.CameraController.ReadInputAndChangeCameraSettings();
-                        break;
-                    }
-
-                    case ControlModeEnum.Car: {
-                        bool switchedTracks = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
-                        if (switchedTracks) {
-                            this.InitializeTrack();
-                        } else {
-                            bool switchedCars = this.CarSwitcher.ReadInputAndSwitchCar();
-                            if (!switchedCars) {
-                                this.CarDebugMover.ReadInputAndMoveCar();
-                            }
+                case ControlModeEnum.Camera:
+                    this.CameraController.ReadInputAndChangeCameraSettings();
+                    break;
+                case ControlModeEnum.Car:
+                    bool switchedTracks = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
+                    if (switchedTracks) {
+                        this.InitializeTrack();
+                    } else {
+                        bool switchedCars = this.CarSwitcher.ReadInputAndSwitchCar();
+                        if (!switchedCars) {
+                            this.CarDebugMover.ReadInputAndMoveCar();
                         }
-                        break;
                     }
-
-                    default: {
-                        throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.ControlMode}'");
-                    }
+                    break;
+                default:
+                    throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.ControlMode}'");
                 }
 
                 this.CameraController.UpdateCameraPosition();

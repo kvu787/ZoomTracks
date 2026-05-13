@@ -42,7 +42,7 @@ csharp_new_line_between_query_expression_clauses = false
 
 # IDE0055: C# formatting options, Indentation options
 csharp_indent_case_contents = true
-csharp_indent_switch_labels = true
+csharp_indent_switch_labels = false
 csharp_indent_case_contents_when_block = false
 
 # IDE0055: C# formatting options, Using directive options
