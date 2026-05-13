@@ -18,7 +18,7 @@ namespace ZoomTracks {
         private CarControlModeSwitcher CarControlModeSwitcher { get; set; }
         private TrackObjects TrackObjects { get; set; }
         private CarSwitcher CarSwitcher { get; set; }
-        private CarDebugMover CarDebugMover { get; set; }
+        private CarState CarState { get; set; }
         private CameraController CameraController { get; set; }
         private UiManager UiManager { get; set; }
 
@@ -80,7 +80,7 @@ namespace ZoomTracks {
                                 // TODO
                                 break;
                             case CarControlModeEnum.Debug:
-                                this.CarDebugMover.ReadInputAndMoveCar();
+                                this.CarState.ReadInputAndUpdateDebug();
                                 break;
                             default:
                                 throw new Exception($"Unknown CarControlMode='{this.CarControlModeSwitcher.Mode}'");
@@ -92,6 +92,7 @@ namespace ZoomTracks {
                     throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.Mode}'");
                 }
 
+                this.CarState.ApplyToGameObject(this.CarSwitcher.CurrentCarGameObject);
                 this.CameraController.UpdateCameraPosition();
                 this.UiManager.Update();
 
@@ -103,9 +104,9 @@ namespace ZoomTracks {
             Debug.Log("Initialize track...");
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.CarControlModeSwitcher = new CarControlModeSwitcher(this.InputManager);
+            this.CarState = new CarState(this.InputManager);
             this.TrackObjects = new TrackObjects();
-            this.CarSwitcher = new CarSwitcher(this.InputManager, this.TrackSwitcher.CurrentTrackScene, this.TrackObjects.PlaceholderCar.transform);
-            this.CarDebugMover = new CarDebugMover(this.InputManager, this.CarSwitcher);
+            this.CarSwitcher = new CarSwitcher(this.InputManager, this.TrackSwitcher.CurrentTrackScene, this.TrackObjects.PlaceholderCar.transform, this.CarState);
             this.CameraController = new CameraController(this.InputManager, this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
             Debug.Log("...done");

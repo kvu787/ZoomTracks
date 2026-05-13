@@ -1,7 +1,6 @@
-using UnityEngine;
-
 namespace ZoomTracks {
     public static class CarPhysics {
+        /*
         public static CarState CreateNewCarState(GameObject placeholderCar) {
             return new CarState {
                 Position = placeholderCar.transform.position,
@@ -75,5 +74,6 @@ namespace ZoomTracks {
         public static void WriteCarStateToCarObject(CarState carState, GameObject car) {
             car.transform.SetPositionAndRotation(carState.Position, carState.Rotation);
         }
+        */
     }
 }
