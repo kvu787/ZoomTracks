@@ -17,7 +17,7 @@ namespace ZoomTracks {
 
         public void Update() {
             this.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {this.CameraController.FollowsCarLocation}";
-            this.ControlModeLabel.text = $"Control mode: {this.ControlModeSwitcher.ControlMode}";
+            this.ControlModeLabel.text = $"Control mode: {this.ControlModeSwitcher.Mode}";
         }
     }
 }

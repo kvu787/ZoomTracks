@@ -9,17 +9,17 @@ namespace ZoomTracks {
 
         public CarControlModeSwitcher(InputManager inputManager) {
             this.InputManager = inputManager;
-            this.CarControlMode = CarControlModeEnum.Debug;
+            this.Mode = CarControlModeEnum.Debug;
         }
 
-        public CarControlModeEnum CarControlMode { get; private set; }
+        public CarControlModeEnum Mode { get; private set; }
 
-        public void ReadInputAndToggleControlMode() {
+        public void ReadInputAndToggleMode() {
             if (this.InputManager.Keyboard?.tabKey.wasPressedThisFrame is true || this.InputManager.Gamepad?.startButton.wasPressedThisFrame is true) {
-                if (this.CarControlMode == CarControlModeEnum.Standard) {
-                    this.CarControlMode = CarControlModeEnum.Debug;
-                } else if (this.CarControlMode == CarControlModeEnum.Debug) {
-                    this.CarControlMode = CarControlModeEnum.Standard;
+                if (this.Mode == CarControlModeEnum.Standard) {
+                    this.Mode = CarControlModeEnum.Debug;
+                } else if (this.Mode == CarControlModeEnum.Debug) {
+                    this.Mode = CarControlModeEnum.Standard;
                 }
             }
         }

@@ -61,10 +61,10 @@ namespace ZoomTracks {
             while (true) {
                 this.InputManager.UpdateBeforeAll();
 
-                this.ControlModeSwitcher.ReadInputAndToggleControlMode();
-                this.CarControlModeSwitcher.ReadInputAndToggleControlMode();
+                this.ControlModeSwitcher.ReadInputAndToggleMode();
+                this.CarControlModeSwitcher.ReadInputAndToggleMode();
 
-                switch (this.ControlModeSwitcher.ControlMode) {
+                switch (this.ControlModeSwitcher.Mode) {
                 case ControlModeEnum.Camera:
                     this.CameraController.ReadInputAndChangeCameraSettings();
                     break;
@@ -75,7 +75,7 @@ namespace ZoomTracks {
                     } else {
                         bool switchedCars = this.CarSwitcher.ReadInputAndSwitchCar();
                         if (!switchedCars) {
-                            switch (this.CarControlModeSwitcher.CarControlMode) {
+                            switch (this.CarControlModeSwitcher.Mode) {
                             case CarControlModeEnum.Standard:
                                 // TODO
                                 break;
@@ -83,13 +83,13 @@ namespace ZoomTracks {
                                 this.CarDebugMover.ReadInputAndMoveCar();
                                 break;
                             default:
-                                throw new Exception($"Unknown CarControlMode='{this.CarControlModeSwitcher.CarControlMode}'");
+                                throw new Exception($"Unknown CarControlMode='{this.CarControlModeSwitcher.Mode}'");
                             }
                         }
                     }
                     break;
                 default:
-                    throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.ControlMode}'");
+                    throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.Mode}'");
                 }
 
                 this.CameraController.UpdateCameraPosition();
