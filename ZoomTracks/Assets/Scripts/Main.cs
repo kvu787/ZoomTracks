@@ -102,10 +102,7 @@ namespace ZoomTracks {
                             if (!this.InCollisionTimeout()) {
                                 switch (carControlMode) {
                                 case CarControlModeEnum.Standard:
-                                    Gamepad gamepad = this.InputManager.Gamepad;
-                                    if (gamepad != null) {
-                                        this.CarState.ReadInputAndUpdateState_Standard();
-                                    }
+                                    this.CarState.ReadInputAndUpdateState_Standard();
                                     break;
                                 case CarControlModeEnum.Debug:
                                     this.CarState.ReadInputAndUpdateState_Debug();
