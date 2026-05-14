@@ -79,11 +79,9 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 this.InputManager.UpdateInputs();
-
                 if (this.CollisionManager.ResetCarIfColliding()) {
                     this.LatestCollisionTime = DateTime.Now;
                 }
-
                 ControlModeEnum controlMode = this.ControlModeSwitcher.ReadInputAndToggleMode();
                 switch (controlMode) {
                 case ControlModeEnum.Camera:
@@ -93,23 +91,21 @@ namespace ZoomTracks {
                 case ControlModeEnum.Car:
                     if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                         this.InitializeTrack();
-                    } else {
-                        CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
-                        if (this.CarSwitcher.ReadInputAndSwitchCar()) {
-                            this.CarState.Reset();
-                        } else {
-                            if (!this.InCollisionTimeout()) {
-                                switch (carControlMode) {
-                                case CarControlModeEnum.Standard:
-                                    this.CarState.ReadInputAndUpdateState_Standard();
-                                    break;
-                                case CarControlModeEnum.Debug:
-                                    this.CarState.ReadInputAndUpdateState_Debug();
-                                    break;
-                                default:
-                                    throw new Exception($"Unknown CarControlMode='{carControlMode}'");
-                                }
-                            }
+                    }
+                    CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
+                    if (this.CarSwitcher.ReadInputAndSwitchCar()) {
+                        this.CarState.Reset();
+                    }
+                    if (!this.InCollisionTimeout()) {
+                        switch (carControlMode) {
+                        case CarControlModeEnum.Standard:
+                            this.CarState.ReadInputAndUpdateState_Standard();
+                            break;
+                        case CarControlModeEnum.Debug:
+                            this.CarState.ReadInputAndUpdateState_Debug();
+                            break;
+                        default:
+                            throw new Exception($"Unknown CarControlMode='{carControlMode}'");
                         }
                     }
                     break;
