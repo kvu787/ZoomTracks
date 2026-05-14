@@ -4,7 +4,7 @@
         {
             "GameObjectName": "SlopeCarGreen",
             "Dynamic": {
-                "VelocityLimiter": 75.0,
+                "VelocityLimiter": 50.0,
                 "AccelerationMap": {
                     "Forward": 150.0,
                     "Reverse": 300.0,
