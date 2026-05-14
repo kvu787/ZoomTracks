@@ -24,12 +24,12 @@ namespace ZoomTracks {
 
         public void ReadInputAndToggleFocus() {
             // A: Toggle follow
-            if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame is true) {
+            if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true) {
                 this.FollowsCarLocation = !this.FollowsCarLocation;
             }
 
             // Left shoulder: Toggle follow
-            if (this.InputManager.Gamepad?.leftShoulder.wasPressedThisFrame is true) {
+            if (this.InputManager.Gamepad?.leftShoulder.wasPressedThisFrame == true) {
                 this.FollowsCarLocation = !this.FollowsCarLocation;
             }
         }

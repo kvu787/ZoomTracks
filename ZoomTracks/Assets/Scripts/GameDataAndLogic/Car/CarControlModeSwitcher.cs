@@ -15,7 +15,7 @@ namespace ZoomTracks {
         private CarControlModeEnum Mode { get; set; }
 
         public CarControlModeEnum ReadInputAndToggleMode() {
-            if (this.InputManager.Keyboard?.tabKey.wasPressedThisFrame is true || this.InputManager.Gamepad?.startButton.wasPressedThisFrame is true) {
+            if (this.InputManager.Keyboard?.tabKey.wasPressedThisFrame == true || this.InputManager.Gamepad?.startButton.wasPressedThisFrame == true) {
                 if (this.Mode == CarControlModeEnum.Standard) {
                     this.Mode = CarControlModeEnum.Debug;
                 } else if (this.Mode == CarControlModeEnum.Debug) {
