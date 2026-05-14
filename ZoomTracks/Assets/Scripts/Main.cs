@@ -62,6 +62,20 @@ namespace ZoomTracks {
             await this.UpdateLoopAsync();
         }
 
+        private void InitializeTrack() {
+            Debug.Log("Initialize track...");
+            this.TrackObjects = new TrackObjects();
+            this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
+            this.CarControlModeSwitcher = new CarControlModeSwitcher(this.InputManager);
+            this.CameraController = new CameraController(this.InputManager);
+            this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.InputManager);
+            this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
+            this.CameraFocuser = new CameraFocuser(this.CarState, this.InputManager);
+            this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
+            this.UiManager = new UiManager(this.CameraFocuser, this.ControlModeSwitcher);
+            Debug.Log("...done");
+        }
+
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
@@ -119,20 +133,6 @@ namespace ZoomTracks {
 
         private bool InCollisionTimeout() {
             return (DateTime.Now - this.LatestCollisionTime) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
-        }
-
-        private void InitializeTrack() {
-            Debug.Log("Initialize track...");
-            this.TrackObjects = new TrackObjects();
-            this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
-            this.CarControlModeSwitcher = new CarControlModeSwitcher(this.InputManager);
-            this.CameraController = new CameraController(this.InputManager);
-            this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.InputManager);
-            this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
-            this.CameraFocuser = new CameraFocuser(this.CarState, this.InputManager);
-            this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
-            this.UiManager = new UiManager(this.CameraFocuser, this.ControlModeSwitcher);
-            Debug.Log("...done");
         }
     }
 }
