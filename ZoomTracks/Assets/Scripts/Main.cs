@@ -67,7 +67,6 @@ namespace ZoomTracks {
                 this.InputManager.UpdateBeforeAll();
 
                 this.ControlModeSwitcher.ReadInputAndToggleMode();
-                this.CarControlModeSwitcher.ReadInputAndToggleMode();
 
                 foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
                     if (CollisionLogic.IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
@@ -86,6 +85,7 @@ namespace ZoomTracks {
                     if (switchedTracks) {
                         this.InitializeTrack();
                     } else {
+                        this.CarControlModeSwitcher.ReadInputAndToggleMode();
                         bool switchedCars = this.CarSwitcher.ReadInputAndSwitchCar();
                         if (switchedCars) {
                             this.CarState.Reset();
