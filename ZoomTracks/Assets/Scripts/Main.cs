@@ -23,7 +23,7 @@ namespace ZoomTracks {
         private CameraController CameraController { get; set; }
         private CarState CarState { get; set; }
         private CollisionManager CollisionManager { get; set; }
-        private CameraFocuser CameraFocuser { get; set; }
+        private CameraPivotManager CameraPivotManager { get; set; }
         private UiManager UiManager { get; set; }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
@@ -69,9 +69,9 @@ namespace ZoomTracks {
             this.CameraController = new CameraController(this.InputManager);
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.InputManager);
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
-            this.CameraFocuser = new CameraFocuser(this.CarState, this.InputManager);
+            this.CameraPivotManager = new CameraPivotManager(this.CarState, this.InputManager);
             this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
-            this.UiManager = new UiManager(this.CameraFocuser, this.ControlModeSwitcher, this.CarControlModeSwitcher);
+            this.UiManager = new UiManager(this.CameraPivotManager, this.ControlModeSwitcher, this.CarControlModeSwitcher);
             Debug.Log("...done");
         }
 
@@ -89,7 +89,7 @@ namespace ZoomTracks {
                 switch (controlMode) {
                 case ControlModeEnum.Camera:
                     this.CameraController.ReadInputAndChangeCameraSettings();
-                    this.CameraFocuser.ReadInputAndToggleFocus();
+                    this.CameraPivotManager.ReadInputAndToggle();
                     break;
                 case ControlModeEnum.Car:
                     CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
@@ -115,7 +115,7 @@ namespace ZoomTracks {
 
                 this.CarState.ApplyVelocityToPositionAndRotation();
                 this.CarState.ApplyStateToGameObject();
-                this.CameraFocuser.UpdateCameraFocusPoint();
+                this.CameraPivotManager.UpdateCameraPivot();
                 this.UiManager.UpdateUi();
 
                 await Awaitable.NextFrameAsync();
