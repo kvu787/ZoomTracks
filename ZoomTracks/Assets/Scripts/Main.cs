@@ -79,17 +79,14 @@ namespace ZoomTracks {
                     this.CameraFocuser.ReadInputAndToggleFocus();
                     break;
                 case ControlModeEnum.Car:
-                    bool switchedTracks = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
-                    if (switchedTracks) {
+                    if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                         this.InitializeTrack();
                     } else {
                         this.CarControlModeSwitcher.ReadInputAndToggleMode();
-                        bool switchedCars = this.CarSwitcher.ReadInputAndSwitchCar();
-                        if (switchedCars) {
+                        if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                             this.CarState.Reset();
                         } else {
-                            bool inCollisionTimeout = (DateTime.Now - this.LatestCollisionTime) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
-                            if (!inCollisionTimeout) {
+                            if (!this.InCollisionTimeout()) {
                                 switch (this.CarControlModeSwitcher.Mode) {
                                 case CarControlModeEnum.Standard:
                                     Gamepad gamepad = this.InputManager.Gamepad;
@@ -118,6 +115,10 @@ namespace ZoomTracks {
 
                 await Awaitable.NextFrameAsync();
             }
+        }
+
+        private bool InCollisionTimeout() {
+            return (DateTime.Now - this.LatestCollisionTime) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
         }
 
         private void InitializeTrack() {
