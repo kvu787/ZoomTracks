@@ -1,22 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     public static class CollisionLogic {
-        private static IEnumerable<Collider> NonCarColliders;
-
-        public static void Initialize() {
-            throw new NotImplementedException();
-            List<GameObject> barriersAndCones = new();
-            barriersAndCones.AddRange(GameObject.FindGameObjectsWithTag("todo"));
-            barriersAndCones.AddRange(GameObject.FindGameObjectsWithTag("todo"));
-            NonCarColliders = barriersAndCones.Select(x => x.GetComponent<Collider>());
-            Assert.IsFalse(NonCarColliders.Any(x => x == null));
-        }
-
         public static bool IsColliding(Collider a, Collider b) {
             // I use Physics.ComputePenetration because I was having issues with the more commonly used Collider.OnTriggerEnter.
             // When the car collided with a barrier right next to its reset position and the reset timeout was too low, OnTriggerEnter
@@ -27,15 +12,6 @@ namespace ZoomTracks {
                 a, a.transform.position, a.transform.rotation,
                 b, b.transform.position, b.transform.rotation,
                 out _, out _);
-        }
-
-        public static bool HasCarCollided(Collider carCollider) {
-            foreach (Collider collider in NonCarColliders) {
-                if (IsColliding(carCollider, collider)) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }
