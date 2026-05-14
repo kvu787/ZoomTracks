@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class OpenScenesTool {
     [MenuItem(itemName: "Tools/Open scenes for full game", isValidateFunction: false, priority: 1)]
@@ -50,11 +51,17 @@ public static class OpenScenesTool {
     [MenuItem(itemName: "Tools/Setup track scene", isValidateFunction: false, priority: 4)]
     public static void SetupTrackSceneFromFbx() {
         GameObject[] allObjects = Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        if (allObjects.Length == 0) {
+            throw new System.Exception("No objects found in scene");
+        }
+        Scene scene = allObjects[0].scene;
         foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
             MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
         }
         foreach (GameObject gameObject in allObjects.Where(obj => BoxColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
             _ = gameObject.AddComponent<BoxCollider>();
         }
+        _ = EditorSceneManager.MarkSceneDirty(scene);
+        _ = EditorSceneManager.SaveScene(scene);
     }
 }
