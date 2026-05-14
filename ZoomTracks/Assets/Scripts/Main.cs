@@ -85,8 +85,8 @@ namespace ZoomTracks {
                     this.LatestCollisionTime = DateTime.Now;
                 }
 
-                this.ControlModeSwitcher.ReadInputAndToggleMode();
-                switch (this.ControlModeSwitcher.Mode) {
+                ControlModeEnum controlMode = this.ControlModeSwitcher.ReadInputAndToggleMode();
+                switch (controlMode) {
                 case ControlModeEnum.Camera:
                     this.CameraController.ReadInputAndChangeCameraSettings();
                     this.CameraFocuser.ReadInputAndToggleFocus();
@@ -95,12 +95,12 @@ namespace ZoomTracks {
                     if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                         this.InitializeTrack();
                     } else {
-                        this.CarControlModeSwitcher.ReadInputAndToggleMode();
+                        CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
                         if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                             this.CarState.Reset();
                         } else {
                             if (!this.InCollisionTimeout()) {
-                                switch (this.CarControlModeSwitcher.Mode) {
+                                switch (carControlMode) {
                                 case CarControlModeEnum.Standard:
                                     Gamepad gamepad = this.InputManager.Gamepad;
                                     if (gamepad != null) {
@@ -111,14 +111,14 @@ namespace ZoomTracks {
                                     this.CarState.ReadInputAndUpdateState_Debug();
                                     break;
                                 default:
-                                    throw new Exception($"Unknown CarControlMode='{this.CarControlModeSwitcher.Mode}'");
+                                    throw new Exception($"Unknown CarControlMode='{carControlMode}'");
                                 }
                             }
                         }
                     }
                     break;
                 default:
-                    throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.Mode}'");
+                    throw new Exception($"Unknown ControlMode='{controlMode}'");
                 }
 
                 this.CarState.ApplyVelocityToPositionAndRotation();
