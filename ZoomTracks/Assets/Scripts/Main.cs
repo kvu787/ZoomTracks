@@ -14,7 +14,7 @@ namespace ZoomTracks {
         };
         private const double CollisionTimeoutSeconds = 0.35;
 
-        private DateTime CollisionTimeStart { get; set; }
+        private DateTime LatestCollisionTime { get; set; }
         private InputManager InputManager { get; set; }
         private TrackSwitcher TrackSwitcher { get; set; }
         private ControlModeSwitcher ControlModeSwitcher { get; set; }
@@ -23,6 +23,7 @@ namespace ZoomTracks {
         private CarSwitcher CarSwitcher { get; set; }
         private CameraController CameraController { get; set; }
         private CarState CarState { get; set; }
+        private CollisionManager CollisionManager { get; set; }
         private CameraFocuser CameraFocuser { get; set; }
         private UiManager UiManager { get; set; }
 
@@ -43,7 +44,7 @@ namespace ZoomTracks {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
 
-            this.CollisionTimeStart = DateTime.MinValue;
+            this.LatestCollisionTime = DateTime.MinValue;
             this.InputManager = new InputManager();
 
             Debug.Log($"Load UI scene...");
@@ -68,11 +69,8 @@ namespace ZoomTracks {
 
                 this.ControlModeSwitcher.ReadInputAndToggleMode();
 
-                foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
-                    if (CollisionLogic.IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
-                        this.CarState.Reset();
-                        this.CollisionTimeStart = DateTime.Now;
-                    }
+                if (this.CollisionManager.ResetCarIfColliding()) {
+                    this.LatestCollisionTime = DateTime.Now;
                 }
 
                 switch (this.ControlModeSwitcher.Mode) {
@@ -90,8 +88,8 @@ namespace ZoomTracks {
                         if (switchedCars) {
                             this.CarState.Reset();
                         } else {
-                            bool isInCollisionTimeout = (DateTime.Now - this.CollisionTimeStart) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
-                            if (!isInCollisionTimeout) {
+                            bool inCollisionTimeout = (DateTime.Now - this.LatestCollisionTime) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
+                            if (!inCollisionTimeout) {
                                 switch (this.CarControlModeSwitcher.Mode) {
                                 case CarControlModeEnum.Standard:
                                     Gamepad gamepad = this.InputManager.Gamepad;
@@ -131,6 +129,7 @@ namespace ZoomTracks {
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.InputManager);
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
             this.CameraFocuser = new CameraFocuser(this.CarState, this.InputManager);
+            this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
             this.UiManager = new UiManager(this.CameraFocuser, this.ControlModeSwitcher);
             Debug.Log("...done");
         }
