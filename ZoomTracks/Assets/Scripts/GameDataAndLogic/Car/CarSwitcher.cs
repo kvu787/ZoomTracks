@@ -12,10 +12,11 @@ namespace ZoomTracks {
         private InputManager InputManager { get; }
         private int CurrentCarIndex { get; set; }
         private List<Car> Cars { get; }
-        private Transform PlaceholderCarTransform { get; }
-        private CarState CarState { get; }
 
-        public CarSwitcher(InputManager inputManager, Scene currentTrackScene, Transform placeholderCarTransform, CarState carState) {
+        private Car CurrentCar => this.Cars[this.CurrentCarIndex];
+        private GameObject CurrentCarGameObject => this.CurrentCar.GameObject;
+
+        public CarSwitcher(Scene currentTrackScene, InputManager inputManager) {
             string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
             Assert.IsTrue(File.Exists(filePath), $"Garage JSON file does not exist at {filePath}");
             string fileContents = File.ReadAllText(filePath); // TODO: Use async file read
@@ -24,8 +25,6 @@ namespace ZoomTracks {
             this.InputManager = inputManager;
             this.CurrentCarIndex = garage.StartCarIndex;
             this.Cars = garage.Cars;
-            this.PlaceholderCarTransform = placeholderCarTransform;
-            this.CarState = carState;
 
             foreach (Car car in this.Cars) {
                 Assert.IsTrue(!string.IsNullOrEmpty(car.GameObjectName));
@@ -34,19 +33,14 @@ namespace ZoomTracks {
 
                 car.GameObject = Object.Instantiate(original: decorativeGameObject, parameters: new InstantiateParameters() { scene = currentTrackScene });
                 car.GameObject.SetActive(false);
-
-                //this.Collider = this.GameObject.GetComponentInChildren<Collider>();
-                //Assert.IsNotNull(this.Collider);
             }
 
-            this.InitializeCurrentCar();
+            this.CurrentCarGameObject.SetActive(true);
         }
 
         public BoxCollider CurrentCarCollider => this.CurrentCarGameObject.GetComponent<BoxCollider>();
-
-        public CarDynamic CurrentCarDynamic => this.Cars[this.CurrentCarIndex].Dynamic;
-
-        public GameObject CurrentCarGameObject => this.Cars[this.CurrentCarIndex].GameObject;
+        public Transform CurrentCarTransform => this.CurrentCarGameObject.transform;
+        public CarDynamic CurrentCarDynamic => this.CurrentCar.Dynamic;
 
         public bool ReadInputAndSwitchCar() {
             bool isPrevCar = false;
@@ -71,14 +65,9 @@ namespace ZoomTracks {
                 } else /* if (isPrevCar) */ {
                     this.CurrentCarIndex = this.CurrentCarIndex.CyclePrev(this.Cars.Count);
                 }
-                this.InitializeCurrentCar();
+                this.CurrentCarGameObject.SetActive(true);
                 return true;
             }
-        }
-
-        private void InitializeCurrentCar() {
-            this.CurrentCarGameObject.SetActive(true);
-            this.CarState.Reset(this.PlaceholderCarTransform);
         }
     }
 }

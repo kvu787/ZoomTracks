@@ -13,26 +13,30 @@ namespace ZoomTracks {
         });
 
         public TrackObjects() {
-            this.PlaceholderCar = GameObject.Find("SlopeCarPlaceholder");
-            this.TireGroundContactPoints = new Transform[] {
-                this.PlaceholderCar.transform.Find("CarFL"),
-                this.PlaceholderCar.transform.Find("CarFR"),
-                this.PlaceholderCar.transform.Find("CarRL"),
-                this.PlaceholderCar.transform.Find("CarRR"),
-            };
-            this.PlaceholderCar.SetActive(false);
+            GameObject placeholderCar = GameObject.Find("SlopeCarPlaceholder");
+            Assert.IsNotNull(placeholderCar);
+            placeholderCar.SetActive(false);
+            this.PlaceholderCarTransform = placeholderCar.transform;
 
-            this.Obstacles =
+            this.TireGroundContactPoints = new Transform[] {
+                placeholderCar.transform.Find("CarFL"),
+                placeholderCar.transform.Find("CarFR"),
+                placeholderCar.transform.Find("CarRL"),
+                placeholderCar.transform.Find("CarRR"),
+            };
+
+            IReadOnlyCollection<BoxCollider> obstacles =
                 Object
                     .FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                     .Where(obj => ObstaclePrefixes.Any(prefix => obj.name.StartsWith(prefix)))
                     .Select(obj => obj.GetComponent<BoxCollider>())
                     .ToList()
                     .AsReadOnly();
-            Assert.IsFalse(this.Obstacles.Any(x => x == null));
+            Assert.IsFalse(obstacles.Any(x => x == null));
+            this.Obstacles = obstacles;
         }
 
-        public GameObject PlaceholderCar { get; }
+        public Transform PlaceholderCarTransform { get; }
         public Transform[] TireGroundContactPoints { get; }
         public IReadOnlyCollection<BoxCollider> Obstacles { get; }
     }

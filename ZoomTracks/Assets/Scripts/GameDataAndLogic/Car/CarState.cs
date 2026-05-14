@@ -6,12 +6,15 @@ namespace ZoomTracks {
         private const float CarForwardBackwardSpeed = 150;
         private const float CarRotateSpeed = 540;
 
+        private Transform PlaceholderCarTransform { get; }
+        private CarSwitcher CarSwitcher { get; }
+        private CameraController CameraController { get; }
         private InputManager InputManager { get; }
 
         /// <summary>
         /// World space
         /// </summary>
-        private Vector3 Position { get; set; }
+        public Vector3 Position { get; private set; }
 
         /// <summary>
         /// World space
@@ -28,13 +31,27 @@ namespace ZoomTracks {
         /// </summary>
         private Vector3 Velocity { get; set; }
 
-        public CarState(InputManager inputManager) {
+        public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
+            this.PlaceholderCarTransform = placeholderCarTransform;
+            this.CarSwitcher = carSwitcher;
+            this.CameraController = cameraController;
             this.InputManager = inputManager;
+            this.Reset();
         }
 
         // cameraTransformEulerAngleY must be in world space
         // cameraTransformEulerAngleY = GameObject.Find("Camera").GetComponent<Camera>().transform.eulerAngles.y
-        public void ReadInputAndUpdateStandard(CarDynamic carDynamic, float brakeInput, Vector2 accelerationInput, float cameraTransformEulerAngleY) {
+        public void ReadInputAndUpdateStandard() {
+            Gamepad gamepad = this.InputManager.Gamepad;
+            if (gamepad == null) {
+                return;
+            }
+
+            float brakeInput = 0;
+            Vector2 accelerationInput = gamepad.leftStick.ReadValue();
+            CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
+            float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
+
             if (brakeInput == 0) {
                 if (accelerationInput.magnitude > 0) {
                     // Map XY input onto XZ world plane
@@ -130,13 +147,13 @@ namespace ZoomTracks {
             this.Rotation += rotationDelta;
         }
 
-        public void ApplyToGameObject(GameObject gameObject) {
-            gameObject.transform.SetPositionAndRotation(this.Position, this.RotationQuaternion);
+        public void ApplyToGameObject() {
+            this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, this.RotationQuaternion);
         }
 
-        public void Reset(Transform placeholderCarTransform) {
-            this.Position = placeholderCarTransform.position;
-            this.Rotation = placeholderCarTransform.rotation.eulerAngles.y;
+        public void Reset() {
+            this.Position = this.PlaceholderCarTransform.position;
+            this.Rotation = this.PlaceholderCarTransform.rotation.eulerAngles.y;
             this.Velocity = Vector3.zero;
         }
     }

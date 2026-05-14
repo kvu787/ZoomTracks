@@ -21,8 +21,9 @@ namespace ZoomTracks {
         private CarControlModeSwitcher CarControlModeSwitcher { get; set; }
         private TrackObjects TrackObjects { get; set; }
         private CarSwitcher CarSwitcher { get; set; }
-        private CarState CarState { get; set; }
         private CameraController CameraController { get; set; }
+        private CarState CarState { get; set; }
+        private CameraFocuser CameraFocuser { get; set; }
         private UiManager UiManager { get; set; }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Awake.html
@@ -70,7 +71,7 @@ namespace ZoomTracks {
 
                 foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
                     if (CollisionLogic.IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
-                        this.CarState.Reset(this.TrackObjects.PlaceholderCar.transform);
+                        this.CarState.Reset();
                         this.CollisionTimeStart = DateTime.Now;
                     }
                 }
@@ -78,6 +79,7 @@ namespace ZoomTracks {
                 switch (this.ControlModeSwitcher.Mode) {
                 case ControlModeEnum.Camera:
                     this.CameraController.ReadInputAndChangeCameraSettings();
+                    this.CameraFocuser.ReadInputAndToggleFocus();
                     break;
                 case ControlModeEnum.Car:
                     bool switchedTracks = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
@@ -85,24 +87,24 @@ namespace ZoomTracks {
                         this.InitializeTrack();
                     } else {
                         bool switchedCars = this.CarSwitcher.ReadInputAndSwitchCar();
-                        bool isInCollisionTimeout = (DateTime.Now - this.CollisionTimeStart) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
-                        if (!switchedCars && !isInCollisionTimeout) {
-                            switch (this.CarControlModeSwitcher.Mode) {
-                            case CarControlModeEnum.Standard:
-                                Gamepad gamepad = this.InputManager.Gamepad;
-                                if (gamepad != null) {
-                                    this.CarState.ReadInputAndUpdateStandard(
-                                        carDynamic: this.CarSwitcher.CurrentCarDynamic,
-                                        brakeInput: 0,
-                                        accelerationInput: gamepad.leftStick.ReadValue(),
-                                        cameraTransformEulerAngleY: this.CameraController.CameraYawWorldSpace);
+                        if (switchedCars) {
+                            this.CarState.Reset();
+                        } else {
+                            bool isInCollisionTimeout = (DateTime.Now - this.CollisionTimeStart) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
+                            if (!isInCollisionTimeout) {
+                                switch (this.CarControlModeSwitcher.Mode) {
+                                case CarControlModeEnum.Standard:
+                                    Gamepad gamepad = this.InputManager.Gamepad;
+                                    if (gamepad != null) {
+                                        this.CarState.ReadInputAndUpdateStandard();
+                                    }
+                                    break;
+                                case CarControlModeEnum.Debug:
+                                    this.CarState.ReadInputAndUpdateDebug();
+                                    break;
+                                default:
+                                    throw new Exception($"Unknown CarControlMode='{this.CarControlModeSwitcher.Mode}'");
                                 }
-                                break;
-                            case CarControlModeEnum.Debug:
-                                this.CarState.ReadInputAndUpdateDebug();
-                                break;
-                            default:
-                                throw new Exception($"Unknown CarControlMode='{this.CarControlModeSwitcher.Mode}'");
                             }
                         }
                     }
@@ -112,8 +114,8 @@ namespace ZoomTracks {
                 }
 
                 this.CarState.ApplyVelocityToPositionAndRotation();
-                this.CarState.ApplyToGameObject(this.CarSwitcher.CurrentCarGameObject);
-                this.CameraController.UpdateCameraPosition();
+                this.CarState.ApplyToGameObject();
+                this.CameraFocuser.UpdateCameraPosition();
                 this.UiManager.Update();
 
                 await Awaitable.NextFrameAsync();
@@ -122,13 +124,14 @@ namespace ZoomTracks {
 
         private void InitializeTrack() {
             Debug.Log("Initialize track...");
+            this.TrackObjects = new TrackObjects();
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.CarControlModeSwitcher = new CarControlModeSwitcher(this.InputManager);
-            this.CarState = new CarState(this.InputManager);
-            this.TrackObjects = new TrackObjects();
-            this.CarSwitcher = new CarSwitcher(this.InputManager, this.TrackSwitcher.CurrentTrackScene, this.TrackObjects.PlaceholderCar.transform, this.CarState);
-            this.CameraController = new CameraController(this.InputManager, this.CarSwitcher);
-            this.UiManager = new UiManager(this.CameraController, this.ControlModeSwitcher);
+            this.CameraController = new CameraController(this.InputManager);
+            this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.InputManager);
+            this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
+            this.CameraFocuser = new CameraFocuser(this.CarState, this.InputManager);
+            this.UiManager = new UiManager(this.CameraFocuser, this.ControlModeSwitcher);
             Debug.Log("...done");
         }
     }

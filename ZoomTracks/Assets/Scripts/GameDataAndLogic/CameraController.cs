@@ -9,30 +9,21 @@ namespace ZoomTracks {
         private const float MinCameraOrthographicSize = 1;
         private const float MaxCameraOrthographicSize = 281.25f;
 
-        public bool FollowsCarLocation { get; private set; }
-
         private InputManager InputManager { get; }
-        private CarSwitcher CarSwitcher { get; }
-        private Transform CameraPanAndYaw { get; }
         private Transform CameraYawOffset { get; }
         private Transform CameraPanOffsetAndPitch { get; }
         private Camera Camera { get; }
 
-        private TransformStruct OriginalCameraPanAndYawTransform { get; }
         private float OriginalCameraOrthographicSize { get; }
 
-        public CameraController(InputManager inputManager, CarSwitcher carSwitcher) {
-            this.FollowsCarLocation = false;
+        public CameraController(InputManager inputManager) {
             this.InputManager = inputManager;
-            this.CarSwitcher = carSwitcher;
 
-            this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
             this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
             this.ValidateCameraParameters();
 
-            this.OriginalCameraPanAndYawTransform = new TransformStruct(this.CameraPanAndYaw.transform);
             this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
         }
 
@@ -50,11 +41,6 @@ namespace ZoomTracks {
 
                 // W/R: Zoom
                 this.Zoom(keyboard.wKey.ReadValue(), keyboard.rKey.ReadValue());
-
-                // A: Toggle follow
-                if (keyboard.aKey.wasPressedThisFrame) {
-                    this.ToggleFollowLocation();
-                }
 
                 // Z: Reset pan offset
                 if (keyboard.zKey.wasPressedThisFrame) {
@@ -76,11 +62,6 @@ namespace ZoomTracks {
                 // Left/right trigger: Zoom
                 this.Zoom(gamepad.leftTrigger.ReadValue(), gamepad.rightTrigger.ReadValue());
 
-                // Left shoulder: Toggle follow
-                if (gamepad.leftShoulder.wasPressedThisFrame) {
-                    this.ToggleFollowLocation();
-                }
-
                 // D-pad up: Reset pan offset
                 if (gamepad.dpad.up.wasPressedThisFrame) {
                     this.ResetPanOffset();
@@ -91,11 +72,6 @@ namespace ZoomTracks {
                     this.ResetZoom();
                 }
             }
-        }
-
-        public void UpdateCameraPosition() {
-            Vector3 newPosition = this.FollowsCarLocation ? this.CarSwitcher.CurrentCarGameObject.transform.position : this.OriginalCameraPanAndYawTransform.Position;
-            this.CameraPanAndYaw.transform.position = newPosition;
         }
 
         private void PanOffset(Vector2 vector2) {
@@ -115,16 +91,7 @@ namespace ZoomTracks {
             this.Camera.orthographicSize = this.OriginalCameraOrthographicSize;
         }
 
-        private void ToggleFollowLocation() {
-            this.FollowsCarLocation = !this.FollowsCarLocation;
-        }
-
         private void ValidateCameraParameters() {
-            Assert.IsTrue(this.CameraPanAndYaw.localPosition.y == 0);
-            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.x == 0);
-            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.z == 0);
-            Assert.IsTrue(this.CameraPanAndYaw.localScale == Vector3.one);
-
             Assert.IsTrue(this.CameraYawOffset.localPosition == Vector3.zero);
             Assert.IsTrue(this.CameraYawOffset.localEulerAngles == Vector3.zero);
             Assert.IsTrue(this.CameraYawOffset.localScale == Vector3.one);
