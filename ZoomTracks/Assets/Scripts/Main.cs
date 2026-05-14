@@ -105,6 +105,12 @@ namespace ZoomTracks {
                 this.CameraController.UpdateCameraPosition();
                 this.UiManager.Update();
 
+                foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
+                    if (CollisionLogic.HasCollided(this.CarSwitcher.CurrentCarCollider, obstacle)) {
+                        Debug.Log($"Car collided with {obstacle.name}");
+                    }
+                }
+
                 await Awaitable.NextFrameAsync();
             }
         }

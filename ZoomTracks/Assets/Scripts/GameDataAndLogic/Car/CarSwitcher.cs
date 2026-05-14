@@ -42,6 +42,8 @@ namespace ZoomTracks {
             this.InitializeCurrentCar();
         }
 
+        public BoxCollider CurrentCarCollider => this.CurrentCarGameObject.GetComponent<BoxCollider>();
+
         public CarDynamic CurrentCarDynamic => this.Cars[this.CurrentCarIndex].Dynamic;
 
         public GameObject CurrentCarGameObject => this.Cars[this.CurrentCarIndex].GameObject;
