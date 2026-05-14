@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -30,18 +31,20 @@ public static class OpenScenesTool {
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
 
-    private static readonly string[] MeshColliderPrefixes = {
+    private static readonly IReadOnlyList<string> MeshColliderPrefixes = new List<string>() {
         "Road",
         "Grass",
         "Gravel",
     };
 
-    private static readonly string[] MeshColliderConvexPrefixes = {
+    private static readonly IReadOnlyList<string> BoxColliderPrefixes = new List<string>() {
         "Barrier",
-        "Cone",
-        "Checkpoint",
+        "BigCone",
         "CheckeredLine",
+        "Checkpoint",
+        "Cone",
         "SlopeCar",
+        "VehicleRoad",
     };
 
     [MenuItem(itemName: "Tools/Setup track scene", isValidateFunction: false, priority: 4)]
@@ -50,9 +53,8 @@ public static class OpenScenesTool {
         foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
             MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
         }
-        foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderConvexPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
-            MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
-            meshCollider.convex = true;
+        foreach (GameObject gameObject in allObjects.Where(obj => BoxColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
+            _ = gameObject.AddComponent<BoxCollider>();
         }
     }
 }
