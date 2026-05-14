@@ -9,7 +9,7 @@ namespace ZoomTracks {
 
         public CarControlModeSwitcher(InputManager inputManager) {
             this.InputManager = inputManager;
-            this.Mode = CarControlModeEnum.Debug;
+            this.Mode = CarControlModeEnum.Standard;
         }
 
         public CarControlModeEnum Mode { get; private set; }
