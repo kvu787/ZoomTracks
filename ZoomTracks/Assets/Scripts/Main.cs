@@ -7,10 +7,10 @@ namespace ZoomTracks {
     public class Main : MonoBehaviour {
         private const string UiSceneName = "Ui";
         private const int InitialTrackSceneIndex = 1;
-        private static readonly IReadOnlyList<string> TrackSceneNames = new List<string>() {
+        private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
             "Track1",
             "Track2",
-        };
+        });
         private const double TimeoutDurationSeconds = 0.35;
 
         private DateTime TimeoutStart { get; set; }

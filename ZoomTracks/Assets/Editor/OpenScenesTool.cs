@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -32,13 +33,13 @@ public static class OpenScenesTool {
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
 
-    private static IReadOnlyList<string> MeshColliderPrefixes { get; } = System.Array.AsReadOnly(new[] {
+    private static IReadOnlyList<string> MeshColliderPrefixes { get; } = Array.AsReadOnly(new[] {
         "Road",
         "Grass",
         "Gravel",
     });
 
-    private static IReadOnlyList<string> BoxColliderPrefixes { get; } = System.Array.AsReadOnly(new[] {
+    private static IReadOnlyList<string> BoxColliderPrefixes { get; } = Array.AsReadOnly(new[] {
         "Barrier",
         "BigCone",
         "CheckeredLine",
@@ -50,9 +51,9 @@ public static class OpenScenesTool {
 
     [MenuItem(itemName: "Tools/Setup new track scene", isValidateFunction: false, priority: 4)]
     public static void SetupNewTrackScene() {
-        GameObject[] allObjects = Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (allObjects.Length == 0) {
-            throw new System.Exception("No objects found in scene");
+            throw new Exception("No objects found in scene");
         }
         Scene scene = allObjects[0].scene;
         foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
