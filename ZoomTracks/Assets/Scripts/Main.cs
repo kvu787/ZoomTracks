@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
 
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
@@ -75,12 +77,20 @@ namespace ZoomTracks {
             Debug.Log("...done");
         }
 
+        private static void ForceGarbageCollection() {
+            Assert.IsTrue(GarbageCollector.GCMode == GarbageCollector.Mode.Enabled);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+        }
+
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 this.InputManager.UpdateInputs();
                 if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                     this.InitializeTrack();
+                    ForceGarbageCollection();
                 }
                 if (this.CollisionManager.ResetCarIfColliding()) {
                     this.CarControlTimeoutStart = DateTime.Now;

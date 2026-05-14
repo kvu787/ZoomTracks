@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.Scripting;
 using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace ZoomTracks {
@@ -66,11 +63,6 @@ namespace ZoomTracks {
 
                 this.CurrentTrackSceneIndex = newTrackIndex;
                 this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackSceneIndex]);
-
-                Assert.IsTrue(GarbageCollector.GCMode == GarbageCollector.Mode.Enabled);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
 
                 return true;
             }
