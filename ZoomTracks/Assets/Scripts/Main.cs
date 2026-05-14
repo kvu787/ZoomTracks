@@ -65,6 +65,12 @@ namespace ZoomTracks {
                 this.ControlModeSwitcher.ReadInputAndToggleMode();
                 this.CarControlModeSwitcher.ReadInputAndToggleMode();
 
+                foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
+                    if (CollisionLogic.IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
+                        this.CarState.Reset(this.TrackObjects.PlaceholderCar.transform);
+                    }
+                }
+
                 switch (this.ControlModeSwitcher.Mode) {
                 case ControlModeEnum.Camera:
                     this.CameraController.ReadInputAndChangeCameraSettings();
@@ -104,12 +110,6 @@ namespace ZoomTracks {
                 this.CarState.ApplyToGameObject(this.CarSwitcher.CurrentCarGameObject);
                 this.CameraController.UpdateCameraPosition();
                 this.UiManager.Update();
-
-                foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
-                    if (CollisionLogic.IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
-                        Debug.Log($"Car is colliding with {obstacle.name}");
-                    }
-                }
 
                 await Awaitable.NextFrameAsync();
             }
