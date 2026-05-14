@@ -32,13 +32,13 @@ public static class OpenScenesTool {
         EditorSceneManager.RestoreSceneManagerSetup(setup);
     }
 
-    private static readonly IReadOnlyList<string> MeshColliderPrefixes = new List<string>() {
+    private static IReadOnlyList<string> MeshColliderPrefixes { get; } = System.Array.AsReadOnly(new[] {
         "Road",
         "Grass",
         "Gravel",
-    };
+    });
 
-    private static readonly IReadOnlyList<string> BoxColliderPrefixes = new List<string>() {
+    private static IReadOnlyList<string> BoxColliderPrefixes { get; } = System.Array.AsReadOnly(new[] {
         "Barrier",
         "BigCone",
         "CheckeredLine",
@@ -46,7 +46,7 @@ public static class OpenScenesTool {
         "Cone",
         "SlopeCar",
         "VehicleRoad",
-    };
+    });
 
     [MenuItem(itemName: "Tools/Setup new track scene", isValidateFunction: false, priority: 4)]
     public static void SetupNewTrackScene() {
