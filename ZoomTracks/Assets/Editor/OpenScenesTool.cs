@@ -48,8 +48,8 @@ public static class OpenScenesTool {
         "VehicleRoad",
     };
 
-    [MenuItem(itemName: "Tools/Setup track scene", isValidateFunction: false, priority: 4)]
-    public static void SetupTrackSceneFromFbx() {
+    [MenuItem(itemName: "Tools/Setup new track scene", isValidateFunction: false, priority: 4)]
+    public static void SetupNewTrackScene() {
         GameObject[] allObjects = Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (allObjects.Length == 0) {
             throw new System.Exception("No objects found in scene");
