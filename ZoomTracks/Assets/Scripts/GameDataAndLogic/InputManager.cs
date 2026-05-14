@@ -5,7 +5,7 @@ namespace ZoomTracks {
         public Keyboard Keyboard { get; private set; }
         public Gamepad Gamepad { get; private set; }
 
-        public void UpdateBeforeAll() {
+        public void UpdateInputs() {
             this.Keyboard = Keyboard.current;
             this.Gamepad = Gamepad.current;
         }

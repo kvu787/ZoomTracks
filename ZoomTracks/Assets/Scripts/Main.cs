@@ -79,14 +79,13 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
-                this.InputManager.UpdateBeforeAll();
-
-                this.ControlModeSwitcher.ReadInputAndToggleMode();
+                this.InputManager.UpdateInputs();
 
                 if (this.CollisionManager.ResetCarIfColliding()) {
                     this.LatestCollisionTime = DateTime.Now;
                 }
 
+                this.ControlModeSwitcher.ReadInputAndToggleMode();
                 switch (this.ControlModeSwitcher.Mode) {
                 case ControlModeEnum.Camera:
                     this.CameraController.ReadInputAndChangeCameraSettings();
@@ -105,11 +104,11 @@ namespace ZoomTracks {
                                 case CarControlModeEnum.Standard:
                                     Gamepad gamepad = this.InputManager.Gamepad;
                                     if (gamepad != null) {
-                                        this.CarState.ReadInputAndUpdateStandard();
+                                        this.CarState.ReadInputAndUpdateState_Standard();
                                     }
                                     break;
                                 case CarControlModeEnum.Debug:
-                                    this.CarState.ReadInputAndUpdateDebug();
+                                    this.CarState.ReadInputAndUpdateState_Debug();
                                     break;
                                 default:
                                     throw new Exception($"Unknown CarControlMode='{this.CarControlModeSwitcher.Mode}'");
@@ -123,9 +122,9 @@ namespace ZoomTracks {
                 }
 
                 this.CarState.ApplyVelocityToPositionAndRotation();
-                this.CarState.ApplyToGameObject();
-                this.CameraFocuser.UpdateCameraPosition();
-                this.UiManager.Update();
+                this.CarState.ApplyStateToGameObject();
+                this.CameraFocuser.UpdateCameraFocusPoint();
+                this.UiManager.UpdateUi();
 
                 await Awaitable.NextFrameAsync();
             }

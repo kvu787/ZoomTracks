@@ -34,7 +34,7 @@ namespace ZoomTracks {
             }
         }
 
-        public void UpdateCameraPosition() {
+        public void UpdateCameraFocusPoint() {
             Vector3 newPosition = this.FollowsCarLocation ? this.CarState.Position : this.OriginalCameraPanAndYawTransform.Position;
             this.CameraPanAndYaw.transform.position = newPosition;
         }

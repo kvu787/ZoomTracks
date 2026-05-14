@@ -41,7 +41,7 @@ namespace ZoomTracks {
 
         // cameraTransformEulerAngleY must be in world space
         // cameraTransformEulerAngleY = GameObject.Find("Camera").GetComponent<Camera>().transform.eulerAngles.y
-        public void ReadInputAndUpdateStandard() {
+        public void ReadInputAndUpdateState_Standard() {
             Gamepad gamepad = this.InputManager.Gamepad;
             if (gamepad == null) {
                 return;
@@ -123,7 +123,7 @@ namespace ZoomTracks {
             }
         }
 
-        public void ReadInputAndUpdateDebug() {
+        public void ReadInputAndUpdateState_Debug() {
             this.Velocity = Vector3.zero;
 
             Vector3 positionDelta = Vector3.zero;
@@ -147,7 +147,7 @@ namespace ZoomTracks {
             this.Rotation += rotationDelta;
         }
 
-        public void ApplyToGameObject() {
+        public void ApplyStateToGameObject() {
             this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, this.RotationQuaternion);
         }
 

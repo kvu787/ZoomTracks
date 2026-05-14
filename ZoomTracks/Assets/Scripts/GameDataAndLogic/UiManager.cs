@@ -15,7 +15,7 @@ namespace ZoomTracks {
             this.CameraFollowCarLocationBoolLabel = GameObject.Find(nameof(this.CameraFollowCarLocationBoolLabel)).GetComponent<TMP_Text>();
         }
 
-        public void Update() {
+        public void UpdateUi() {
             this.CameraFollowCarLocationBoolLabel.text = $"Camera following car location: {this.CameraFocuser.FollowsCarLocation}";
             this.ControlModeLabel.text = $"Control mode: {this.ControlModeSwitcher.Mode}";
         }
