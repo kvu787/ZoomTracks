@@ -6,7 +6,7 @@ namespace ZoomTracks {
     // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html
     // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/SceneManagement.EditorSceneManager-playModeStartScene.html
     class SetPlayModeStartScene : AssetPostprocessor {
-        private const string MainScenePath = "Assets/Scenes/ain.unity";
+        private const string MainScenePath = "Assets/Scenes/Main.unity";
 
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload) {
             SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(MainScenePath);
