@@ -56,7 +56,7 @@ public static class OpenScenesTool {
         }
         Scene scene = allObjects[0].scene;
         foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
-            MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
+            _ = gameObject.AddComponent<MeshCollider>();
         }
         foreach (GameObject gameObject in allObjects.Where(obj => BoxColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
             _ = gameObject.AddComponent<BoxCollider>();
