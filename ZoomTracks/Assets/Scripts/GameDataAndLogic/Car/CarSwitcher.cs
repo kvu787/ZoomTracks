@@ -42,7 +42,7 @@ namespace ZoomTracks {
             this.InitializeCurrentCar();
         }
 
-        public Dynamic CurrentCarDynamic => this.Cars[this.CurrentCarIndex].Dynamic;
+        public CarDynamic CurrentCarDynamic => this.Cars[this.CurrentCarIndex].Dynamic;
 
         public GameObject CurrentCarGameObject => this.Cars[this.CurrentCarIndex].GameObject;
 

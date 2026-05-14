@@ -8,7 +8,7 @@ namespace ZoomTracks {
         public string GameObjectName;
 
         [SerializeField]
-        public Dynamic Dynamic;
+        public CarDynamic Dynamic;
 
         [NonSerialized]
         public GameObject GameObject;

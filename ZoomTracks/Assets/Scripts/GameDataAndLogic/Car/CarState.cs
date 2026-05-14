@@ -34,7 +34,7 @@ namespace ZoomTracks {
 
         // cameraTransformEulerAngleY must be in world space
         // cameraTransformEulerAngleY = GameObject.Find("Camera").GetComponent<Camera>().transform.eulerAngles.y
-        public void ReadInputAndUpdateStandard(Dynamic dynamic, float brakeInput, Vector2 accelerationInput, float cameraTransformEulerAngleY) {
+        public void ReadInputAndUpdateStandard(CarDynamic carDynamic, float brakeInput, Vector2 accelerationInput, float cameraTransformEulerAngleY) {
             if (brakeInput == 0) {
                 if (accelerationInput.magnitude > 0) {
                     // Map XY input onto XZ world plane
@@ -49,14 +49,14 @@ namespace ZoomTracks {
                     // Apply acceleration map
                     Vector3 d = c;
                     if (d.x > 0) {
-                        d.x *= dynamic.AccelerationMap.Right;
+                        d.x *= carDynamic.AccelerationMap.Right;
                     } else if (d.x < 0) {
-                        d.x *= dynamic.AccelerationMap.Left;
+                        d.x *= carDynamic.AccelerationMap.Left;
                     }
                     if (d.z > 0) {
-                        d.z *= dynamic.AccelerationMap.Forward;
+                        d.z *= carDynamic.AccelerationMap.Forward;
                     } else if (d.z < 0) {
-                        d.z *= dynamic.AccelerationMap.Reverse;
+                        d.z *= carDynamic.AccelerationMap.Reverse;
                     }
 
                     // Rotate back to world space
@@ -81,7 +81,7 @@ namespace ZoomTracks {
                     // Brake is non-zero, but velocity is already zero, so do nothing
                 } else {
                     Vector3 opposingVec = (-1 * this.Velocity).normalized;
-                    Vector3 velocityDelta = dynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * opposingVec;
+                    Vector3 velocityDelta = carDynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * opposingVec;
                     if (velocityDelta.magnitude >= this.Velocity.magnitude) {
                         this.Velocity = Vector3.zero;
                     } else {
@@ -90,9 +90,9 @@ namespace ZoomTracks {
                 }
             }
 
-            if (dynamic.VelocityLimiter >= 0) {
+            if (carDynamic.VelocityLimiter >= 0) {
                 // Limit velocity
-                this.Velocity = Vector3.ClampMagnitude(this.Velocity, dynamic.VelocityLimiter);
+                this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
         }
 

@@ -81,7 +81,7 @@ namespace ZoomTracks {
                                 Gamepad gamepad = this.InputManager.Gamepad;
                                 if (gamepad != null) {
                                     this.CarState.ReadInputAndUpdateStandard(
-                                        dynamic: this.CarSwitcher.CurrentCarDynamic,
+                                        carDynamic: this.CarSwitcher.CurrentCarDynamic,
                                         brakeInput: 0,
                                         accelerationInput: gamepad.leftStick.ReadValue(),
                                         cameraTransformEulerAngleY: this.CameraController.CameraYawWorldSpace);
