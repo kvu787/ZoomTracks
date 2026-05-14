@@ -106,8 +106,8 @@ namespace ZoomTracks {
                 this.UiManager.Update();
 
                 foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
-                    if (CollisionLogic.HasCollided(this.CarSwitcher.CurrentCarCollider, obstacle)) {
-                        Debug.Log($"Car collided with {obstacle.name}");
+                    if (CollisionLogic.IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
+                        Debug.Log($"Car is colliding with {obstacle.name}");
                     }
                 }
 
