@@ -36,6 +36,8 @@ namespace ZoomTracks {
             this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
         }
 
+        public float CameraYawWorldSpace => this.Camera.transform.eulerAngles.y;
+
         public void ReadInputAndChangeCameraSettings() {
             if (this.InputManager.Keyboard != null) {
                 Keyboard keyboard = this.InputManager.Keyboard;

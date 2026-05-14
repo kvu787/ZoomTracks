@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
@@ -77,7 +78,14 @@ namespace ZoomTracks {
                         if (!switchedCars) {
                             switch (this.CarControlModeSwitcher.Mode) {
                             case CarControlModeEnum.Standard:
-                                // TODO
+                                Gamepad gamepad = this.InputManager.Gamepad;
+                                if (gamepad != null) {
+                                    this.CarState.ReadInputAndUpdateStandard(
+                                        dynamic: this.CarSwitcher.CurrentCarDynamic,
+                                        brakeInput: 0,
+                                        accelerationInput: gamepad.leftStick.ReadValue(),
+                                        cameraTransformEulerAngleY: this.CameraController.CameraYawWorldSpace);
+                                }
                                 break;
                             case CarControlModeEnum.Debug:
                                 this.CarState.ReadInputAndUpdateDebug();
@@ -92,6 +100,7 @@ namespace ZoomTracks {
                     throw new Exception($"Unknown ControlMode='{this.ControlModeSwitcher.Mode}'");
                 }
 
+                this.CarState.ApplyVelocityToPositionAndRotation();
                 this.CarState.ApplyToGameObject(this.CarSwitcher.CurrentCarGameObject);
                 this.CameraController.UpdateCameraPosition();
                 this.UiManager.Update();
