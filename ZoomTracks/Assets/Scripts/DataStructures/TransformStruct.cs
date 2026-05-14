@@ -1,10 +1,10 @@
 using UnityEngine;
 
 namespace ZoomTracks {
-    public struct TransformStruct {
-        public Vector3 Position;
-        public Quaternion Rotation;
-        public Vector3 Scale;
+    public readonly struct TransformStruct {
+        public Vector3 Position { get; }
+        public Quaternion Rotation { get; }
+        public Vector3 Scale { get; }
 
         public TransformStruct(Transform t) {
             this.Position = t.position;
