@@ -6,7 +6,7 @@ namespace ZoomTracks {
         private InputManager InputManager { get; }
         private Transform CameraPanAndYaw { get; }
         private CarState CarState { get; }
-        public bool FollowsCarLocation { get; private set; }
+        public bool FollowsCar { get; private set; }
         private TransformStruct OriginalCameraPanAndYawTransform { get; }
 
         public CameraFocuser(CarState carState, InputManager inputManager) {
@@ -25,17 +25,17 @@ namespace ZoomTracks {
         public void ReadInputAndToggleFocus() {
             // A: Toggle follow
             if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true) {
-                this.FollowsCarLocation = !this.FollowsCarLocation;
+                this.FollowsCar = !this.FollowsCar;
             }
 
             // Left shoulder: Toggle follow
             if (this.InputManager.Gamepad?.leftShoulder.wasPressedThisFrame == true) {
-                this.FollowsCarLocation = !this.FollowsCarLocation;
+                this.FollowsCar = !this.FollowsCar;
             }
         }
 
         public void UpdateCameraFocusPoint() {
-            Vector3 newPosition = this.FollowsCarLocation ? this.CarState.Position : this.OriginalCameraPanAndYawTransform.Position;
+            Vector3 newPosition = this.FollowsCar ? this.CarState.Position : this.OriginalCameraPanAndYawTransform.Position;
             this.CameraPanAndYaw.transform.position = newPosition;
         }
     }

@@ -6,7 +6,7 @@ namespace ZoomTracks {
         private CameraFocuser CameraFocuser { get; }
         private ControlModeSwitcher ControlModeSwitcher { get; }
         private CarControlModeSwitcher CarControlModeSwitcher { get; }
-        private TMP_Text CameraFollowCarLocationBoolLabel { get; }
+        private TMP_Text CameraFollowsCarLabel { get; }
         private TMP_Text ControlModeLabel { get; }
         private TMP_Text CarControlModeLabel { get; }
 
@@ -14,13 +14,13 @@ namespace ZoomTracks {
             this.CameraFocuser = cameraFocuser;
             this.ControlModeSwitcher = controlModeSwitcher;
             this.CarControlModeSwitcher = carControlModeSwitcher;
-            this.CameraFollowCarLocationBoolLabel = GameObject.Find(nameof(this.CameraFollowCarLocationBoolLabel)).GetComponent<TMP_Text>();
+            this.CameraFollowsCarLabel = GameObject.Find(nameof(this.CameraFollowsCarLabel)).GetComponent<TMP_Text>();
             this.ControlModeLabel = GameObject.Find(nameof(this.ControlModeLabel)).GetComponent<TMP_Text>();
             this.CarControlModeLabel = GameObject.Find(nameof(this.CarControlModeLabel)).GetComponent<TMP_Text>();
         }
 
         public void UpdateUi() {
-            this.CameraFollowCarLocationBoolLabel.text = $"Camera follows car location: {this.CameraFocuser.FollowsCarLocation}";
+            this.CameraFollowsCarLabel.text = $"Camera follows car location: {this.CameraFocuser.FollowsCar}";
             this.ControlModeLabel.text = $"Control mode: {this.ControlModeSwitcher.Mode}";
             this.CarControlModeLabel.text = $"Car control mode: {this.CarControlModeSwitcher.Mode}";
         }
