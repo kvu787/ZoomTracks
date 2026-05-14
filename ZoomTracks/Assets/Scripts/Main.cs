@@ -79,6 +79,9 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 this.InputManager.UpdateInputs();
+                if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
+                    this.InitializeTrack();
+                }
                 if (this.CollisionManager.ResetCarIfColliding()) {
                     this.LatestCollisionTime = DateTime.Now;
                 }
@@ -89,9 +92,6 @@ namespace ZoomTracks {
                     this.CameraFocuser.ReadInputAndToggleFocus();
                     break;
                 case ControlModeEnum.Car:
-                    if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
-                        this.InitializeTrack();
-                    }
                     CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
                     if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                         this.CarState.Reset();
