@@ -12,10 +12,6 @@ namespace ZoomTracks {
             "VehicleRoad",
         });
 
-        public GameObject PlaceholderCar { get; }
-        public Transform[] TireGroundContactPoints { get; }
-        public IReadOnlyCollection<BoxCollider> Obstacles { get; }
-
         public TrackObjects() {
             this.PlaceholderCar = GameObject.Find("SlopeCarPlaceholder");
             this.TireGroundContactPoints = new Transform[] {
@@ -35,5 +31,9 @@ namespace ZoomTracks {
                     .AsReadOnly();
             Assert.IsFalse(this.Obstacles.Any(x => x == null));
         }
+
+        public GameObject PlaceholderCar { get; }
+        public Transform[] TireGroundContactPoints { get; }
+        public IReadOnlyCollection<BoxCollider> Obstacles { get; }
     }
 }
