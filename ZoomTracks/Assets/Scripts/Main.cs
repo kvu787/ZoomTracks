@@ -11,9 +11,9 @@ namespace ZoomTracks {
             "Track1",
             "Track2",
         };
-        private const double CollisionTimeoutSeconds = 0.35;
+        private const double TimeoutDurationSeconds = 0.35;
 
-        private DateTime LatestCollisionTime { get; set; }
+        private DateTime TimeoutStart { get; set; }
         private InputManager InputManager { get; set; }
         private TrackSwitcher TrackSwitcher { get; set; }
         private ControlModeSwitcher ControlModeSwitcher { get; set; }
@@ -43,7 +43,7 @@ namespace ZoomTracks {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
 
-            this.LatestCollisionTime = DateTime.MinValue;
+            this.TimeoutStart = DateTime.MinValue;
             this.InputManager = new InputManager();
 
             Debug.Log($"Load UI scene...");
@@ -83,7 +83,7 @@ namespace ZoomTracks {
                     this.InitializeTrack();
                 }
                 if (this.CollisionManager.ResetCarIfColliding()) {
-                    this.LatestCollisionTime = DateTime.Now;
+                    this.TimeoutStart = DateTime.Now;
                 }
                 ControlModeEnum controlMode = this.ControlModeSwitcher.ReadInputAndToggleMode();
                 switch (controlMode) {
@@ -95,6 +95,7 @@ namespace ZoomTracks {
                     CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
                     if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                         this.CarState.Reset();
+                        this.TimeoutStart = DateTime.Now;
                     }
                     if (!this.InCollisionTimeout()) {
                         switch (carControlMode) {
@@ -123,7 +124,7 @@ namespace ZoomTracks {
         }
 
         private bool InCollisionTimeout() {
-            return (DateTime.Now - this.LatestCollisionTime) <= TimeSpan.FromSeconds(CollisionTimeoutSeconds);
+            return (DateTime.Now - this.TimeoutStart) <= TimeSpan.FromSeconds(TimeoutDurationSeconds);
         }
     }
 }
