@@ -11,9 +11,9 @@ namespace ZoomTracks {
             "Track1",
             "Track2",
         });
-        private const double TimeoutDurationSeconds = 0.35;
+        private TimeSpan TimeoutDurationSeconds { get; } = TimeSpan.FromSeconds(0.35);
 
-        private DateTime TimeoutStart { get; set; }
+        private DateTime CarControlTimeoutStart { get; set; }
         private InputManager InputManager { get; set; }
         private TrackSwitcher TrackSwitcher { get; set; }
         private ControlModeSwitcher ControlModeSwitcher { get; set; }
@@ -43,7 +43,7 @@ namespace ZoomTracks {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
 
-            this.TimeoutStart = DateTime.MinValue;
+            this.CarControlTimeoutStart = DateTime.MinValue;
             this.InputManager = new InputManager();
 
             Debug.Log($"Load UI scene...");
@@ -83,7 +83,7 @@ namespace ZoomTracks {
                     this.InitializeTrack();
                 }
                 if (this.CollisionManager.ResetCarIfColliding()) {
-                    this.TimeoutStart = DateTime.Now;
+                    this.CarControlTimeoutStart = DateTime.Now;
                 }
                 ControlModeEnum controlMode = this.ControlModeSwitcher.ReadInputAndToggleMode();
                 switch (controlMode) {
@@ -95,9 +95,9 @@ namespace ZoomTracks {
                     CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
                     if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                         this.CarState.Reset();
-                        this.TimeoutStart = DateTime.Now;
+                        this.CarControlTimeoutStart = DateTime.Now;
                     }
-                    if (!this.InCollisionTimeout()) {
+                    if (!this.InCarControlTimeout()) {
                         switch (carControlMode) {
                         case CarControlModeEnum.Standard:
                             this.CarState.ReadInputAndUpdateState_Standard();
@@ -123,8 +123,8 @@ namespace ZoomTracks {
             }
         }
 
-        private bool InCollisionTimeout() {
-            return (DateTime.Now - this.TimeoutStart) <= TimeSpan.FromSeconds(TimeoutDurationSeconds);
+        private bool InCarControlTimeout() {
+            return (DateTime.Now - this.CarControlTimeoutStart) <= this.TimeoutDurationSeconds;
         }
     }
 }
