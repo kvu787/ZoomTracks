@@ -1,7 +1,8 @@
 {
     "CameraFollowsCarLocation": true,
-    "FollowCameraSize": 39,
+    "FollowCameraSize": 27.5,
     "FixedCameraSize": 84.375,
+    "CarScale": 0.7,
     "StartCarIndex": 1,
     "Cars": [
         {

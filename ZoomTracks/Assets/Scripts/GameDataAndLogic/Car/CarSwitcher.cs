@@ -24,6 +24,7 @@ namespace ZoomTracks {
                 Assert.IsNotNull(decorativeGameObject);
 
                 car.GameObject = Object.Instantiate(original: decorativeGameObject, parameters: new InstantiateParameters() { scene = currentTrackScene });
+                car.GameObject.transform.localScale = Vector3.one * currentTrackJson.CarScale;
                 car.GameObject.SetActive(false);
             }
 

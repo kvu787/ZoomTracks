@@ -15,6 +15,9 @@ namespace ZoomTracks {
         public float FixedCameraSize;
 
         [SerializeField]
+        public float CarScale;
+
+        [SerializeField]
         public int StartCarIndex;
 
         [SerializeField]
