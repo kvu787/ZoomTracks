@@ -1,19 +1,19 @@
 {
     "CameraFollowsCarLocation": true,
-    "FollowCameraSize": 27.5,
+    "FollowCameraSize": 35,
     "FixedCameraSize": 79,
-    "CarScale": 0.7,
-    "StartCarIndex": 1,
+    "CarScale": 1,
+    "StartCarIndex": 0,
     "Cars": [
         {
             "GameObjectName": "SlopeCarGreen",
             "Dynamic": {
-                "VelocityLimiter": 50.0,
+                "VelocityLimiter": 30,
                 "AccelerationMap": {
-                    "Forward": 150.0,
-                    "Reverse": 300.0,
-                    "Left": 100.0,
-                    "Right": 100.0
+                    "Forward": 10,
+                    "Reverse": 200,
+                    "Left": 50,
+                    "Right": 50
                 }
             }
         },
