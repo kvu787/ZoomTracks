@@ -9,10 +9,10 @@ namespace ZoomTracks {
         public bool CameraFollowsCarLocation;
 
         [SerializeField]
-        public int FollowCameraSize;
+        public float FollowCameraSize;
 
         [SerializeField]
-        public int FixedCameraSize;
+        public float FixedCameraSize;
 
         [SerializeField]
         public int StartCarIndex;
