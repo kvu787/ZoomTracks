@@ -1,22 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace ZoomTracks {
     public class TrackSwitcher {
         private InputManager InputManager { get; }
-        public int CurrentTrackSceneIndex { get; private set; }
         private IReadOnlyList<string> TrackSceneNames { get; }
-        public Scene CurrentTrackScene { get; private set; }
+        private string CurrentTrackSceneName => this.TrackSceneNames[this.CurrentTrackSceneIndex];
+        private int CurrentTrackSceneIndex { get; set; }
 
-        public TrackSwitcher(InputManager inputManager, int currentTrackSceneIndex, IReadOnlyList<string> trackSceneNames) {
+        public TrackSwitcher(InputManager inputManager, IReadOnlyList<string> trackSceneNames, int currentTrackSceneIndex) {
             this.InputManager = inputManager;
-            this.CurrentTrackSceneIndex = currentTrackSceneIndex;
             this.TrackSceneNames = trackSceneNames;
-            this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackSceneIndex]);
+            this.CurrentTrackSceneIndex = currentTrackSceneIndex;
+            this.CurrentTrackScene = SceneManager.GetSceneByName(this.CurrentTrackSceneName);
+            Assert.IsTrue(this.CurrentTrackScene.IsValid());
+            this.CurrentTrackJson = this.ReadCurrentTrackJson();
         }
+
+        public Scene CurrentTrackScene { get; private set; }
+        public TrackJson CurrentTrackJson { get; private set; }
 
         public async Awaitable<bool> ReadInputAndSwitchTracksAsync() {
             bool isPrevTrack = false;
@@ -50,7 +55,7 @@ namespace ZoomTracks {
                 this.CurrentTrackScene = default;
 
                 Debug.Log($"Unload old track scene...");
-                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await UnitySceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]));
+                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]));
                 Debug.Log($"...done");
 
                 Debug.Log($"Unload unused assets...");
@@ -58,14 +63,20 @@ namespace ZoomTracks {
                 Debug.Log($"...done");
 
                 Debug.Log($"Load new track scene...");
-                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await UnitySceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
+                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
                 Debug.Log($"...done");
 
                 this.CurrentTrackSceneIndex = newTrackIndex;
-                this.CurrentTrackScene = UnitySceneManager.GetSceneByName(this.TrackSceneNames[this.CurrentTrackSceneIndex]);
+                this.CurrentTrackScene = SceneManager.GetSceneByName(this.CurrentTrackSceneName);
+                this.CurrentTrackJson = this.ReadCurrentTrackJson();
 
                 return true;
             }
+        }
+
+        private TrackJson ReadCurrentTrackJson() {
+            string relativePath = $"{this.CurrentTrackSceneName}.json";
+            return JsonUtility.Deserialize<TrackJson>(relativePath);
         }
     }
 }

@@ -3,12 +3,15 @@ using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     public class CameraPivotManager {
+        private CameraFollowSettings CameraFollowSettings { get; }
         private CarState CarState { get; }
         private InputManager InputManager { get; }
         private Transform CameraPanAndYaw { get; }
         private TransformStruct OriginalCameraPanAndYawTransform { get; }
 
-        public CameraPivotManager(CarState carState, InputManager inputManager) {
+        public CameraPivotManager(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, CarState carState, InputManager inputManager) {
+            this.CameraFollowSettings = cameraFollowSettings;
+            this.CameraFollowSettings.FollowsCarLocation = trackJson.CameraFollowsCarLocation;
             this.CarState = carState;
             this.InputManager = inputManager;
             this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
@@ -17,28 +20,24 @@ namespace ZoomTracks {
             Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.z == 0);
             Assert.IsTrue(this.CameraPanAndYaw.localScale == Vector3.one);
             this.OriginalCameraPanAndYawTransform = new TransformStruct(this.CameraPanAndYaw.transform);
-
-            this.FollowsCarLocation = true;
         }
-
-        public bool FollowsCarLocation { get; private set; }
 
         public void ReadInputAndToggle() {
             // TODO: Implement mode for following car yaw
 
             // A key: Toggle follow location
             if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true) {
-                this.FollowsCarLocation = !this.FollowsCarLocation;
+                this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation.Value;
             }
 
             // South button: Toggle follow location
             if (this.InputManager.Gamepad?.buttonSouth.wasPressedThisFrame == true) {
-                this.FollowsCarLocation = !this.FollowsCarLocation;
+                this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation.Value;
             }
         }
 
         public void UpdateCameraPivot() {
-            Vector3 newPosition = this.FollowsCarLocation ? this.CarState.Position : this.OriginalCameraPanAndYawTransform.Position;
+            Vector3 newPosition = this.CameraFollowSettings.FollowsCarLocation.Value ? this.CarState.Position : this.OriginalCameraPanAndYawTransform.Position;
             this.CameraPanAndYaw.transform.position = newPosition;
         }
     }

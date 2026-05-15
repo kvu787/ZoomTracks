@@ -9,22 +9,22 @@ namespace ZoomTracks {
         private const float MinCameraOrthographicSize = 1;
         private const float MaxCameraOrthographicSize = 281.25f;
 
+        private CameraFollowSettings CameraFollowSettings { get; }
+        private TrackJson TrackJson { get; }
         private InputManager InputManager { get; }
         private Transform CameraYawOffset { get; }
         private Transform CameraPanOffsetAndPitch { get; }
         private Camera Camera { get; }
 
-        private float OriginalCameraOrthographicSize { get; }
-
-        public CameraController(InputManager inputManager) {
+        public CameraController(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, InputManager inputManager) {
+            this.CameraFollowSettings = cameraFollowSettings;
+            this.TrackJson = trackJson;
             this.InputManager = inputManager;
 
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
             this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
             this.ValidateCameraParameters();
-
-            this.OriginalCameraOrthographicSize = this.Camera.orthographicSize;
         }
 
         public float CameraYawWorldSpace => this.Camera.transform.eulerAngles.y;
@@ -88,7 +88,11 @@ namespace ZoomTracks {
         }
 
         private void ResetZoom() {
-            this.Camera.orthographicSize = this.OriginalCameraOrthographicSize;
+            if (this.CameraFollowSettings.FollowsCarLocation.Value) {
+                this.Camera.orthographicSize = this.TrackJson.FollowCameraSize;
+            } else {
+                this.Camera.orthographicSize = this.TrackJson.FixedCameraSize;
+            }
         }
 
         private void ValidateCameraParameters() {

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
@@ -7,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class CarSwitcher {
-        private const string GarageFileName = "Garage.json";
-
         private InputManager InputManager { get; }
         private int CurrentCarIndex { get; set; }
         private List<Car> Cars { get; }
@@ -16,15 +13,10 @@ namespace ZoomTracks {
         private Car CurrentCar => this.Cars[this.CurrentCarIndex];
         private GameObject CurrentCarGameObject => this.CurrentCar.GameObject;
 
-        public CarSwitcher(Scene currentTrackScene, InputManager inputManager) {
-            string filePath = Path.Combine(Application.streamingAssetsPath.Replace('/', '\\'), GarageFileName);
-            Assert.IsTrue(File.Exists(filePath), $"Garage JSON file does not exist at {filePath}");
-            string fileContents = File.ReadAllText(filePath); // TODO: Use async file read
-            Garage garage = JsonUtility.FromJson<Garage>(fileContents);
-
+        public CarSwitcher(Scene currentTrackScene, TrackJson currentTrackJson, InputManager inputManager) {
             this.InputManager = inputManager;
-            this.CurrentCarIndex = garage.StartCarIndex;
-            this.Cars = garage.Cars;
+            this.CurrentCarIndex = currentTrackJson.StartCarIndex;
+            this.Cars = currentTrackJson.Cars;
 
             foreach (Car car in this.Cars) {
                 Assert.IsTrue(!string.IsNullOrEmpty(car.GameObjectName));

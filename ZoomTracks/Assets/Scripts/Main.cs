@@ -18,9 +18,11 @@ namespace ZoomTracks {
         private DateTime CarControlTimeoutStart { get; set; }
         private InputManager InputManager { get; set; }
         private TrackSwitcher TrackSwitcher { get; set; }
+
+        private CameraFollowSettings CameraFollowSettings { get; set; }
+        private TrackObjects TrackObjects { get; set; }
         private ControlModeSwitcher ControlModeSwitcher { get; set; }
         private CarControlModeSwitcher CarControlModeSwitcher { get; set; }
-        private TrackObjects TrackObjects { get; set; }
         private CarSwitcher CarSwitcher { get; set; }
         private CameraController CameraController { get; set; }
         private CarState CarState { get; set; }
@@ -56,7 +58,7 @@ namespace ZoomTracks {
             await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
             Debug.Log($"...done");
 
-            this.TrackSwitcher = new TrackSwitcher(this.InputManager, InitialTrackSceneIndex, TrackSceneNames);
+            this.TrackSwitcher = new TrackSwitcher(this.InputManager, TrackSceneNames, InitialTrackSceneIndex);
             this.InitializeTrack();
 
             Debug.Log($"END: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
@@ -65,15 +67,16 @@ namespace ZoomTracks {
 
         private void InitializeTrack() {
             Debug.Log("Initialize track...");
+            this.CameraFollowSettings = new CameraFollowSettings();
             this.TrackObjects = new TrackObjects();
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.CarControlModeSwitcher = new CarControlModeSwitcher(this.InputManager);
-            this.CameraController = new CameraController(this.InputManager);
-            this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.InputManager);
+            this.CameraController = new CameraController(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
+            this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
-            this.CameraPivotManager = new CameraPivotManager(this.CarState, this.InputManager);
+            this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.CarState, this.InputManager);
             this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
-            this.UiManager = new UiManager(this.CameraPivotManager, this.ControlModeSwitcher, this.CarControlModeSwitcher);
+            this.UiManager = new UiManager(this.CameraFollowSettings, this.ControlModeSwitcher, this.CarControlModeSwitcher);
             Debug.Log("...done");
         }
 
