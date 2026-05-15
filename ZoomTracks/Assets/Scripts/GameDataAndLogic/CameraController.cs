@@ -24,6 +24,7 @@ namespace ZoomTracks {
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
             this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
+            this.ResetZoom();
             this.ValidateCameraParameters();
         }
 
