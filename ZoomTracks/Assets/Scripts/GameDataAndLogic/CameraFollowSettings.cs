@@ -1,6 +1,11 @@
 namespace ZoomTracks {
     public class CameraFollowSettings {
-        public bool? FollowsCarLocation { get; set; }
+
+        public CameraFollowSettings(TrackJson trackJson) {
+            this.FollowsCarLocation = trackJson.CameraFollowsCarLocation;
+        }
+
+        public bool FollowsCarLocation { get; set; }
 
         // TODO:
         // public bool CameraFollowsCarRotation { get; set; }

@@ -88,7 +88,7 @@ namespace ZoomTracks {
         }
 
         private void ResetZoom() {
-            if (this.CameraFollowSettings.FollowsCarLocation.Value) {
+            if (this.CameraFollowSettings.FollowsCarLocation) {
                 this.Camera.orthographicSize = this.TrackJson.FollowCameraSize;
             } else {
                 this.Camera.orthographicSize = this.TrackJson.FixedCameraSize;

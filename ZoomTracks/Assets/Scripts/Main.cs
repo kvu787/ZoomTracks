@@ -67,14 +67,14 @@ namespace ZoomTracks {
 
         private void InitializeTrack() {
             Debug.Log("Initialize track...");
-            this.CameraFollowSettings = new CameraFollowSettings();
+            this.CameraFollowSettings = new CameraFollowSettings(this.TrackSwitcher.CurrentTrackJson);
             this.TrackObjects = new TrackObjects();
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.CarControlModeSwitcher = new CarControlModeSwitcher(this.InputManager);
             this.CameraController = new CameraController(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
-            this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.CarState, this.InputManager);
+            this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.CarState, this.InputManager);
             this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
             this.UiManager = new UiManager(this.CameraFollowSettings, this.ControlModeSwitcher, this.CarControlModeSwitcher);
             Debug.Log("...done");
