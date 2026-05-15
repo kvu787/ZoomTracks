@@ -4,13 +4,15 @@ using UnityEngine.Assertions;
 namespace ZoomTracks {
     public class CameraPivotManager {
         private CameraFollowSettings CameraFollowSettings { get; }
+        private CameraController CameraController { get; }
         private CarState CarState { get; }
         private InputManager InputManager { get; }
         private Transform CameraPanAndYaw { get; }
         private TransformStruct OriginalCameraPanAndYawTransform { get; }
 
-        public CameraPivotManager(CameraFollowSettings cameraFollowSettings, CarState carState, InputManager inputManager) {
+        public CameraPivotManager(CameraFollowSettings cameraFollowSettings, CameraController cameraController, CarState carState, InputManager inputManager) {
             this.CameraFollowSettings = cameraFollowSettings;
+            this.CameraController = cameraController;
             this.CarState = carState;
             this.InputManager = inputManager;
             this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
@@ -27,11 +29,13 @@ namespace ZoomTracks {
             // A key: Toggle follow location
             if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true) {
                 this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation;
+                this.CameraController.ResetZoom();
             }
 
             // South button: Toggle follow location
             if (this.InputManager.Gamepad?.buttonSouth.wasPressedThisFrame == true) {
                 this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation;
+                this.CameraController.ResetZoom();
             }
         }
 

@@ -88,7 +88,7 @@ namespace ZoomTracks {
             this.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
         }
 
-        private void ResetZoom() {
+        public void ResetZoom() {
             if (this.CameraFollowSettings.FollowsCarLocation) {
                 this.Camera.orthographicSize = this.TrackJson.FollowCameraSize;
             } else {
