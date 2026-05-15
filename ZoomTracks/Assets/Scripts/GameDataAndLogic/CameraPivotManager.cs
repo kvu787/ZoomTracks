@@ -15,25 +15,18 @@ namespace ZoomTracks {
             this.CameraController = cameraController;
             this.CarState = carState;
             this.InputManager = inputManager;
+
             this.CameraPanAndYaw = GameObject.Find(nameof(this.CameraPanAndYaw)).transform;
-            Assert.IsTrue(this.CameraPanAndYaw.localPosition.y == 0);
-            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.x == 0);
-            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.z == 0);
-            Assert.IsTrue(this.CameraPanAndYaw.localScale == Vector3.one);
+            this.Validate();
             this.OriginalCameraPanAndYawTransform = new TransformStruct(this.CameraPanAndYaw.transform);
         }
 
         public void ReadInputAndToggle() {
             // TODO: Implement mode for following car yaw
 
-            // A key: Toggle follow location
-            if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true) {
-                this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation;
-                this.CameraController.ResetZoom();
-            }
-
-            // South button: Toggle follow location
-            if (this.InputManager.Gamepad?.buttonSouth.wasPressedThisFrame == true) {
+            // Toggle follow car location: [A key] or [South button]
+            if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true
+                || this.InputManager.Gamepad?.buttonSouth.wasPressedThisFrame == true) {
                 this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation;
                 this.CameraController.ResetZoom();
             }
@@ -42,6 +35,13 @@ namespace ZoomTracks {
         public void UpdateCameraPivot() {
             Vector3 newPosition = this.CameraFollowSettings.FollowsCarLocation ? this.CarState.Position : this.OriginalCameraPanAndYawTransform.Position;
             this.CameraPanAndYaw.transform.position = newPosition;
+        }
+
+        private void Validate() {
+            Assert.IsTrue(this.CameraPanAndYaw.localPosition.y == 0);
+            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.x == 0);
+            Assert.IsTrue(this.CameraPanAndYaw.localEulerAngles.z == 0);
+            Assert.IsTrue(this.CameraPanAndYaw.localScale == Vector3.one);
         }
     }
 }
