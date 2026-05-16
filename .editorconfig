@@ -77,7 +77,7 @@ dotnet_diagnostic.IDE0044.severity = suggestion
 dotnet_diagnostic.IDE0045.severity = none
 
 # Use conditional expression for return
-dotnet_diagnostic.IDE0046.severity = suggestion
+dotnet_diagnostic.IDE0046.severity = none
 
 # Remove unnecessary parentheses
 dotnet_diagnostic.IDE0047.severity = none
