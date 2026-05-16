@@ -47,8 +47,8 @@ namespace ZoomTracks {
                 return;
             }
 
-            float brakeInput = gamepad.rightTrigger.ReadValue();
-            Vector2 accelerationInput = gamepad.rightStick.IsActuated() ? gamepad.rightStick.ReadValue() : gamepad.leftStick.ReadValue();
+            float brakeInput = gamepad.leftTrigger.ReadValue();
+            Vector2 accelerationInput = gamepad.rightStick.ReadValue();
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
 
