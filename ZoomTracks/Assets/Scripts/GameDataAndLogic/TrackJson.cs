@@ -18,6 +18,9 @@ namespace ZoomTracks {
         public float CarScale;
 
         [SerializeField]
+        public float MinVelocityForRotation;
+
+        [SerializeField]
         public int StartCarIndex;
 
         [SerializeField]

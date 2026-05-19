@@ -9,5 +9,8 @@ namespace ZoomTracks {
 
         [SerializeField]
         public CarAccelerationMap AccelerationMap;
+
+        [SerializeField]
+        public float MinVelocityForRotation;
     }
 }

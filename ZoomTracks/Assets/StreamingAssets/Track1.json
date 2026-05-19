@@ -3,6 +3,7 @@
     "FollowCameraSize": 27.5,
     "FixedCameraSize": 84.375,
     "CarScale": 0.7,
+    "MinVelocityForRotation": 0.25,
     "StartCarIndex": 1,
     "Cars": [
         {

@@ -7,6 +7,7 @@ namespace ZoomTracks {
         private const float CarRotateSpeed = 540;
 
         private Transform PlaceholderCarTransform { get; }
+        private TrackSwitcher TrackSwitcher { get; }
         private CarSwitcher CarSwitcher { get; }
         private CameraController CameraController { get; }
         private InputManager InputManager { get; }
@@ -31,8 +32,9 @@ namespace ZoomTracks {
         /// </summary>
         private Vector3 Velocity { get; set; }
 
-        public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
+        public CarState(Transform placeholderCarTransform, TrackSwitcher trackSwitcher, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
             this.PlaceholderCarTransform = placeholderCarTransform;
+            this.TrackSwitcher = trackSwitcher;
             this.CarSwitcher = carSwitcher;
             this.CameraController = cameraController;
             this.InputManager = inputManager;
@@ -87,6 +89,7 @@ namespace ZoomTracks {
 
                     // The result is the change in velocity for this frame
                     Vector3 velocityDelta = f;
+                    velocityDelta = this.PreventRotationJitter(velocityDelta);
 
                     // Update car velocity
                     this.Velocity += velocityDelta;
@@ -110,6 +113,21 @@ namespace ZoomTracks {
             if (carDynamic.VelocityLimiter >= 0) {
                 // Limit velocity
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
+            }
+        }
+
+        private Vector3 PreventRotationJitter(Vector3 velocityDelta) {
+            float minVelocityForRotation = this.CarSwitcher.CurrentCarDynamic.MinVelocityForRotation;
+            if (minVelocityForRotation == 0) {
+                minVelocityForRotation = this.TrackSwitcher.CurrentTrackJson.MinVelocityForRotation;
+            }
+            if (this.Velocity.magnitude < minVelocityForRotation) {
+                Vector3 carSpaceVelocityDelta = Quaternion.Inverse(this.RotationQuaternion) * velocityDelta;
+                carSpaceVelocityDelta.x = 0;
+                Vector3 newVelocityDelta = this.RotationQuaternion * carSpaceVelocityDelta;
+                return newVelocityDelta;
+            } else {
+                return velocityDelta;
             }
         }
 

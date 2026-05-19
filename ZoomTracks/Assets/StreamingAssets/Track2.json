@@ -3,6 +3,7 @@
     "FollowCameraSize": 35,
     "FixedCameraSize": 79,
     "CarScale": 1,
+    "MinVelocityForRotation": 0.25,
     "StartCarIndex": 0,
     "Cars": [
         {
@@ -14,7 +15,8 @@
                     "Reverse": 200,
                     "Left": 50,
                     "Right": 50
-                }
+                },
+                "MinVelocityForRotation": 1
             }
         },
         {
