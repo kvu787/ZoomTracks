@@ -1,68 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public static class OpenScenesTool {
-    [MenuItem(itemName: "Tools/Open scenes for full game", isValidateFunction: false, priority: 1)]
-    public static void OpenScenesForFullGame() {
-        SceneSetup[] setup = new SceneSetup[] {
-            new() { path = "Assets/Scenes/Main.unity", isLoaded = true, isActive = true },
-            new() { path = "Assets/Scenes/Ui.unity", isLoaded = true, isActive = false },
-            new() { path = "Assets/Scenes/Track1.unity", isLoaded = true, isActive = false },
-        };
-        EditorSceneManager.RestoreSceneManagerSetup(setup);
-    }
-
-    [MenuItem(itemName: "Tools/Open UI scene", isValidateFunction: false, priority: 2)]
-    public static void OpenUiScene() {
-        SceneSetup[] setup = new SceneSetup[] {
-            new() { path = "Assets/Scenes/Ui.unity", isLoaded = true, isActive = true },
-        };
-        EditorSceneManager.RestoreSceneManagerSetup(setup);
-    }
-
-    [MenuItem(itemName: "Tools/Open initial track scene", isValidateFunction: false, priority: 3)]
-    public static void OpenGameScene() {
-        SceneSetup[] setup = new SceneSetup[] {
-            new() { path = "Assets/Scenes/Track1.unity", isLoaded = true, isActive = true },
-        };
-        EditorSceneManager.RestoreSceneManagerSetup(setup);
-    }
-
-    private static IReadOnlyList<string> MeshColliderPrefixes { get; } = Array.AsReadOnly(new[] {
-        "Road",
-        "Grass",
-        "Gravel",
-    });
-
-    private static IReadOnlyList<string> BoxColliderPrefixes { get; } = Array.AsReadOnly(new[] {
-        "Barrier",
-        "BigCone",
-        "CheckeredLine",
-        "Checkpoint",
-        "Cone",
-        "SlopeCar",
-        "VehicleRoad",
-    });
-
-    [MenuItem(itemName: "Tools/Setup new track scene", isValidateFunction: false, priority: 4)]
-    public static void SetupNewTrackScene() {
-        GameObject[] allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        if (allObjects.Length == 0) {
-            throw new Exception("No objects found in scene");
+namespace ZoomTracks {
+    public static class OpenScenesTool {
+        [MenuItem(itemName: "Tools/Open scenes for full game", isValidateFunction: false, priority: 1)]
+        public static void OpenScenesForFullGame() {
+            SceneSetup[] setup = new SceneSetup[] {
+                new() { path = "Assets/Scenes/Main.unity", isLoaded = true, isActive = true },
+                new() { path = "Assets/Scenes/Ui.unity", isLoaded = true, isActive = false },
+                new() { path = "Assets/Scenes/Track1.unity", isLoaded = true, isActive = false },
+            };
+            EditorSceneManager.RestoreSceneManagerSetup(setup);
         }
-        Scene scene = allObjects[0].scene;
-        foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
-            _ = gameObject.AddComponent<MeshCollider>();
+
+        [MenuItem(itemName: "Tools/Open UI scene", isValidateFunction: false, priority: 2)]
+        public static void OpenUiScene() {
+            SceneSetup[] setup = new SceneSetup[] {
+                new() { path = "Assets/Scenes/Ui.unity", isLoaded = true, isActive = true },
+            };
+            EditorSceneManager.RestoreSceneManagerSetup(setup);
         }
-        foreach (GameObject gameObject in allObjects.Where(obj => BoxColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
-            _ = gameObject.AddComponent<BoxCollider>();
+
+        [MenuItem(itemName: "Tools/Open initial track scene", isValidateFunction: false, priority: 3)]
+        public static void OpenGameScene() {
+            SceneSetup[] setup = new SceneSetup[] {
+                new() { path = "Assets/Scenes/Track1.unity", isLoaded = true, isActive = true },
+            };
+            EditorSceneManager.RestoreSceneManagerSetup(setup);
         }
-        _ = EditorSceneManager.MarkSceneDirty(scene);
-        _ = EditorSceneManager.SaveScene(scene);
     }
 }
