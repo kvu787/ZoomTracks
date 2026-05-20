@@ -12,8 +12,5 @@ namespace ZoomTracks {
 
         [NonSerialized]
         public GameObject GameObject;
-
-        [NonSerialized]
-        public Collider Collider;
     }
 }
