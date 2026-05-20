@@ -1,8 +1,8 @@
 {
-    "CameraFollowsCarLocation": true,
-    "FollowCameraSize": 27.5,
+    "CameraFollowsCarLocation": false,
+    "FollowCameraSize": 60,
     "FixedCameraSize": 84.375,
-    "CarScale": 0.7,
+    "CarScale": 1,
     "MinVelocityForRotation": 0.25,
     "StartCarIndex": 1,
     "Cars": [
