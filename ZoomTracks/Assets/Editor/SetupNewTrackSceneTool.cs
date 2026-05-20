@@ -24,7 +24,7 @@ namespace ZoomTracks {
             "VehicleRoad",
         });
 
-        [MenuItem(itemName: "Tools/Setup new track scene", isValidateFunction: false, priority: 4)]
+        [MenuItem(itemName: "Tools/Setup new track scene", isValidateFunction: false, priority: 3)]
         public static void SetupNewTrackScene() {
             GameObject[] allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             if (allObjects.Length == 0) {

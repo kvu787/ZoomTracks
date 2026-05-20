@@ -20,13 +20,5 @@ namespace ZoomTracks {
             };
             EditorSceneManager.RestoreSceneManagerSetup(setup);
         }
-
-        [MenuItem(itemName: "Tools/Open initial track scene", isValidateFunction: false, priority: 3)]
-        public static void OpenGameScene() {
-            SceneSetup[] setup = new SceneSetup[] {
-                new() { path = "Assets/Scenes/Track1.unity", isLoaded = true, isActive = true },
-            };
-            EditorSceneManager.RestoreSceneManagerSetup(setup);
-        }
     }
 }
