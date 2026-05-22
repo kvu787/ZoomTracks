@@ -1,36 +1,17 @@
-* Use Blender 4.5.x LTS
+These instructions assume you are using Blender 4.5.x LTS.
+
+# Initial setup
+
 * Delete all default objects
 * Move Outliner and Properties sidebar from the right side to the left side
 
-* Use "Viewport Shading = Material Preview" to see colors
-  * Do not use "Viewport Shading = Rendered"
+# Outliner
 
-# Materials
-
-All materials should be Principled BSDF with default parameters.
-
-Exception:
-If you want a simple solid color with just shading and no specular, use these parameters:
-1. Base color > Surface > Roughness = 1.0
-2. Base color > Surface > Specular > IOR Level = 0.0
-
-# Objects
-
-Do not add lighting objects. Lighting is provided by the "Material Preview" environment.
-
-Camera pivot
-  * Plain axes
-    * Display As = Arrows
-    * Size = 10 m
-  * Pitch = 45 deg
-  * Distance from pivot to camera (zoom) = 50 m
-
-Camera
-  * Type = Orthographic
-  * Orthographic Scale = 100
-  * Clip Start = 1 m
-  * Clip End = 150 m
-  * Viewport Display > Show > Limit = True
+In "Outliner > Filter > Restriction Toggles", enable only these:
+* Checkbox
+* Arrow
+* Eye
+* Monitor
 
 # Viewport
 
@@ -42,10 +23,34 @@ Camera
 * Disable temporal reprojection
 * Viewport samples = 8
 
-# Outliner
+# Camera objects
 
-In "Outliner > Filter > Restriction Toggles", enable only these:
-* Checkbox
-* Arrow
-* Eye
-* Monitor
+Camera pivot:
+* Plain axes
+  * Display As = Arrows
+  * Size = 10 m
+* Pitch = 45 deg
+* Distance from pivot to camera (zoom) = 50 m
+
+Camera:
+* Type = Orthographic
+* Orthographic Scale = 100
+* Clip Start = 1 m
+* Clip End = 150 m
+* Viewport Display > Show > Limit = True
+
+# Materials
+
+All materials should be Principled BSDF with default parameters.
+
+Exception:
+If you want a simple solid color with just shading and no specular, use these parameters:
+1. Base color > Surface > Roughness = 1.0
+2. Base color > Surface > Specular > IOR Level = 0.0
+
+# Usage instructions
+
+* Use "Viewport Shading = Material Preview" to see colors.
+  * Do not use "Viewport Shading = Rendered".
+* Do not add lighting objects.
+  * Lighting is provided by the "Material Preview" environment.
