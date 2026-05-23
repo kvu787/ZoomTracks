@@ -42,8 +42,23 @@ In "Outliner > Filter > Restriction Toggles", enable only these:
 
 * Properties > Render > Sampling > Viewport > Samples = 1
 * Properties > Render > Sampling > Viewport > Temporal Reprojection = Unchecked
-* Properties > Render > Sampling > Shadows = False
+* Properties > Render > Sampling > Shadows = Unchecked
 * Properties > Render > Color Management > View Transform = Standard
+
+# Track objects
+
+* In the Templates collection, add the BarrierSegment and CheckeredLineSegment objects
+* In the Track collection, add a simple oval track that uses each object:
+  * Rectangular grass area
+  * 
+
+# Geometry nodes
+
+After adding the template track, you should have these custom geometry nodes modifiers:
+* GenerateBarrier
+* GenerateCheckeredLine
+
+All custom geometry nodes modifiers should have "Fake User" enabled.
 
 # Camera objects
 
@@ -61,7 +76,7 @@ Camera:
 * Orthographic Scale = 300
 * Clip Start = 1 m
 * Clip End = 1000 m
-* Viewport Display > Show > Limit = True
+* Properties > Data > Viewport Display > Show > Limit = Checked
 * Distance from pivot to camera (Location.Z) = 500 m
 
 # Materials
