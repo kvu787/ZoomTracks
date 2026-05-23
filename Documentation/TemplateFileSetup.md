@@ -5,6 +5,7 @@ These instructions assume you are using Blender 4.5.x LTS.
 * Delete all default objects
 * Move Outliner and Properties sidebar from the right side to the left side
 * Remove the Timeline editor area at the bottom
+* Expand the N-sidebar
 
 # Outliner
 
