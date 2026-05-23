@@ -36,29 +36,33 @@ In "Outliner > Filter > Restriction Toggles", enable only these:
 
 # Viewport
 
-* Gizmos: Disable "Camera > Lens"
-* Clip start = 1 m
-* Clip end = 10000 m
-* Render > Sampling > Shadows = False
-* Scene > Color Management > View Transform = Standard
-* Disable temporal reprojection
-* Viewport samples = 8
+* 3D Viewport > Top-right corner > Gizmos > Camera > Lens = Unchecked
+* 3D Viewport > N-sidebar > View > View >
+  * Clip start = 1 m
+  * Clip end = 10000 m
+* Properties > Render > Sampling > Shadows = False
+* Properties > Render > Color Management > View Transform = Standard
+* Properties > Render > Sampling > Viewport > Temporal Reprojection = Unchecked
+* Properties > Render > Sampling > Viewport > Samples = 1
 
 # Camera objects
 
 Camera pivot:
+* Name: "CameraPivot"
 * Plain axes
   * Display As = Arrows
   * Size = 10 m
-* Pitch = 45 deg
-* Distance from pivot to camera (zoom) = 50 m
+* Pitch = 45 deg (Rotation.X)
+* Yaw   = 45 deg (Rotation.Z)
 
 Camera:
+* Name: "Camera"
 * Type = Orthographic
-* Orthographic Scale = 100
+* Orthographic Scale = 300
 * Clip Start = 1 m
-* Clip End = 150 m
+* Clip End = 1000 m
 * Viewport Display > Show > Limit = True
+* Distance from pivot to camera (Location.Z) = 500 m
 
 # Materials
 
