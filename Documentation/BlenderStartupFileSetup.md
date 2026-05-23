@@ -37,13 +37,13 @@ In "Outliner > Filter > Restriction Toggles", enable only these:
 # Viewport
 
 * 3D Viewport > Top-right corner > Gizmos > Camera > Lens = Unchecked
-* 3D Viewport > N-sidebar > View > View >
-  * Clip start = 1 m
-  * Clip end = 10000 m
+* 3D Viewport > N-sidebar > View > View > Clip start = 1 m
+* 3D Viewport > N-sidebar > View > View > Clip end = 10000 m
+
+* Properties > Render > Sampling > Viewport > Samples = 1
+* Properties > Render > Sampling > Viewport > Temporal Reprojection = Unchecked
 * Properties > Render > Sampling > Shadows = False
 * Properties > Render > Color Management > View Transform = Standard
-* Properties > Render > Sampling > Viewport > Temporal Reprojection = Unchecked
-* Properties > Render > Sampling > Viewport > Samples = 1
 
 # Camera objects
 
