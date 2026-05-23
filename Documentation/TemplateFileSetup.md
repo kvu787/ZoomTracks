@@ -7,6 +7,25 @@ These instructions assume you are using Blender 4.5.x LTS.
 * Remove the Timeline editor area at the bottom
 * Expand the N-sidebar
 
+# Collections
+
+* There should be only 1 item at the root: a collection called "Collection"
+* Then, add the following collections:
+
+```python
+AllowedCollectionNames = [
+    "Barriers",
+    "BigCones",
+    "Camera",
+    "Checkpoints",
+    "Cones",
+    "Templates",
+    "Track",
+    "Uncategorized",
+    "Vehicles",
+]
+```
+
 # Outliner
 
 In "Outliner > Filter > Restriction Toggles", enable only these:
