@@ -50,5 +50,7 @@ def Main():
         else:
             assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude
 
+    # TODO: Warn on any unapplied modifiers that aren't subd or custom generators
+
 if __name__ == "__main__":
     Main()
