@@ -94,7 +94,7 @@ namespace ZoomTracks {
                     // Update car velocity
                     this.Velocity += velocityDelta;
                 } else {
-                    // Brake and acceleration is zero, so do nothing
+                    // Brake and acceleration are zero, so do nothing
                 }
             } else {
                 if (this.Velocity == Vector3.zero) {
