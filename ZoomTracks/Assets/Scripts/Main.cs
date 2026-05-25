@@ -79,6 +79,7 @@ namespace ZoomTracks {
             this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
             this.UiManager = new UiManager(this.CameraFollowSettings, this.ControlModeSwitcher, this.CarControlModeSwitcher);
             Debug.Log("...done");
+            // TODO: Throw if placeholder car collider is colliding with anything else
         }
 
         private static void ForceGarbageCollection() {
