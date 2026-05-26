@@ -57,6 +57,7 @@
         {
             "GameObjectName": "SlopeCarCyan",
             "Dynamic": {
+                "MinVelocityForRotation": 0.0001,
                 "VelocityLimiter": -1.0,
                 "AccelerationMap": {
                     "Forward": 1000.0,
