@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 
 namespace ZoomTracks {
     public class CameraController {
@@ -26,7 +27,10 @@ namespace ZoomTracks {
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
             this.ResetZoom();
             this.ValidateCameraParameters();
+            this.CameraData = this.Camera.GetUniversalAdditionalCameraData();
         }
+
+        public UniversalAdditionalCameraData CameraData { get; }
 
         public float CameraYawWorldSpace => this.Camera.transform.eulerAngles.y;
 

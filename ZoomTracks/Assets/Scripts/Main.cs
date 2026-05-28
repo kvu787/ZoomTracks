@@ -26,6 +26,7 @@ namespace ZoomTracks {
         private CarControlModeSwitcher CarControlModeSwitcher { get; set; }
         private CarSwitcher CarSwitcher { get; set; }
         private CameraController CameraController { get; set; }
+        private GraphicsSettingsManager GraphicsSettingsManager { get; set; }
         private CarState CarState { get; set; }
         private CollisionManager CollisionManager { get; set; }
         private CameraPivotManager CameraPivotManager { get; set; }
@@ -35,8 +36,7 @@ namespace ZoomTracks {
         private void Awake() {
             Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.enableLog".Replace("/", "\\"));
-            QualitySettings.maxQueuedFrames = 0;
-            QualitySettings.vSyncCount = 1;
+            GraphicsSettingsManager.Awake();
             Debug.Log($"END: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
@@ -73,6 +73,7 @@ namespace ZoomTracks {
             this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.CarControlModeSwitcher = new CarControlModeSwitcher(this.InputManager);
             this.CameraController = new CameraController(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
+            this.GraphicsSettingsManager = new GraphicsSettingsManager(this.CameraController, this.InputManager);
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.TrackSwitcher, this.CarSwitcher, this.CameraController, this.InputManager);
             this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.CameraController, this.CarState, this.InputManager);
@@ -93,6 +94,8 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 this.InputManager.UpdateInputs();
+                this.GraphicsSettingsManager.ReadInputAndUpdate();
+
                 if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                     this.InitializeTrack();
                     ForceGarbageCollection();
