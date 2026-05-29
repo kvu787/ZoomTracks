@@ -16,6 +16,7 @@ namespace ZoomTracks {
         private Transform CameraYawOffset { get; }
         private Transform CameraPanOffsetAndPitch { get; }
         private Camera Camera { get; }
+        private float DefaultFixedCameraSize { get; }
 
         public CameraController(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, InputManager inputManager) {
             this.CameraFollowSettings = cameraFollowSettings;
@@ -25,9 +26,10 @@ namespace ZoomTracks {
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
             this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
-            this.ResetZoom();
             this.ValidateCameraParameters();
             this.CameraData = this.Camera.GetUniversalAdditionalCameraData();
+            this.DefaultFixedCameraSize = this.Camera.orthographicSize;
+            this.ResetZoom();
         }
 
         public UniversalAdditionalCameraData CameraData { get; }
@@ -96,7 +98,7 @@ namespace ZoomTracks {
             if (this.CameraFollowSettings.FollowsCarLocation) {
                 this.Camera.orthographicSize = this.TrackJson.FollowCameraSize;
             } else {
-                this.Camera.orthographicSize = this.TrackJson.FixedCameraSize;
+                this.Camera.orthographicSize = this.DefaultFixedCameraSize;
             }
         }
 

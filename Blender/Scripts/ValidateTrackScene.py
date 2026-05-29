@@ -1,4 +1,6 @@
 import bpy
+from datetime import datetime
+from pathlib import Path
 
 AllowedCollectionNames = [
     "Barriers",
@@ -12,6 +14,38 @@ AllowedCollectionNames = [
     "Vehicles",
 ]
 
+CheckOriginPrefixes = [
+    "Grass",
+    "Road",
+    "Gravel",
+    "Barrier",
+    "Checkpoint",
+    "CheckeredLine",
+    "VehicleRoad",
+    "Cone",
+    "BigCone",
+]
+
+def CheckOriginPositionAndRotation():
+    objects = [obj for obj in bpy.context.selected_objects if obj.type == "MESH"]
+    objects.sort(key=lambda obj: obj.name)
+    if len(objects) > 0:
+        for obj in objects:
+            if obj.location.z not in ValidZHeights:
+                print(f"Name: {obj.name}")
+                print("Origin ERROR")
+                print(f"Origin: z={repr(obj.location.z)}")
+                print()
+            for vertex in obj.data.vertices:
+                if not (vertex.co.z == 0):
+                    print(f"Name: {obj.name}")
+                    print("Vertex ERROR")
+                    print(f"Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}")
+                    print()
+        print(f"{len(objects)} objects checked")
+    else:
+        print("No mesh objects found in selection")
+
 def FindLayerCollection(layerCollection: bpy.types.LayerCollection, collection: bpy.types.Collection) -> bpy.types.LayerCollection | None:
     if layerCollection.collection == collection:
         return layerCollection
@@ -22,6 +56,8 @@ def FindLayerCollection(layerCollection: bpy.types.LayerCollection, collection: 
     return None
 
 def Main():
+    print(f"{Path(__file__).name} started at {datetime.now()}")
+
     assert len(bpy.data.scenes) == 1, "Blender file must have exactly one scene"
     scene = bpy.data.scenes[0]
 
@@ -51,6 +87,7 @@ def Main():
             assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude
 
     # TODO: Warn on any unapplied modifiers that aren't subd or custom generators
+    print(f"{Path(__file__).name} finished at {datetime.now()}")
 
 if __name__ == "__main__":
     Main()
