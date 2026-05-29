@@ -1,6 +1,6 @@
 {
-    "CameraFollowsCarLocation": false,
-    "FollowCameraSize": 35,
+    "CameraFollowsCarLocation": true,
+    "FollowCameraSize": 40,
     "FixedCameraSize": 97,
     "CarScale": 1,
     "MinVelocityForRotation": 0.25,
@@ -11,10 +11,10 @@
             "Dynamic": {
                 "VelocityLimiter": -1.0,
                 "AccelerationMap": {
-                    "Forward": 50,
-                    "Reverse": 100,
-                    "Left": 50,
-                    "Right": 50
+                    "Forward": 30,
+                    "Reverse": 60,
+                    "Left": 30,
+                    "Right": 30
                 }
             }
         },
