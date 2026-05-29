@@ -123,6 +123,7 @@ namespace ZoomTracks {
             }
             if (this.Velocity.magnitude < minVelocityForRotation) {
                 Vector3 carSpaceVelocityDelta = Quaternion.Inverse(this.RotationQuaternion) * velocityDelta;
+                // Zero out the Vector3.left and Vector3.right (with respect to the car yaw) component of the velocity delta
                 carSpaceVelocityDelta.x = 0;
                 Vector3 newVelocityDelta = this.RotationQuaternion * carSpaceVelocityDelta;
                 return newVelocityDelta;
