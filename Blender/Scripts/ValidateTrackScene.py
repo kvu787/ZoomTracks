@@ -1,6 +1,7 @@
 import bpy
 from datetime import datetime
 from pathlib import Path
+from collections.abc import Iterable
 
 AllowedCollectionNames = [
     "Barriers",
@@ -26,25 +27,33 @@ CheckOriginPrefixes = [
     "BigCone",
 ]
 
-def CheckOriginPositionAndRotation():
-    objects = [obj for obj in bpy.context.selected_objects if obj.type == "MESH"]
+ValidZHeights = [
+    0,
+    0.015625,
+    0.03125,
+    0.046875,
+    0.0625,
+    0.078125,
+    0.09375,
+]
+
+def CheckOriginPositionAndRotation(objects: Iterable[bpy.types.Object]):
+    objects = sorted(objects, key=lambda obj: obj.name)
+    for obj in objects:
+        if obj.name != "CameraPivot":
+            assert obj.rotation_euler.x == 0 and obj.rotation_euler.y == 0, f"{obj.name} has a non-zero x or y rotation"
+    for obj in objects:
+        assert obj.location.z in ValidZHeights, f"{obj.name} has invalid z height"
+
+def CheckVertices(objects: Iterable[bpy.types.Object]):
     objects.sort(key=lambda obj: obj.name)
-    if len(objects) > 0:
-        for obj in objects:
-            if obj.location.z not in ValidZHeights:
+    for obj in objects:
+        for vertex in obj.data.vertices:
+            if not (vertex.co.z == 0):
                 print(f"Name: {obj.name}")
-                print("Origin ERROR")
-                print(f"Origin: z={repr(obj.location.z)}")
+                print("Vertex ERROR")
+                print(f"Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}")
                 print()
-            for vertex in obj.data.vertices:
-                if not (vertex.co.z == 0):
-                    print(f"Name: {obj.name}")
-                    print("Vertex ERROR")
-                    print(f"Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}")
-                    print()
-        print(f"{len(objects)} objects checked")
-    else:
-        print("No mesh objects found in selection")
 
 def FindLayerCollection(layerCollection: bpy.types.LayerCollection, collection: bpy.types.Collection) -> bpy.types.LayerCollection | None:
     if layerCollection.collection == collection:
@@ -79,12 +88,14 @@ def Main():
         if collectionName not in AllowedCollectionNames:
             raise Exception(f"Disallowed collection name: {collectionName}")
 
-    assert not FindLayerCollection(viewLayer.layer_collection, rootCollection).exclude
+    assert not FindLayerCollection(viewLayer.layer_collection, rootCollection).exclude, "Root collection is hidden"
     for collection in rootCollection.children:
         if collection.name == "Camera" or collection.name == "Templates":
-            assert FindLayerCollection(viewLayer.layer_collection, collection).exclude
+            assert FindLayerCollection(viewLayer.layer_collection, collection).exclude, "Camera or Template collection is not hidden"
         else:
-            assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude
+            assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude, "This collection should not be hidden"
+
+    CheckOriginPositionAndRotation(bpy.data.objects)
 
     # TODO: Warn on any unapplied modifiers that aren't subd or custom generators
     print(f"{Path(__file__).name} finished at {datetime.now()}")
