@@ -117,6 +117,7 @@ def Main():
     # Check for non-uniform scales
     rel_tol = 1e-5
     abs_tol = 1e-4
+    flag = False
     for obj in bpy.data.objects:
         isUniform = \
                 math.isclose(obj.scale.x, obj.scale.y, rel_tol=rel_tol, abs_tol=abs_tol) \
@@ -124,6 +125,8 @@ def Main():
             and math.isclose(obj.scale.x, obj.scale.z, rel_tol=rel_tol, abs_tol=abs_tol)
         if not isUniform:
             print(f"Non-uniform scale: {obj.name}, ({repr(obj.scale.x)}, {repr(obj.scale.y)}, {repr(obj.scale.z)})")
+            flag = True
+    assert not flag, "One or more non-uniform scale errors"
 
     # Print out subd levels
     for obj in bpy.data.objects:
