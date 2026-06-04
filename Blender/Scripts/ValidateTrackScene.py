@@ -2,6 +2,7 @@ import bpy
 from datetime import datetime
 from pathlib import Path
 from collections.abc import Iterable
+import math
 
 AllowedCollectionNames = [
     "Barriers",
@@ -114,9 +115,15 @@ def Main():
                 print(f"Warning: Unapplied modifier of type '{modifier.type}' on object '{obj.name}'")
 
     # Check for non-uniform scales
-    # for obj in bpy.data.objects:
-    #     if not (obj.scale.x == obj.scale.y and obj.scale.y == obj.scale.z):
-    #         print(f"Non-uniform scale: {obj.name}, ({repr(obj.scale.x)}, {repr(obj.scale.y)}, {repr(obj.scale.z)})")
+    rel_tol = 1e-5
+    abs_tol = 1e-4
+    for obj in bpy.data.objects:
+        isUniform = \
+                math.isclose(obj.scale.x, obj.scale.y, rel_tol=rel_tol, abs_tol=abs_tol) \
+            and math.isclose(obj.scale.y, obj.scale.z, rel_tol=rel_tol, abs_tol=abs_tol) \
+            and math.isclose(obj.scale.x, obj.scale.z, rel_tol=rel_tol, abs_tol=abs_tol)
+        if not isUniform:
+            print(f"Non-uniform scale: {obj.name}, ({repr(obj.scale.x)}, {repr(obj.scale.y)}, {repr(obj.scale.z)})")
 
     # Print out subd levels
     for obj in bpy.data.objects:
@@ -125,6 +132,7 @@ def Main():
                 print(f"Subd modifier: {obj.name}, levels={modifier.levels}")
 
     print(f"{Path(__file__).name} finished at {datetime.now()}")
+    print()
 
 if __name__ == "__main__":
     Main()
