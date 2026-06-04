@@ -1,0 +1,80 @@
+{
+    "CameraFollowsCarLocation": false,
+    "FollowCameraSize": 40,
+    "CarScale": 1,
+    "StartCarIndex": 2,
+    "Cars": [
+        {
+            "GameObjectName": "SlopeCarGreen",
+            "Dynamic": {
+                "VelocityLimiter": -1.0,
+                "AccelerationMap": {
+                    "Forward": 30,
+                    "Reverse": 60,
+                    "Left": 30,
+                    "Right": 30
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarBlue",
+            "Dynamic": {
+                "VelocityLimiter": -1.0,
+                "AccelerationMap": {
+                    "Forward": 60,
+                    "Reverse": 120,
+                    "Left": 60,
+                    "Right": 60
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarRed",
+            "Dynamic": {
+                "VelocityLimiter": -1.0,
+                "AccelerationMap": {
+                    "Forward": 120,
+                    "Reverse": 240,
+                    "Left": 120,
+                    "Right": 120
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarYellow",
+            "Dynamic": {
+                "VelocityLimiter": -1.0,
+                "AccelerationMap": {
+                    "Forward": 240,
+                    "Reverse": 480,
+                    "Left": 240,
+                    "Right": 240
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarCyan",
+            "Dynamic": {
+                "VelocityLimiter": -1.0,
+                "AccelerationMap": {
+                    "Forward": 480,
+                    "Reverse": 960,
+                    "Left": 480,
+                    "Right": 480
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarMagenta",
+            "Dynamic": {
+                "VelocityLimiter": -1.0,
+                "AccelerationMap": {
+                    "Forward": 1000,
+                    "Reverse": 2000,
+                    "Left": 200,
+                    "Right": 200
+                }
+            }
+        }
+    ]
+}
