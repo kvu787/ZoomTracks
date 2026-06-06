@@ -102,44 +102,45 @@ namespace ZoomTracks {
                 if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                     this.InitializeTrack();
                     ForceGarbageCollection();
-                }
-                if (this.CollisionManager.ResetCarIfColliding()) {
-                    this.CarControlTimeoutStart = DateTime.Now;
-                }
-                ControlModeEnum controlMode = this.ControlModeSwitcher.ReadInputAndToggleMode();
-                switch (controlMode) {
-                case ControlModeEnum.Camera:
-                    this.CameraController.ReadInputAndChangeCameraSettings();
-                    this.CameraPivotManager.ReadInputAndToggle();
-                    break;
-                case ControlModeEnum.Car:
-                    this.GraphicsSettingsManager.ReadInputAndUpdate();
-                    CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
-                    if (this.CarSwitcher.ReadInputAndSwitchCar()) {
-                        this.CarState.Reset();
+                } else {
+                    if (this.CollisionManager.ResetCarIfColliding()) {
                         this.CarControlTimeoutStart = DateTime.Now;
                     }
-                    if (!this.InCarControlTimeout()) {
-                        switch (carControlMode) {
-                        case CarControlModeEnum.Standard:
-                            this.CarState.ReadInputAndUpdateState_Standard();
-                            break;
-                        case CarControlModeEnum.Debug:
-                            this.CarState.ReadInputAndUpdateState_Debug();
-                            break;
-                        default:
-                            throw new Exception($"Unknown CarControlMode='{carControlMode}'");
+                    ControlModeEnum controlMode = this.ControlModeSwitcher.ReadInputAndToggleMode();
+                    switch (controlMode) {
+                    case ControlModeEnum.Camera:
+                        this.CameraController.ReadInputAndChangeCameraSettings();
+                        this.CameraPivotManager.ReadInputAndToggle();
+                        break;
+                    case ControlModeEnum.Car:
+                        this.GraphicsSettingsManager.ReadInputAndUpdate();
+                        CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
+                        if (this.CarSwitcher.ReadInputAndSwitchCar()) {
+                            this.CarState.Reset();
+                            this.CarControlTimeoutStart = DateTime.Now;
                         }
+                        if (!this.InCarControlTimeout()) {
+                            switch (carControlMode) {
+                            case CarControlModeEnum.Standard:
+                                this.CarState.ReadInputAndUpdateState_Standard();
+                                break;
+                            case CarControlModeEnum.Debug:
+                                this.CarState.ReadInputAndUpdateState_Debug();
+                                break;
+                            default:
+                                throw new Exception($"Unknown CarControlMode='{carControlMode}'");
+                            }
+                        }
+                        break;
+                    default:
+                        throw new Exception($"Unknown ControlMode='{controlMode}'");
                     }
-                    break;
-                default:
-                    throw new Exception($"Unknown ControlMode='{controlMode}'");
-                }
 
-                this.CarState.ApplyVelocityToPositionAndRotation();
-                this.CarState.ApplyStateToGameObject();
-                this.CameraPivotManager.UpdateCameraPivot();
-                this.UiManager.UpdateUi();
+                    this.CarState.ApplyVelocityToPositionAndRotation();
+                    this.CarState.ApplyStateToGameObject();
+                    this.CameraPivotManager.UpdateCameraPivot();
+                    this.UiManager.UpdateUi();
+                }
 
                 await Awaitable.NextFrameAsync();
             }
