@@ -22,8 +22,6 @@ namespace ZoomTracks {
         }
 
         public void ReadInputAndToggle() {
-            // TODO: Implement mode for following car yaw
-
             // Toggle follow car location: [A key] or [South button]
             if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true
                 || this.InputManager.Gamepad?.buttonSouth.wasPressedThisFrame == true) {
