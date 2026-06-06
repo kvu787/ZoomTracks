@@ -10,12 +10,12 @@ namespace ZoomTracks {
         private const string UiSceneName = "Ui";
         private const int InitialTrackSceneIndex = 6;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
-            "Track1",
-            "Track2",
-            "Track3",
-            "Track4",
-            "Track7",
-            "Track8",
+            "Track001",
+            "Track002",
+            "Track003",
+            "Track004",
+            "Track007",
+            "Track008",
             "Track009",
         });
         private TimeSpan TimeoutDurationSeconds { get; } = TimeSpan.FromSeconds(0.35);
