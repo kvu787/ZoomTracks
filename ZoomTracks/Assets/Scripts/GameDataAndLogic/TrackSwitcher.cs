@@ -35,8 +35,8 @@ namespace ZoomTracks {
 
             if (this.InputManager.Gamepad != null) {
                 Gamepad gamepad = this.InputManager.Gamepad;
-                isPrevTrack = isPrevTrack || gamepad.leftShoulder.wasPressedThisFrame;
-                isNextTrack = isNextTrack || gamepad.rightShoulder.wasPressedThisFrame;
+                isPrevTrack = isPrevTrack || gamepad.dpad.down.wasPressedThisFrame;
+                isNextTrack = isNextTrack || gamepad.dpad.up.wasPressedThisFrame;
             }
 
             if (isPrevTrack == isNextTrack) {
