@@ -72,7 +72,7 @@ namespace ZoomTracks {
 
             if (this.InputManager.Gamepad != null) {
                 Gamepad gamepad = this.InputManager.Gamepad;
-                if (!gamepad.leftStickButton.IsPressed()) {
+                if (!gamepad.leftShoulder.IsPressed()) {
                     return;
                 }
                 if (gamepad.aButton.wasPressedThisFrame) {
