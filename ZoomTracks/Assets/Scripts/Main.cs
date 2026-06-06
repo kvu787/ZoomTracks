@@ -98,7 +98,6 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 this.InputManager.UpdateInputs();
-                this.GraphicsSettingsManager.ReadInputAndUpdate();
 
                 if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                     this.InitializeTrack();
@@ -114,6 +113,7 @@ namespace ZoomTracks {
                     this.CameraPivotManager.ReadInputAndToggle();
                     break;
                 case ControlModeEnum.Car:
+                    this.GraphicsSettingsManager.ReadInputAndUpdate();
                     CarControlModeEnum carControlMode = this.CarControlModeSwitcher.ReadInputAndToggleMode();
                     if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                         this.CarState.Reset();
