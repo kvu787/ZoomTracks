@@ -136,12 +136,12 @@ namespace ZoomTracks {
                     default:
                         throw new Exception($"Unknown ControlMode='{controlMode}'");
                     }
-
-                    this.CarState.ApplyVelocityToPositionAndRotation();
-                    this.CarState.ApplyStateToGameObject();
-                    this.CameraPivotManager.UpdateCameraPivot();
-                    this.UiManager.UpdateUi();
                 }
+
+                this.CarState.ApplyVelocityToPositionAndRotation();
+                this.CarState.ApplyStateToGameObject();
+                this.CameraPivotManager.UpdateCameraPivot();
+                this.UiManager.UpdateUi();
 
                 await Awaitable.NextFrameAsync();
             }
