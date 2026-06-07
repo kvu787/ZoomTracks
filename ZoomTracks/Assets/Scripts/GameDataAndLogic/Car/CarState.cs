@@ -43,7 +43,7 @@ namespace ZoomTracks {
 
         // cameraTransformEulerAngleY must be in world space
         // cameraTransformEulerAngleY = GameObject.Find("Camera").GetComponent<Camera>().transform.eulerAngles.y
-        public void ReadInputAndUpdateState_Standard() {
+        public void ReadInputAndUpdateState() {
             Gamepad gamepad = this.InputManager.Gamepad;
             if (gamepad == null) {
                 return;
@@ -143,30 +143,6 @@ namespace ZoomTracks {
                 // Rotate to match the velocity direction
                 this.Rotation = Quaternion.LookRotation(this.Velocity, Vector3.up).eulerAngles.y;
             }
-        }
-
-        public void ReadInputAndUpdateState_Debug() {
-            this.Velocity = Vector3.zero;
-
-            Vector3 positionDelta = Vector3.zero;
-            float rotationDelta = 0;
-            Vector3 positionTerm = Time.deltaTime * CarForwardBackwardSpeed * (this.RotationQuaternion * Vector3.forward);
-            float rotationTerm = Time.deltaTime * CarRotateSpeed;
-
-            if (this.InputManager.Keyboard != null) {
-                Keyboard keyboard = this.InputManager.Keyboard;
-                positionDelta += positionTerm * (keyboard.eKey.ReadValue() - keyboard.dKey.ReadValue());
-                rotationDelta += rotationTerm * (keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue());
-            }
-
-            if (this.InputManager.Gamepad != null) {
-                Vector2 leftStick = this.InputManager.Gamepad.leftStick.ReadValue();
-                positionDelta += positionTerm * leftStick.y;
-                rotationDelta += rotationTerm * leftStick.x;
-            }
-
-            this.Position += positionDelta;
-            this.Rotation += rotationDelta;
         }
 
         public void ApplyStateToGameObject() {
