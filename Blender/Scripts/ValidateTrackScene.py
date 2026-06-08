@@ -38,14 +38,6 @@ ValidZHeights = [
     0.09375,
 ]
 
-def CheckOriginPositionAndRotation(objects: Iterable[bpy.types.Object]):
-    objects = sorted(objects, key=lambda obj: obj.name)
-    for obj in objects:
-        if obj.name != "CameraPivot":
-            assert obj.rotation_euler.x == 0 and obj.rotation_euler.y == 0, f"{obj.name} has a non-zero x or y rotation"
-    for obj in objects:
-        assert obj.location.z in ValidZHeights, f"{obj.name} has invalid z height"
-
 def CheckVertices(objects: Iterable[bpy.types.Object]):
     objects.sort(key=lambda obj: obj.name)
     for obj in objects:
@@ -64,6 +56,21 @@ def FindLayerCollection(layerCollection: bpy.types.LayerCollection, collection: 
         if found is not None:
             return found
     return None
+
+def PrintParentedUnparentedObjects():
+    parentedObjects   = sorted([obj for obj in bpy.data.objects if obj.parent is not None], key=lambda obj: obj.name)
+    unparentedObjects = sorted([obj for obj in bpy.data.objects if obj.parent is None],     key=lambda obj: obj.name)
+
+    print()
+    print("#### Parented objects:")
+    for obj in parentedObjects:
+        print(obj.name)
+    print()
+
+    print("#### Unparented objects:")
+    for obj in unparentedObjects:
+        print(obj.name)
+    print()
 
 def Main():
     print(f"{Path(__file__).name} started at {datetime.now()}")
@@ -98,9 +105,9 @@ def Main():
     assert not FindLayerCollection(viewLayer.layer_collection, rootCollection).exclude, "Root collection is hidden"
     for collection in rootCollection.children:
         if collection.name in ("Camera", "Templates", "Uncategorized"):
-            assert FindLayerCollection(viewLayer.layer_collection, collection).exclude, "Camera or Template collection is not hidden"
+            assert FindLayerCollection(viewLayer.layer_collection, collection).exclude, f"This collection should be hidden: {collection.name}"
         else:
-            assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude, "This collection should not be hidden"
+            assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude, f"This collection should not be hidden: {collection.name}"
 
     # Check for modifiers that should be applied
     for obj in bpy.data.objects:
@@ -127,6 +134,16 @@ def Main():
             print(f"Non-uniform scale: {obj.name}, ({repr(obj.scale.x)}, {repr(obj.scale.y)}, {repr(obj.scale.z)})")
             flag = True
     assert not flag, "One or more non-uniform scale errors"
+
+    # Check for non-zero pitch or twist
+    unparentedObjects = sorted([obj for obj in bpy.data.objects if obj.parent is None], key=lambda obj: obj.name)
+    for obj in unparentedObjects:
+        if obj.name != "CameraPivot":
+            assert obj.rotation_euler.x == 0 and obj.rotation_euler.y == 0, f"{obj.name}: Has a non-zero x (pitch) or y (twist) rotation"
+
+    # Check for invalid Z-heights
+    for obj in unparentedObjects:
+        assert obj.location.z in ValidZHeights, f"{obj.name}: Has invalid Z-height"
 
     # Print out subd levels
     for obj in bpy.data.objects:
