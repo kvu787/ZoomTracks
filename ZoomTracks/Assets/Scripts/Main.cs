@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
-using UnityEngine.Scripting;
 
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
@@ -87,13 +85,6 @@ namespace ZoomTracks {
             Debug.Log("...done");
         }
 
-        private static void ForceGarbageCollection() {
-            Assert.IsTrue(GarbageCollector.GCMode == GarbageCollector.Mode.Enabled);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-        }
-
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
@@ -101,7 +92,7 @@ namespace ZoomTracks {
 
                 if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
                     this.InitializeTrack();
-                    ForceGarbageCollection();
+                    GarbageCollectionUtility.ForceGarbageCollection();
                 } else {
                     if (this.CollisionManager.ResetCarIfColliding()) {
                         this.CarControlTimeoutStart = DateTime.Now;
