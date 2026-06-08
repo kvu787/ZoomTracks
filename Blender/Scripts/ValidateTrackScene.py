@@ -4,16 +4,6 @@ from pathlib import Path
 from collections.abc import Iterable
 import math
 
-def CheckVertices(objects: Iterable[bpy.types.Object]):
-    objects.sort(key=lambda obj: obj.name)
-    for obj in objects:
-        for vertex in obj.data.vertices:
-            if not (vertex.co.z == 0):
-                print(f"Name: {obj.name}")
-                print("Vertex ERROR")
-                print(f"Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}")
-                print()
-
 def FindLayerCollection(layerCollection: bpy.types.LayerCollection, collection: bpy.types.Collection) -> bpy.types.LayerCollection | None:
     if layerCollection.collection == collection:
         return layerCollection
