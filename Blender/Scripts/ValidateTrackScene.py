@@ -87,6 +87,11 @@ def Main():
         else:
             assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude, f"This collection should not be hidden: {collection.name}"
 
+    # Ensure all objects belong to one collection
+    for obj in bpy.data.objects:
+        numCollections = len(obj.users_collection)
+        assert numCollections == 1, f"{obj.name}: Belongs to {numCollections} collections"
+
     # Check for modifiers that should be applied
     for obj in bpy.data.objects:
         for modifier in obj.modifiers:
@@ -137,14 +142,15 @@ def Main():
         "Grass",
         "Road",
         "Gravel",
-        "Barrier"
-        "CheckeredLine"
+        "Barrier",
+        "CheckeredLine",
     )
     filteredObjects = sorted([obj for obj in bpy.data.objects if obj.name.startswith(CheckVertexZCoordinatePrefixes)], key=lambda obj: obj.name)
     for obj in filteredObjects:
+        if obj.users_collection[0].name in ("Templates",):
+            continue
         for vertex in obj.data.vertices:
-            if vertex.co.z != 0:
-                print(f"{obj.name}: Has vertex with non-zero Z-coordinate: Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}")
+            assert vertex.co.z == 0, f"{obj.name}: Has vertex with non-zero Z-coordinate: Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}"
 
     # Print out subd levels
     for obj in bpy.data.objects:
