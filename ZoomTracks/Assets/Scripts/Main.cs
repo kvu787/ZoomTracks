@@ -106,24 +106,15 @@ namespace ZoomTracks {
                     if (this.CollisionManager.ResetCarIfColliding()) {
                         this.CarControlTimeoutStart = DateTime.Now;
                     }
-                    ControlModeEnum controlMode = this.ControlModeSwitcher.ReadInputAndToggleMode();
-                    switch (controlMode) {
-                    case ControlModeEnum.Camera:
-                        this.CameraController.ReadInputAndChangeCameraSettings();
-                        this.CameraPivotManager.ReadInputAndToggle();
-                        break;
-                    case ControlModeEnum.Car:
-                        this.GraphicsSettingsManager.ReadInputAndUpdate();
-                        if (this.CarSwitcher.ReadInputAndSwitchCar()) {
-                            this.CarState.Reset();
-                            this.CarControlTimeoutStart = DateTime.Now;
-                        }
-                        if (!this.InCarControlTimeout()) {
-                            this.CarState.ReadInputAndUpdateState();
-                        }
-                        break;
-                    default:
-                        throw new Exception($"Unknown ControlMode='{controlMode}'");
+                    this.CameraController.ReadInputAndChangeCameraSettings();
+                    //this.CameraPivotManager.ReadInputAndToggle();
+                    this.GraphicsSettingsManager.ReadInputAndUpdate();
+                    if (this.CarSwitcher.ReadInputAndSwitchCar()) {
+                        this.CarState.Reset();
+                        this.CarControlTimeoutStart = DateTime.Now;
+                    }
+                    if (!this.InCarControlTimeout()) {
+                        this.CarState.ReadInputAndUpdateState();
                     }
                 }
 
@@ -131,6 +122,7 @@ namespace ZoomTracks {
                 this.CarState.ApplyStateToGameObject();
                 this.CameraPivotManager.UpdateCameraPivot();
                 this.UiManager.UpdateUi();
+                this.CameraController.Update();
 
                 await Awaitable.NextFrameAsync();
             }

@@ -5,17 +5,22 @@ using UnityEngine.Rendering.Universal;
 
 namespace ZoomTracks {
     public class CameraController {
-        private const float CameraPanSpeed = 150;
+        private const float CameraRotationSpeed = 100;
         private const float CameraZoomSpeed = 100;
-        private const float MinCameraOrthographicSize = 1;
-        private const float MaxCameraOrthographicSize = 281.25f;
+        private const float CameraPanSpeed = 150;
+        private const float MinOrthographicCameraSize = 1;
+        private const float MaxOrthographicCameraSize = 281.25f;
 
         private CameraFollowSettings CameraFollowSettings { get; }
         private TrackJson TrackJson { get; }
         private InputManager InputManager { get; }
+
         private Transform CameraYawOffset { get; }
         private Transform CameraPanOffsetAndPitch { get; }
         private Camera Camera { get; }
+
+        private float RotationOffset { get; set; }
+        private float OrthographicCameraSize { get; set; }
         private float DefaultFixedCameraSize { get; }
 
         public CameraController(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, InputManager inputManager) {
@@ -26,9 +31,14 @@ namespace ZoomTracks {
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
             this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
-            this.ValidateCameraParameters();
+
+            this.RotationOffset = 0f;
+            this.OrthographicCameraSize = this.Camera.orthographicSize;
+            this.DefaultFixedCameraSize = this.OrthographicCameraSize;
+
             this.CameraData = this.Camera.GetUniversalAdditionalCameraData();
-            this.DefaultFixedCameraSize = this.Camera.orthographicSize;
+
+            this.ValidateCameraParameters();
             this.ResetZoom();
         }
 
@@ -36,69 +46,138 @@ namespace ZoomTracks {
 
         public float CameraYawWorldSpace => this.Camera.transform.eulerAngles.y;
 
+        public void Update() {
+            this.CameraYawOffset.localEulerAngles = new Vector3(0f, this.RotationOffset, 0f);
+            this.Camera.orthographicSize = this.OrthographicCameraSize;
+        }
+
         public void ReadInputAndChangeCameraSettings() {
-            if (this.InputManager.Keyboard != null) {
-                Keyboard keyboard = this.InputManager.Keyboard;
-
-                // ESDF: Pan
-                Vector2 vector2 = new(
-                    keyboard.fKey.ReadValue() - keyboard.sKey.ReadValue(),
-                    keyboard.eKey.ReadValue() - keyboard.dKey.ReadValue());
-                this.PanOffset(vector2);
-
-                // W/R: Zoom
-                this.Zoom(keyboard.wKey.ReadValue(), keyboard.rKey.ReadValue());
-
-                // Z: Reset pan offset
-                if (keyboard.zKey.wasPressedThisFrame) {
-                    this.ResetPanOffset();
-                }
-
-                // C: Reset zoom
-                if (keyboard.cKey.wasPressedThisFrame) {
-                    this.ResetZoom();
-                }
-            }
-
-            if (this.InputManager.Gamepad != null) {
-                Gamepad gamepad = this.InputManager.Gamepad;
-
-                // Left stick: Pan offset
-                this.PanOffset(gamepad.leftStick.ReadValue());
-
-                // Left/right trigger: Zoom
-                this.Zoom(gamepad.leftTrigger.ReadValue(), gamepad.rightTrigger.ReadValue());
-
-                // D-pad up: Reset pan offset
-                if (gamepad.dpad.up.wasPressedThisFrame) {
-                    this.ResetPanOffset();
-                }
-
-                // D-pad down: Reset zoom
-                if (gamepad.dpad.down.wasPressedThisFrame) {
-                    this.ResetZoom();
-                }
+            Gamepad gamepad = this.InputManager.Gamepad;
+            if (gamepad != null) {
+                this.NoPanControl_RotationLeftStick_ZoomRightShoulderAndRightStick_CustomDeadzones(gamepad);
             }
         }
 
-        private void PanOffset(Vector2 vector2) {
-            this.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
+        private static float DeadzoneFilter(float input, float innerDeadzone, float outerDeadzone) {
+            float sign = Mathf.Sign(input);
+            input = Mathf.Abs(input);
+            if (input > outerDeadzone) {
+                input = 1f;
+            } else {
+                if (input < innerDeadzone) {
+                    input = 0;
+                } else {
+                    input = (input - innerDeadzone) / (outerDeadzone - innerDeadzone);
+                }
+            }
+            return sign * input;
         }
+
+        private void NoPanControl_RotationLeftStick_ZoomRightShoulderAndRightStick_CustomDeadzones(Gamepad gamepad) {
+            //float innerDeadzone = 0.125f;
+            float innerDeadzone = 0.2f;
+            float outerDeadzone = 0.95f;
+            //float innerDeadzone = 0.3f;
+            //float outerDeadzone = 0.7f;
+            //float innerDeadzone = 0.2f;
+            //float outerDeadzone = 0.8f;
+
+            if (gamepad.rightShoulder.isPressed) {
+                float y = DeadzoneFilter(gamepad.rightStick.ReadValue().y, innerDeadzone, outerDeadzone);
+                if (y > 0) {
+                    this.Zoom(0, y);
+                } else if (y < 0) {
+                    this.Zoom(Mathf.Abs(y), 0);
+                }
+
+                if (gamepad.xButton.wasPressedThisFrame) {
+                    this.ResetRotationOffset();
+                }
+                if (gamepad.yButton.wasPressedThisFrame) {
+                    this.ResetZoom();
+                }
+            } else {
+                float x = DeadzoneFilter(gamepad.rightStick.ReadUnprocessedValue().x, innerDeadzone, outerDeadzone);
+                this.RotateOffset(x);
+            }
+        }
+
+        /*
+        private void NoPanControl_RotationLeftStick_ZoomRightShoulderAndRightStick(Gamepad gamepad) {
+            if (gamepad.rightShoulder.isPressed) {
+                float rightStickY = gamepad.rightStick.ReadValue().y;
+                if (rightStickY > 0) {
+                    this.Zoom(0, rightStickY);
+                } else if (rightStickY < 0) {
+                    this.Zoom(Mathf.Abs(rightStickY), 0);
+                }
+
+                if (gamepad.xButton.wasPressedThisFrame) {
+                    this.ResetRotationOffset();
+                }
+                if (gamepad.yButton.wasPressedThisFrame) {
+                    this.ResetZoom();
+                }
+            } else {
+                float rightStickX = Gamepad.current.rightStick.ReadValue().x;
+                float rightStickX_unprocessed = Gamepad.current.rightStick.ReadUnprocessedValue().x;
+                this.RotateOffset(rightStickX);
+            }
+        }
+        */
+
+        /*
+        private void NoPanControl_RotationLeftStick_ZoomLeftShoulderAndRightStick(Gamepad gamepad) {
+            if (gamepad.leftShoulder.isPressed) {
+                //this.PanOffset(gamepad.leftStick.ReadValue());
+                float rightStickY = gamepad.rightStick.ReadValue().y;
+                if (rightStickY > 0) {
+                    this.Zoom(0, rightStickY);
+                } else if (rightStickY < 0) {
+                    this.Zoom(Mathf.Abs(rightStickY), 0);
+                }
+
+                if (gamepad.xButton.wasPressedThisFrame) {
+                    this.ResetRotationOffset();
+                }
+                if (gamepad.yButton.wasPressedThisFrame) {
+                    this.ResetZoom();
+                }
+            } else {
+                float rightStickX = Gamepad.current.rightStick.ReadValue().x;
+                float rightStickX_unprocessed = Gamepad.current.rightStick.ReadUnprocessedValue().x;
+                //Debug.Log($"Right stick X: {rightStickX}, Right stick X unprocessed: {rightStickX_unprocessed}, Deadzone min: {InputSystem.settings.defaultDeadzoneMin}, Deadzone max: {InputSystem.settings.defaultDeadzoneMax}");
+                this.RotateOffset(rightStickX);
+            }
+        }
+        */
+
+        private void RotateOffset(float f) {
+            this.RotationOffset += Time.deltaTime * CameraRotationSpeed * f;
+        }
+
+        //private void PanOffset(Vector2 vector2) {
+        //    this.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
+        //}
 
         private void Zoom(float zoomOut, float zoomIn) {
-            this.Camera.orthographicSize += Time.deltaTime * CameraZoomSpeed * (zoomOut - zoomIn);
-            this.Camera.orthographicSize = Mathf.Clamp(this.Camera.orthographicSize, MinCameraOrthographicSize, MaxCameraOrthographicSize);
+            this.OrthographicCameraSize += Time.deltaTime * CameraZoomSpeed * (zoomOut - zoomIn);
+            this.OrthographicCameraSize = Mathf.Clamp(this.OrthographicCameraSize, MinOrthographicCameraSize, MaxOrthographicCameraSize);
         }
 
-        private void ResetPanOffset() {
-            this.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
+        private void ResetRotationOffset() {
+            this.RotationOffset = 0f;
         }
+
+        //private void ResetPanOffset() {
+        //    this.CameraPanOffsetAndPitch.localPosition = Vector3.zero;
+        //}
 
         public void ResetZoom() {
             if (this.CameraFollowSettings.FollowsCarLocation) {
-                this.Camera.orthographicSize = this.TrackJson.FollowCameraSize;
+                this.OrthographicCameraSize = this.TrackJson.FollowCameraSize;
             } else {
-                this.Camera.orthographicSize = this.DefaultFixedCameraSize;
+                this.OrthographicCameraSize = this.DefaultFixedCameraSize;
             }
         }
 
@@ -119,7 +198,7 @@ namespace ZoomTracks {
             Assert.IsTrue(this.Camera.transform.localEulerAngles == Vector3.zero);
             Assert.IsTrue(this.Camera.transform.localScale == Vector3.one);
             Assert.IsTrue(this.Camera.orthographic);
-            Assert.IsTrue(MinCameraOrthographicSize <= this.Camera.orthographicSize && this.Camera.orthographicSize <= MaxCameraOrthographicSize);
+            Assert.IsTrue(MinOrthographicCameraSize <= this.OrthographicCameraSize && this.OrthographicCameraSize <= MaxOrthographicCameraSize);
             Assert.IsTrue(this.Camera.nearClipPlane == 1);
             Assert.IsTrue(this.Camera.farClipPlane == 1000);
             Assert.IsTrue(this.Camera.clearFlags == CameraClearFlags.SolidColor);
