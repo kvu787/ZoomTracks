@@ -9,12 +9,13 @@ using UnityEngine.Scripting;
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
         private const string UiSceneName = "Ui";
-        private const int InitialTrackSceneIndex = 6;
+        private const int InitialTrackSceneIndex = 4;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
             "Track001",
             "Track002",
             "Track003",
             "Track004",
+            "Track005",
             "Track007",
             "Track008",
             "Track009",
