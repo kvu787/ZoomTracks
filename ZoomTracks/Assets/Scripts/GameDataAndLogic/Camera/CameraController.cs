@@ -12,7 +12,6 @@ namespace ZoomTracks {
         private const float MaxOrthographicCameraSize = 281.25f;
 
         private CameraFollowSettings CameraFollowSettings { get; }
-        private TrackJson TrackJson { get; }
         private InputManager InputManager { get; }
 
         private Transform CameraYawOffset { get; }
@@ -20,12 +19,12 @@ namespace ZoomTracks {
         private Camera Camera { get; }
 
         private float RotationOffset { get; set; }
-        private float OrthographicCameraSize { get; set; }
         private float DefaultFixedCameraSize { get; }
+        private float DefaultFollowCameraSize { get; }
+        private float OrthographicCameraSize { get; set; }
 
         public CameraController(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, InputManager inputManager) {
             this.CameraFollowSettings = cameraFollowSettings;
-            this.TrackJson = trackJson;
             this.InputManager = inputManager;
 
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
@@ -33,13 +32,13 @@ namespace ZoomTracks {
             this.Camera = GameObject.Find(nameof(this.Camera)).GetComponent<Camera>();
 
             this.RotationOffset = 0f;
-            this.OrthographicCameraSize = this.Camera.orthographicSize;
-            this.DefaultFixedCameraSize = this.OrthographicCameraSize;
+            this.DefaultFixedCameraSize = this.Camera.orthographicSize;
+            this.DefaultFollowCameraSize = trackJson.FollowCameraSize;
+            this.ResetZoom();
 
             this.CameraData = this.Camera.GetUniversalAdditionalCameraData();
 
             this.ValidateCameraParameters();
-            this.ResetZoom();
         }
 
         public UniversalAdditionalCameraData CameraData { get; }
@@ -176,7 +175,7 @@ namespace ZoomTracks {
 
         public void ResetZoom() {
             if (this.CameraFollowSettings.FollowsCarLocation) {
-                this.OrthographicCameraSize = this.TrackJson.FollowCameraSize;
+                this.OrthographicCameraSize = this.DefaultFollowCameraSize;
             } else {
                 this.OrthographicCameraSize = this.DefaultFixedCameraSize;
             }
@@ -199,6 +198,8 @@ namespace ZoomTracks {
             Assert.IsTrue(this.Camera.transform.localEulerAngles == Vector3.zero);
             Assert.IsTrue(this.Camera.transform.localScale == Vector3.one);
             Assert.IsTrue(this.Camera.orthographic);
+            Assert.IsTrue(MinOrthographicCameraSize <= this.DefaultFixedCameraSize && this.DefaultFixedCameraSize <= MaxOrthographicCameraSize);
+            Assert.IsTrue(MinOrthographicCameraSize <= this.DefaultFollowCameraSize && this.DefaultFollowCameraSize <= MaxOrthographicCameraSize);
             Assert.IsTrue(MinOrthographicCameraSize <= this.OrthographicCameraSize && this.OrthographicCameraSize <= MaxOrthographicCameraSize);
             Assert.IsTrue(this.Camera.nearClipPlane == 1);
             Assert.IsTrue(this.Camera.farClipPlane == 1000);
