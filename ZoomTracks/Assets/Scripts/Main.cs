@@ -112,17 +112,16 @@ namespace ZoomTracks {
                     if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                         this.CarState.Reset();
                         this.CarControlTimeoutStart = DateTime.Now;
-                    }
-                    if (!this.InCarControlTimeout()) {
+                    } else if (!this.InCarControlTimeout()) {
                         this.CarState.ReadInputAndUpdateState();
                     }
                 }
 
                 this.CarState.ApplyVelocityToPositionAndRotation();
                 this.CarState.ApplyStateToGameObject();
+                this.CameraController.Update();
                 this.CameraPivotManager.UpdateCameraPivot();
                 this.UiManager.UpdateUi();
-                this.CameraController.Update();
 
                 await Awaitable.NextFrameAsync();
             }
