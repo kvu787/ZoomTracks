@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CameraPivotManager {
@@ -22,11 +23,12 @@ namespace ZoomTracks {
         }
 
         public void ReadInputAndToggle() {
-            // Toggle follow car location: [A key] or [South button]
-            if (this.InputManager.Keyboard?.aKey.wasPressedThisFrame == true
-                || this.InputManager.Gamepad?.buttonSouth.wasPressedThisFrame == true) {
-                this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation;
-                this.CameraController.ResetZoom();
+            Gamepad gamepad = this.InputManager.Gamepad;
+            if (gamepad != null) {
+                if (gamepad.rightShoulder.isPressed && gamepad.aButton.wasPressedThisFrame) {
+                    this.CameraFollowSettings.FollowsCarLocation = !this.CameraFollowSettings.FollowsCarLocation;
+                    this.CameraController.ResetZoom();
+                }
             }
         }
 

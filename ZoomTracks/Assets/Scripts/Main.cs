@@ -107,7 +107,7 @@ namespace ZoomTracks {
                         this.CarControlTimeoutStart = DateTime.Now;
                     }
                     this.CameraController.ReadInputAndChangeCameraSettings();
-                    //this.CameraPivotManager.ReadInputAndToggle();
+                    this.CameraPivotManager.ReadInputAndToggle();
                     this.GraphicsSettingsManager.ReadInputAndUpdate();
                     if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                         this.CarState.Reset();
