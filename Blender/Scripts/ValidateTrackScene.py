@@ -16,18 +16,6 @@ AllowedCollectionNames = [
     "Vehicles",
 ]
 
-CheckOriginPrefixes = [
-    "Grass",
-    "Road",
-    "Gravel",
-    "Barrier",
-    "Checkpoint",
-    "CheckeredLine",
-    "VehicleRoad",
-    "Cone",
-    "BigCone",
-]
-
 ValidZHeights = [
     0,
     0.015625,
