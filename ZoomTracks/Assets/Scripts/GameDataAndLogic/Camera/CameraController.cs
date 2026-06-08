@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 namespace ZoomTracks {
     public class CameraController {
         private const float CameraRotationSpeed = 100;
-        private const float CameraZoomSpeed = 100;
+        private const float CameraZoomSpeed = 50;
         private const float CameraPanSpeed = 150;
         private const float MinOrthographicCameraSize = 1;
         private const float MaxOrthographicCameraSize = 281.25f;
@@ -75,7 +75,6 @@ namespace ZoomTracks {
 
         private void NoPanControl_RotationLeftStick_ZoomRightShoulderAndRightStick_CustomDeadzones(Gamepad gamepad) {
             //float innerDeadzone = 0.125f;
-            float innerDeadzone = 0.2f;
             float outerDeadzone = 0.95f;
             //float innerDeadzone = 0.3f;
             //float outerDeadzone = 0.7f;
@@ -83,6 +82,7 @@ namespace ZoomTracks {
             //float outerDeadzone = 0.8f;
 
             if (gamepad.rightShoulder.isPressed) {
+                float innerDeadzone = 0.0078125f;
                 float y = DeadzoneFilter(gamepad.rightStick.ReadValue().y, innerDeadzone, outerDeadzone);
                 if (y > 0) {
                     this.Zoom(0, y);
@@ -97,6 +97,7 @@ namespace ZoomTracks {
                     this.ResetZoom();
                 }
             } else {
+                float innerDeadzone = 0.2f;
                 float x = DeadzoneFilter(gamepad.rightStick.ReadUnprocessedValue().x, innerDeadzone, outerDeadzone);
                 this.RotateOffset(x);
             }
