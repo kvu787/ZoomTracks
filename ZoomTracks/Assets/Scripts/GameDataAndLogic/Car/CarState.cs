@@ -50,49 +50,38 @@ namespace ZoomTracks {
             }
 
             float brakeInput = gamepad.bButton.ReadValue();
-            Vector2 accelerationInput = gamepad.leftStick.ReadValue();
+            Vector2 accelerationInput_xyPlanar = gamepad.leftStick.ReadValue();
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
 
             if (brakeInput == 0) {
-                if (accelerationInput.magnitude > 0) {
-                    // Map XY input onto XZ world plane
-                    Vector3 a = new(accelerationInput.x, 0, accelerationInput.y);
+                if (accelerationInput_xyPlanar.magnitude > 0) {
+                    Vector3 accelerationInput_xzPlanar = new(accelerationInput_xyPlanar.x, 0, accelerationInput_xyPlanar.y);
+                    Vector3 accelerationInput_worldSpace = Quaternion.Euler(0, cameraTransformEulerAngleY, 0) * accelerationInput_xzPlanar;
+                    Vector3 accelerationInput_carSpace = Quaternion.Inverse(this.RotationQuaternion) * accelerationInput_worldSpace;
 
-                    // Adjust for camera yaw
-                    Vector3 b = Quaternion.Euler(0, cameraTransformEulerAngleY, 0) * a;
-
-                    // Orient with respect to the car
-                    Vector3 c = Quaternion.Inverse(this.RotationQuaternion) * b;
-
-                    // Apply acceleration map
-                    Vector3 d = c;
-                    if (d.x > 0) {
-                        d.x *= carDynamic.AccelerationMap.Right;
-                    } else if (d.x < 0) {
-                        d.x *= carDynamic.AccelerationMap.Left;
+                    Vector3 accelerationOutput_carSpace = default;
+                    if (accelerationInput_carSpace.x > 0) {
+                        accelerationOutput_carSpace.x = accelerationInput_carSpace.x * carDynamic.AccelerationMap.Right;
+                    } else if (accelerationInput_carSpace.x < 0) {
+                        accelerationOutput_carSpace.x = accelerationInput_carSpace.x * carDynamic.AccelerationMap.Left;
+                    } else {
+                        accelerationOutput_carSpace.x = 0;
                     }
-                    if (d.z > 0) {
-                        d.z *= carDynamic.AccelerationMap.Forward;
-                    } else if (d.z < 0) {
-                        d.z *= carDynamic.AccelerationMap.Reverse;
+                    if (accelerationInput_carSpace.z > 0) {
+                        accelerationOutput_carSpace.z = accelerationInput_carSpace.z * carDynamic.AccelerationMap.Forward;
+                    } else if (accelerationInput_carSpace.z < 0) {
+                        accelerationOutput_carSpace.z = accelerationInput_carSpace.z * carDynamic.AccelerationMap.Reverse;
+                    } else {
+                        accelerationOutput_carSpace.z = 0;
                     }
+                    accelerationOutput_carSpace.y = 0;
 
-                    // Rotate back to world space
-                    Vector3 e = this.RotationQuaternion * d;
-
-                    // Convert acceleration to change in velocity
-                    Vector3 f = Time.deltaTime * e;
-
-                    // Just to be safe, zero out the y coordinate
-                    f.y = 0;
-
-                    // The result is the change in velocity for this frame
-                    Vector3 velocityDelta = f;
-                    velocityDelta = this.PreventRotationJitter(velocityDelta);
-
-                    // Update car velocity
-                    this.Velocity += velocityDelta;
+                    Vector3 accelerationOutput_worldSpace = this.RotationQuaternion * accelerationOutput_carSpace;
+                    Vector3 deltaVelocity_worldSpace = Time.deltaTime * accelerationOutput_worldSpace;
+                    deltaVelocity_worldSpace.y = 0;
+                    deltaVelocity_worldSpace = this.PreventRotationJitter(deltaVelocity_worldSpace);
+                    this.Velocity += deltaVelocity_worldSpace;
                 } else {
                     // Brake and acceleration are zero, so do nothing
                 }
