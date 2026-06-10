@@ -3,43 +3,37 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarState {
-        private Transform PlaceholderCarTransform { get; }
         private TrackSwitcher TrackSwitcher { get; }
         private CarSwitcher CarSwitcher { get; }
         private CameraController CameraController { get; }
         private InputManager InputManager { get; }
 
-        /// <summary>
-        /// World space
-        /// </summary>
         public Vector3 Position { get; private set; }
-
-        /// <summary>
-        /// World space
-        /// </summary>
-        private float Rotation { get; set; }
-
-        /// <summary>
-        /// World space
-        /// </summary>
-        private Quaternion RotationQuaternion => Quaternion.Euler(0f, this.Rotation, 0f);
-
-        /// <summary>
-        /// World space
-        /// </summary>
+        private Quaternion Rotation {
+            get {
+                if (this.Rotation_MostRecentNonZeroVelocity is null) {
+                    return this.StartingRotation;
+                } else {
+                    return this.Rotation_MostRecentNonZeroVelocity.Value;
+                }
+            }
+        }
+        private Quaternion? Rotation_MostRecentNonZeroVelocity { get; set; }
         private Vector3 Velocity { get; set; }
 
+        private Vector3 StartingPosition { get; }
+        private Quaternion StartingRotation { get; }
+
         public CarState(Transform placeholderCarTransform, TrackSwitcher trackSwitcher, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
-            this.PlaceholderCarTransform = placeholderCarTransform;
             this.TrackSwitcher = trackSwitcher;
             this.CarSwitcher = carSwitcher;
             this.CameraController = cameraController;
             this.InputManager = inputManager;
+            this.StartingPosition = placeholderCarTransform.position;
+            this.StartingRotation = placeholderCarTransform.rotation;
             this.Reset();
         }
 
-        // cameraTransformEulerAngleY must be in world space
-        // cameraTransformEulerAngleY = GameObject.Find("Camera").GetComponent<Camera>().transform.eulerAngles.y
         public void ReadInputAndUpdateState() {
             Gamepad gamepad = this.InputManager.Gamepad;
             if (gamepad == null) {
@@ -55,7 +49,7 @@ namespace ZoomTracks {
                 if (accelerationInput_xyPlane.magnitude > 0) {
                     Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
                     Vector3 accelerationInput_worldSpace = Quaternion.Euler(0, cameraTransformEulerAngleY, 0) * accelerationInput_xzPlane;
-                    Vector3 accelerationInput_carSpace = Quaternion.Inverse(this.RotationQuaternion) * accelerationInput_worldSpace;
+                    Vector3 accelerationInput_carSpace = Quaternion.Inverse(this.Rotation) * accelerationInput_worldSpace;
 
                     Vector3 accelerationOutput_carSpace = default;
                     if (accelerationInput_carSpace.x > 0) {
@@ -74,9 +68,10 @@ namespace ZoomTracks {
                     }
                     accelerationOutput_carSpace.y = 0;
 
-                    Vector3 accelerationOutput_worldSpace = this.RotationQuaternion * accelerationOutput_carSpace;
+                    Vector3 accelerationOutput_worldSpace = this.Rotation * accelerationOutput_carSpace;
                     Vector3 deltaVelocity_worldSpace = Time.deltaTime * accelerationOutput_worldSpace;
                     deltaVelocity_worldSpace.y = 0;
+                    deltaVelocity_worldSpace = this.PreventRotationJitter(deltaVelocity_worldSpace);
                     this.Velocity += deltaVelocity_worldSpace;
                 } else {
                     // Brake and acceleration are zero, so do nothing
@@ -99,41 +94,40 @@ namespace ZoomTracks {
                 // Limit velocity
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
+
+            if (this.Velocity.sqrMagnitude > 0) {
+                this.Rotation_MostRecentNonZeroVelocity = Quaternion.LookRotation(this.Velocity, Vector3.up);
+            }
         }
 
-        private Vector3 PreventRotationJitter(Vector3 velocityDelta) {
+        private Vector3 PreventRotationJitter(Vector3 deltaVelocity_worldSpace) {
             float minVelocityForRotation = this.CarSwitcher.CurrentCarDynamic.MinVelocityForRotation;
             if (minVelocityForRotation == 0) {
                 minVelocityForRotation = this.TrackSwitcher.CurrentTrackJson.MinVelocityForRotation;
             }
+
             if (this.Velocity.magnitude < minVelocityForRotation) {
-                Vector3 carSpaceVelocityDelta = Quaternion.Inverse(this.RotationQuaternion) * velocityDelta;
-                // Zero out the Vector3.left and Vector3.right (with respect to the car yaw) component of the velocity delta
-                carSpaceVelocityDelta.x = 0;
-                Vector3 newVelocityDelta = this.RotationQuaternion * carSpaceVelocityDelta;
-                return newVelocityDelta;
+                Vector3 deltaVelocity_carSpace = Quaternion.Inverse(this.Rotation) * deltaVelocity_worldSpace;
+                deltaVelocity_carSpace.x = 0;
+                Vector3 newDeltaVelocity_worldSpace = this.Rotation * deltaVelocity_carSpace;
+                newDeltaVelocity_worldSpace.y = 0;
+                return newDeltaVelocity_worldSpace;
             } else {
-                return velocityDelta;
+                return deltaVelocity_worldSpace;
             }
         }
 
         public void ApplyVelocityToPositionAndRotation() {
-            // Apply velocity to position
             this.Position += this.Velocity * Time.deltaTime;
-
-            if (this.Velocity != Vector3.zero) {
-                // Rotate to match the velocity direction
-                this.Rotation = Quaternion.LookRotation(this.Velocity, Vector3.up).eulerAngles.y;
-            }
         }
 
         public void ApplyStateToGameObject() {
-            this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, this.RotationQuaternion);
+            this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, this.Rotation);
         }
 
         public void Reset() {
-            this.Position = this.PlaceholderCarTransform.position;
-            this.Rotation = this.PlaceholderCarTransform.rotation.eulerAngles.y;
+            this.Position = this.StartingPosition;
+            this.Rotation_MostRecentNonZeroVelocity = null;
             this.Velocity = Vector3.zero;
         }
     }

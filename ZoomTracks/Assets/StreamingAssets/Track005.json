@@ -2,6 +2,7 @@
     "CameraFollowsCarLocation": true,
     "FollowCameraSize": 30,
     "CarScale": 1,
+    "MinVelocityForRotation": 0.5,
     "StartCarIndex": 2,
     "Cars": [
         {
