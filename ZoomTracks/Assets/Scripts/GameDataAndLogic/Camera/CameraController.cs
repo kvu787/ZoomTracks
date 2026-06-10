@@ -96,9 +96,9 @@ namespace ZoomTracks {
                     this.ResetZoom();
                 }
             } else {
-                float innerDeadzone = 0.2f;
-                float x = DeadzoneFilter(gamepad.rightStick.ReadUnprocessedValue().x, innerDeadzone, outerDeadzone);
-                this.RotateOffset(x);
+                //float innerDeadzone = 0.2f;
+                //float x = DeadzoneFilter(gamepad.rightStick.ReadUnprocessedValue().x, innerDeadzone, outerDeadzone);
+                //this.RotateOffset(x);
             }
         }
 

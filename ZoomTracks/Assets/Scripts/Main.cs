@@ -108,7 +108,7 @@ namespace ZoomTracks {
                     }
                 }
 
-                this.CarState.ApplyVelocityToPositionAndRotation();
+                this.CarState.ApplyVelocities();
                 this.CarState.ApplyStateToGameObject();
                 this.CameraController.Update();
                 this.CameraPivotManager.UpdateCameraPivot();
