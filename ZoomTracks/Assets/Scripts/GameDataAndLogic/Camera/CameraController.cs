@@ -81,7 +81,7 @@ namespace ZoomTracks {
 
             if (gamepad.rightShoulder.isPressed) {
                 float innerDeadzone = 0.0078125f;
-                float y = DeadzoneFilter(gamepad.rightStick.ReadValue().y, innerDeadzone, outerDeadzone);
+                float y = DeadzoneFilter(gamepad.leftStick.ReadValue().y, innerDeadzone, outerDeadzone);
                 if (y > 0) {
                     this.Zoom(0, y);
                 } else if (y < 0) {
@@ -96,7 +96,7 @@ namespace ZoomTracks {
                 }
             } else {
                 float innerDeadzone = 0.2f;
-                float x = DeadzoneFilter(gamepad.rightStick.ReadUnprocessedValue().x, innerDeadzone, outerDeadzone);
+                float x = DeadzoneFilter(gamepad.leftStick.ReadUnprocessedValue().x, innerDeadzone, outerDeadzone);
                 this.RotateOffset(x);
             }
         }
