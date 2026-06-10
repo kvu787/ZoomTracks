@@ -26,7 +26,6 @@ namespace ZoomTracks {
 
         private CameraFollowSettings CameraFollowSettings { get; set; }
         private TrackObjects TrackObjects { get; set; }
-        private ControlModeSwitcher ControlModeSwitcher { get; set; }
         private CarSwitcher CarSwitcher { get; set; }
         private CameraController CameraController { get; set; }
         private GraphicsSettingsManager GraphicsSettingsManager { get; set; }
@@ -74,7 +73,6 @@ namespace ZoomTracks {
             Debug.Log("Initialize track...");
             this.CameraFollowSettings = new CameraFollowSettings(this.TrackSwitcher.CurrentTrackJson);
             this.TrackObjects = new TrackObjects();
-            this.ControlModeSwitcher = new ControlModeSwitcher(this.InputManager);
             this.CameraController = new CameraController(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
             this.GraphicsSettingsManager = new GraphicsSettingsManager(this.CameraController, this.InputManager);
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.TrackSwitcher.CurrentTrackJson, this.InputManager);

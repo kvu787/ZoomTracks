@@ -7,7 +7,6 @@ namespace ZoomTracks {
     public class CameraController {
         private const float CameraRotationSpeed = 100;
         private const float CameraZoomSpeed = 50;
-        private const float CameraPanSpeed = 150;
         private const float MinOrthographicCameraSize = 1;
         private const float MaxOrthographicCameraSize = 281.25f;
 
