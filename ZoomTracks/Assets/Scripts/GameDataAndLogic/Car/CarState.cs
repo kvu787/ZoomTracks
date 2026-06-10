@@ -40,13 +40,13 @@ namespace ZoomTracks {
                 return;
             }
 
-            float brakeInput = gamepad.bButton.ReadValue();
+            float brakeInput = gamepad.leftTrigger.ReadValue();
             Vector2 accelerationInput_xyPlane = gamepad.rightStick.ReadValue();
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
 
             if (brakeInput == 0) {
-                if (accelerationInput_xyPlane.magnitude > 0) {
+                if (accelerationInput_xyPlane != Vector2.zero) {
                     Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
                     Vector3 accelerationInput_worldSpace = Quaternion.Euler(0, cameraTransformEulerAngleY, 0) * accelerationInput_xzPlane;
                     Vector3 accelerationInput_carSpace = Quaternion.Inverse(this.Rotation) * accelerationInput_worldSpace;
@@ -81,17 +81,16 @@ namespace ZoomTracks {
                     // Brake is non-zero, but velocity is already zero, so do nothing
                 } else {
                     Vector3 opposingVec = (-1 * this.Velocity).normalized;
-                    Vector3 velocityDelta = carDynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * opposingVec;
-                    if (velocityDelta.magnitude >= this.Velocity.magnitude) {
+                    Vector3 deltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * opposingVec;
+                    if (deltaVelocity.sqrMagnitude >= this.Velocity.sqrMagnitude) {
                         this.Velocity = Vector3.zero;
                     } else {
-                        this.Velocity += velocityDelta;
+                        this.Velocity += deltaVelocity;
                     }
                 }
             }
 
             if (carDynamic.VelocityLimiter >= 0) {
-                // Limit velocity
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
 
