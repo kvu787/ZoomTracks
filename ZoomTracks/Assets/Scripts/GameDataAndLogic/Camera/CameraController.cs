@@ -52,7 +52,7 @@ namespace ZoomTracks {
         public void ReadInputAndChangeCameraSettings() {
             Gamepad gamepad = this.InputManager.Gamepad;
             if (gamepad != null) {
-                this.NoPanControl_RotationLeftStick_ZoomRightShoulderAndRightStick_CustomDeadzones(gamepad);
+                this.RightShoulderAndRightStickZoom_CustomDeadzones(gamepad);
             }
         }
 
@@ -71,6 +71,23 @@ namespace ZoomTracks {
             return sign * input;
         }
 
+        private void RightShoulderAndRightStickZoom_CustomDeadzones(Gamepad gamepad) {
+            if (gamepad.rightShoulder.isPressed) {
+                float outerDeadzone = 0.95f;
+                float innerDeadzone = 0.0078125f; // 2**-7
+                float y = DeadzoneFilter(gamepad.leftStick.ReadValue().y, innerDeadzone, outerDeadzone);
+                if (y > 0) {
+                    this.Zoom(0, y);
+                } else if (y < 0) {
+                    this.Zoom(Mathf.Abs(y), 0);
+                }
+                if (gamepad.yButton.wasPressedThisFrame) {
+                    this.ResetZoom();
+                }
+            }
+        }
+
+        /*
         private void NoPanControl_RotationLeftStick_ZoomRightShoulderAndRightStick_CustomDeadzones(Gamepad gamepad) {
             //float innerDeadzone = 0.125f;
             float outerDeadzone = 0.95f;
@@ -100,6 +117,7 @@ namespace ZoomTracks {
                 this.RotateOffset(x);
             }
         }
+        */
 
         /*
         private void NoPanControl_RotationLeftStick_ZoomRightShoulderAndRightStick(Gamepad gamepad) {
