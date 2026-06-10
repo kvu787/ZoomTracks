@@ -3,9 +3,6 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarState {
-        private const float CarForwardBackwardSpeed = 150;
-        private const float CarRotateSpeed = 540;
-
         private Transform PlaceholderCarTransform { get; }
         private TrackSwitcher TrackSwitcher { get; }
         private CarSwitcher CarSwitcher { get; }
