@@ -139,7 +139,9 @@ namespace ZoomTracks {
             //    Debug.Log(rotationSpeed);
             //}
 
-            this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, MaxRotationSpeed_DegreesPerSecond);
+            // Uncomment this for standard angular speed clamping:
+            // this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, MaxRotationSpeed_DegreesPerSecond);
+
             //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 10f * this.Velocity.magnitude);
             //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 100f * this.Velocity.magnitude);
             //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 100f * this.Velocity.magnitude * this.Velocity.magnitude);

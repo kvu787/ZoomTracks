@@ -54,7 +54,7 @@ namespace ZoomTracks {
             this.CameraData = cameraController.CameraData;
             this.InputManager = inputManager;
 
-            this.MsaaMode = MsaaModeEnum.Msaa8x;
+            this.MsaaMode = MsaaModeEnum.Off;
             this.TaaMode = TaaModeEnum.Off;
             this.VsyncMode = VsyncModeEnum.EveryVBlank;
             this.RenderScale = RenderScaleEnum.Scale1;
