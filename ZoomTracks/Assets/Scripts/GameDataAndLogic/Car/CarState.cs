@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarState {
-        private const float MaxRotationSpeed_DegreesPerSecond = 720f;
+        private const float MaxRotationSpeed_DegreesPerSecond = 540f;
         private const float MinVelocityForRotation = 1f;
         private const float AxialDeadzoneInner = 0.05f;
         private const float AxialDeadzoneOuter = 0.95f;
