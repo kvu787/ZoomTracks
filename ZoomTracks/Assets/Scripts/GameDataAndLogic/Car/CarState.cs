@@ -3,6 +3,10 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarState {
+        private const float MaxRotationSpeed_DegreesPerSecond = 700f;
+        private const float MinVelocityForRotation = 1f;
+        private const float AxialDeadzone = 0.075f;
+
         private TrackSwitcher TrackSwitcher { get; }
         private CarSwitcher CarSwitcher { get; }
         private CameraController CameraController { get; }
@@ -18,6 +22,7 @@ namespace ZoomTracks {
                 }
             }
         }
+        private float Rotation_Degrees => this.Rotation.eulerAngles.y;
         private Quaternion? Rotation_MostRecentNonZeroVelocity { get; set; }
         private Vector3 Velocity { get; set; }
 
@@ -34,6 +39,16 @@ namespace ZoomTracks {
             this.Reset();
         }
 
+        // Per-axis deadzone with rescaling so there's no snap at the threshold:
+        // the surviving range [deadzone, 1] is remapped to [0, 1].
+        private static float DeadzoneAxis(float value, float deadzone) {
+            float magnitude = Mathf.Abs(value);
+            if (magnitude < deadzone) {
+                return 0f;
+            }
+            return Mathf.Sign(value) * (magnitude - deadzone) / (1f - deadzone);
+        }
+
         public void ReadInputAndUpdateState() {
             Gamepad gamepad = this.InputManager.Gamepad;
             if (gamepad == null) {
@@ -44,12 +59,14 @@ namespace ZoomTracks {
             Vector2 accelerationInput_xyPlane = gamepad.rightStick.ReadValue();
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
+            Vector3 oldVelocity = this.Velocity;
 
             if (brakeInput == 0) {
                 if (accelerationInput_xyPlane != Vector2.zero) {
                     Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
                     Vector3 accelerationInput_worldSpace = Quaternion.Euler(0, cameraTransformEulerAngleY, 0) * accelerationInput_xzPlane;
                     Vector3 accelerationInput_carSpace = Quaternion.Inverse(this.Rotation) * accelerationInput_worldSpace;
+                    accelerationInput_carSpace.x = DeadzoneAxis(accelerationInput_carSpace.x, AxialDeadzone);
 
                     Vector3 accelerationOutput_carSpace = default;
                     if (accelerationInput_carSpace.x > 0) {
@@ -71,7 +88,7 @@ namespace ZoomTracks {
                     Vector3 accelerationOutput_worldSpace = this.Rotation * accelerationOutput_carSpace;
                     Vector3 deltaVelocity_worldSpace = Time.deltaTime * accelerationOutput_worldSpace;
                     deltaVelocity_worldSpace.y = 0;
-                    deltaVelocity_worldSpace = this.PreventRotationJitter(deltaVelocity_worldSpace);
+                    //deltaVelocity_worldSpace = this.PreventRotationJitter(deltaVelocity_worldSpace);
                     this.Velocity += deltaVelocity_worldSpace;
                 } else {
                     // Brake and acceleration are zero, so do nothing
@@ -94,18 +111,29 @@ namespace ZoomTracks {
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
 
+            //float deltaAngle_degrees = Vector3.Angle(previousVelocity, this.Velocity);
+            //float rotationSpeed = (deltaAngle_degrees / Time.deltaTime);
+            //if (rotationSpeed > MaxRotationSpeed_DegreesPerSecond) {
+            //    Debug.Log(rotationSpeed);
+            //}
+
+            //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, MaxRotationSpeed_DegreesPerSecond);
+            //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 10f * this.Velocity.magnitude);
+            //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 100f * this.Velocity.magnitude);
+            //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 100f * this.Velocity.magnitude * this.Velocity.magnitude);
+
             if (this.Velocity.sqrMagnitude > 0) {
                 this.Rotation_MostRecentNonZeroVelocity = Quaternion.LookRotation(this.Velocity, Vector3.up);
             }
         }
 
         private Vector3 PreventRotationJitter(Vector3 deltaVelocity_worldSpace) {
-            float minVelocityForRotation = this.CarSwitcher.CurrentCarDynamic.MinVelocityForRotation;
-            if (minVelocityForRotation == 0) {
-                minVelocityForRotation = this.TrackSwitcher.CurrentTrackJson.MinVelocityForRotation;
-            }
+            //float minVelocityForRotation = this.CarSwitcher.CurrentCarDynamic.MinVelocityForRotation;
+            //if (minVelocityForRotation == 0) {
+            //    minVelocityForRotation = this.TrackSwitcher.CurrentTrackJson.MinVelocityForRotation;
+            //}
 
-            if (this.Velocity.magnitude < minVelocityForRotation) {
+            if (this.Velocity.magnitude < MinVelocityForRotation) {
                 Vector3 deltaVelocity_carSpace = Quaternion.Inverse(this.Rotation) * deltaVelocity_worldSpace;
                 deltaVelocity_carSpace.x = 0;
                 Vector3 newDeltaVelocity_worldSpace = this.Rotation * deltaVelocity_carSpace;
