@@ -12,7 +12,6 @@ namespace ZoomTracks {
             if (Mathf.Abs(signedDeltaRotation_degrees) <= maxDeltaRotation_degrees) {
                 return newVelocity;
             }
-            Debug.Log(Mathf.Abs(signedDeltaRotation_degrees));
             float clampedRotation_degrees = Mathf.Sign(signedDeltaRotation_degrees) * maxDeltaRotation_degrees;
             Vector3 newDirectionUnitVector = Quaternion.AngleAxis(clampedRotation_degrees, Vector3.up) * oldDirectionUnitVector;
             return newDirectionUnitVector * newVelocity.magnitude;
