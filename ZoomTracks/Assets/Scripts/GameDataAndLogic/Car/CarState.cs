@@ -9,7 +9,6 @@ namespace ZoomTracks {
         private const float AxialDeadzoneInner = 0.05f;
         private const float AxialDeadzoneOuter = 0.95f;
 
-        private TrackSwitcher TrackSwitcher { get; }
         private CarSwitcher CarSwitcher { get; }
         private CameraController CameraController { get; }
         private InputManager InputManager { get; }
@@ -31,8 +30,7 @@ namespace ZoomTracks {
         private Vector3 StartingPosition { get; }
         private Quaternion StartingRotation { get; }
 
-        public CarState(Transform placeholderCarTransform, TrackSwitcher trackSwitcher, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
-            this.TrackSwitcher = trackSwitcher;
+        public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
             this.CarSwitcher = carSwitcher;
             this.CameraController = cameraController;
             this.InputManager = inputManager;
