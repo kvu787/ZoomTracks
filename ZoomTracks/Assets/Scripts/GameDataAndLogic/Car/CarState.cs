@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 namespace ZoomTracks {
     public class CarState {
         private const float MaxRotationSpeed_DegreesPerSecond = 540f;
-        private const float MinVelocityForRotation = 1f;
         private const float AxialDeadzoneInner = 0.05f;
         private const float AxialDeadzoneOuter = 0.95f;
 
@@ -77,7 +76,6 @@ namespace ZoomTracks {
             Vector2 accelerationInput_xyPlane = Gamepad.current.rightStick.ReadUnprocessedValue();
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
-            Vector3 oldVelocity = this.Velocity;
 
             if (brakeInput == 0) {
                 Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
