@@ -104,7 +104,6 @@ namespace ZoomTracks {
                     Vector3 accelerationOutput_worldSpace = this.Rotation * accelerationOutput_carSpace;
                     Vector3 deltaVelocity_worldSpace = Time.deltaTime * accelerationOutput_worldSpace;
                     deltaVelocity_worldSpace.y = 0;
-                    //deltaVelocity_worldSpace = this.PreventRotationJitter(deltaVelocity_worldSpace);
                     this.Velocity += deltaVelocity_worldSpace;
                 } else {
                     // Brake and acceleration are zero, so do nothing
