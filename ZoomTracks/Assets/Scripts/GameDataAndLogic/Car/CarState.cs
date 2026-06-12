@@ -131,18 +131,8 @@ namespace ZoomTracks {
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
 
-            //float deltaAngle_degrees = Vector3.Angle(previousVelocity, this.Velocity);
-            //float rotationSpeed = (deltaAngle_degrees / Time.deltaTime);
-            //if (rotationSpeed > MaxRotationSpeed_DegreesPerSecond) {
-            //    Debug.Log(rotationSpeed);
-            //}
-
             // Uncomment this for standard angular speed clamping:
             // this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, MaxRotationSpeed_DegreesPerSecond);
-
-            //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 10f * this.Velocity.magnitude);
-            //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 100f * this.Velocity.magnitude);
-            //this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, maxRotationSpeed_degreesPerSecond: 100f * this.Velocity.magnitude * this.Velocity.magnitude);
 
             if (this.Velocity.sqrMagnitude > 0) {
                 this.Rotation_MostRecentNonZeroVelocity = Quaternion.LookRotation(this.Velocity, Vector3.up);
