@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarState {
-        private const float MaxRotationSpeed_DegreesPerSecond = 540f;
         private const float AxialDeadzoneInner = 0.05f;
         private const float AxialDeadzoneOuter = 0.95f;
 
@@ -22,7 +21,6 @@ namespace ZoomTracks {
                 }
             }
         }
-        private float Rotation_Degrees => this.Rotation.eulerAngles.y;
         private Quaternion? Rotation_MostRecentNonZeroVelocity { get; set; }
         private Vector3 Velocity { get; set; }
 
@@ -128,9 +126,6 @@ namespace ZoomTracks {
             if (carDynamic.VelocityLimiter >= 0) {
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
-
-            // Uncomment this for standard angular speed clamping:
-            // this.Velocity = VectorUtility.ClampAngularSpeed(this.Rotation_Degrees, newVelocity: this.Velocity, MaxRotationSpeed_DegreesPerSecond);
 
             if (this.Velocity.sqrMagnitude > 0) {
                 this.Rotation_MostRecentNonZeroVelocity = Quaternion.LookRotation(this.Velocity, Vector3.up);
