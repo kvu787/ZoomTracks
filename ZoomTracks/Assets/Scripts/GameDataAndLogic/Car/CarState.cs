@@ -80,11 +80,13 @@ namespace ZoomTracks {
             if (brakeInput == 0) {
                 Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
                 Vector3 accelerationInput_worldSpace = accelerationInput_xzPlane.Rotate2D(cameraTransformEulerAngleY);
+
                 Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(-1 * this.Rotation);
                 accelerationInput_carSpace.x = AxialDeadzone(accelerationInput_carSpace.x, AxialDeadzoneInner, AxialDeadzoneOuter);
-                accelerationInput_carSpace.z = AxialDeadzone(accelerationInput_carSpace.z, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace.y = 0;
+                accelerationInput_carSpace.z = AxialDeadzone(accelerationInput_carSpace.z, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace = Vector3.ClampMagnitude(accelerationInput_carSpace, 1f);
+
                 if (accelerationInput_carSpace != Vector3.zero) {
                     Vector3 accelerationOutput_carSpace = default;
                     if (accelerationInput_carSpace.x > 0) {
@@ -94,6 +96,7 @@ namespace ZoomTracks {
                     } else {
                         accelerationOutput_carSpace.x = 0;
                     }
+                    accelerationOutput_carSpace.y = 0;
                     if (accelerationInput_carSpace.z > 0) {
                         accelerationOutput_carSpace.z = accelerationInput_carSpace.z * carDynamic.AccelerationMap.Forward;
                     } else if (accelerationInput_carSpace.z < 0) {
@@ -101,7 +104,6 @@ namespace ZoomTracks {
                     } else {
                         accelerationOutput_carSpace.z = 0;
                     }
-                    accelerationOutput_carSpace.y = 0;
 
                     Vector3 accelerationOutput_worldSpace = accelerationOutput_carSpace.Rotate2D(this.Rotation);
                     Vector3 deltaVelocity_worldSpace = Time.deltaTime * accelerationOutput_worldSpace;
