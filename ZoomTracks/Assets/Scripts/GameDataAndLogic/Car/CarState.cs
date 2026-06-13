@@ -12,7 +12,7 @@ namespace ZoomTracks {
         private InputManager InputManager { get; }
 
         public Vector3 Position { get; private set; }
-        private Quaternion Rotation {
+        private float Rotation {
             get {
                 if (this.Rotation_MostRecentNonZeroVelocity is null) {
                     return this.StartingRotation;
@@ -21,11 +21,11 @@ namespace ZoomTracks {
                 }
             }
         }
-        private Quaternion? Rotation_MostRecentNonZeroVelocity { get; set; }
+        private float? Rotation_MostRecentNonZeroVelocity { get; set; }
         private Vector3 Velocity { get; set; }
 
         private Vector3 StartingPosition { get; }
-        private Quaternion StartingRotation { get; }
+        private float StartingRotation { get; }
 
         public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
             this.CarSwitcher = carSwitcher;
@@ -33,7 +33,7 @@ namespace ZoomTracks {
             this.InputManager = inputManager;
 
             this.StartingPosition = placeholderCarTransform.position;
-            this.StartingRotation = placeholderCarTransform.rotation;
+            this.StartingRotation = placeholderCarTransform.rotation.eulerAngles.y;
 
             this.ResetPositionRotationVelocity();
         }
@@ -80,7 +80,7 @@ namespace ZoomTracks {
             if (brakeInput == 0) {
                 Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
                 Vector3 accelerationInput_worldSpace = accelerationInput_xzPlane.Rotate2D(cameraTransformEulerAngleY);
-                Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(Quaternion.Inverse(this.Rotation));
+                Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(-1 * this.Rotation);
                 accelerationInput_carSpace.x = AxialDeadzone(accelerationInput_carSpace.x, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace.z = AxialDeadzone(accelerationInput_carSpace.z, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace.y = 0;
@@ -128,7 +128,7 @@ namespace ZoomTracks {
             }
 
             if (this.Velocity.sqrMagnitude > 0) {
-                this.Rotation_MostRecentNonZeroVelocity = this.Velocity.Get2DRotationQuaternion();
+                this.Rotation_MostRecentNonZeroVelocity = this.Velocity.Get2DRotation();
             }
         }
 
@@ -137,7 +137,7 @@ namespace ZoomTracks {
         }
 
         public void ApplyStateToGameObject() {
-            this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, this.Rotation);
+            this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, Quaternion.Euler(0f, this.Rotation, 0f));
         }
 
         public void ResetPositionRotationVelocity() {
