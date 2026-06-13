@@ -17,9 +17,10 @@ namespace ZoomTracks {
         private float StartingRotation { get; }
 
         public Vector3 Position { get; private set; }
-        private float Rotation => this.Rotation_ForMostRecentNonZeroVelocity ?? this.StartingRotation;
         private float? Rotation_ForMostRecentNonZeroVelocity { get; set; }
         private Vector3 Velocity { get; set; }
+
+        private float Rotation => this.Rotation_ForMostRecentNonZeroVelocity ?? this.StartingRotation;
 
         public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
             this.CarSwitcher = carSwitcher;
@@ -29,7 +30,7 @@ namespace ZoomTracks {
             this.StartingPosition = placeholderCarTransform.position;
             this.StartingRotation = placeholderCarTransform.rotation.eulerAngles.y;
 
-            this.ResetPositionRotationVelocity();
+            this.Reset_PositionRotationVelocity();
         }
 
         public static float AxialDeadzone(float value, float innerDeadzone, float outerDeadzone) {
@@ -139,7 +140,7 @@ namespace ZoomTracks {
             this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, Quaternion.Euler(0f, this.Rotation, 0f));
         }
 
-        public void ResetPositionRotationVelocity() {
+        public void Reset_PositionRotationVelocity() {
             this.Position = this.StartingPosition;
             this.Rotation_ForMostRecentNonZeroVelocity = null;
             this.Velocity = Vector3.zero;
