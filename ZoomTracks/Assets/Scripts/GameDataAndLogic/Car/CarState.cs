@@ -75,11 +75,11 @@ namespace ZoomTracks {
             float brakeInput = gamepad.leftTrigger.ReadValue();
             Vector2 accelerationInput_xyPlane = Gamepad.current.rightStick.ReadUnprocessedValue();
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
-            float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
+            float cameraYaw = this.CameraController.CameraYaw;
 
             if (brakeInput == 0f) {
                 Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0f, accelerationInput_xyPlane.y);
-                Vector3 accelerationInput_worldSpace = accelerationInput_xzPlane.Rotate2D(cameraTransformEulerAngleY);
+                Vector3 accelerationInput_worldSpace = accelerationInput_xzPlane.Rotate2D(cameraYaw);
 
                 Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(-1f * this.Rotation);
                 accelerationInput_carSpace.x = AxialDeadzone(accelerationInput_carSpace.x, AxialDeadzoneInner, AxialDeadzoneOuter);

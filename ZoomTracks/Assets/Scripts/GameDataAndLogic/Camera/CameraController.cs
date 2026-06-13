@@ -42,7 +42,7 @@ namespace ZoomTracks {
 
         public UniversalAdditionalCameraData CameraData { get; }
 
-        public float CameraYawWorldSpace => this.Camera.transform.eulerAngles.y;
+        public float CameraYaw => this.Camera.transform.eulerAngles.y;
 
         public void Update() {
             this.CameraYawOffset.localEulerAngles = new Vector3(0f, this.RotationOffset, 0f);
