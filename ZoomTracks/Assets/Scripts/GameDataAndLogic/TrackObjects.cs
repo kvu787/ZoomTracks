@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,16 +6,27 @@ using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     public class TrackObjects {
-        private static IReadOnlyList<string> ObstaclePrefixes { get; } = System.Array.AsReadOnly(new[] {
+        private static IReadOnlyList<string> ObstaclePrefixes { get; } = Array.AsReadOnly(new[] {
             "Barrier",
             "BigCone",
             "Cone",
             "VehicleRoad",
         });
 
+        private static IReadOnlyList<float> ValidZHeights { get; } = Array.AsReadOnly(new[] {
+            0f,
+            0.015625f,
+            0.03125f,
+            0.046875f,
+            0.0625f,
+            0.078125f,
+            0.09375f,
+        });
+
         public TrackObjects() {
             GameObject placeholderCar = GameObject.Find("SlopeCarPlaceholder");
             Assert.IsNotNull(placeholderCar);
+            ValidatePlaceholderCar(placeholderCar);
             placeholderCar.SetActive(false);
             this.PlaceholderCarTransform = placeholderCar.transform;
 
@@ -26,7 +38,7 @@ namespace ZoomTracks {
             };
 
             IReadOnlyCollection<BoxCollider> obstacles =
-                Object
+                UnityEngine.Object
                     .FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                     .Where(obj => ObstaclePrefixes.Any(prefix => obj.name.StartsWith(prefix)))
                     .Select(obj => obj.GetComponent<BoxCollider>())
@@ -39,5 +51,12 @@ namespace ZoomTracks {
         public Transform PlaceholderCarTransform { get; }
         public Transform[] TireGroundContactPoints { get; }
         public IReadOnlyCollection<BoxCollider> Obstacles { get; }
+
+        private static void ValidatePlaceholderCar(GameObject placeholderCar) {
+            Assert.IsTrue(ValidZHeights.Contains(placeholderCar.transform.position.y));
+            Assert.IsTrue(placeholderCar.transform.rotation.eulerAngles.x == 0f);
+            Assert.IsTrue(placeholderCar.transform.rotation.eulerAngles.z == 0f);
+            Assert.IsTrue(placeholderCar.transform.localScale == Vector3.one);
+        }
     }
 }
