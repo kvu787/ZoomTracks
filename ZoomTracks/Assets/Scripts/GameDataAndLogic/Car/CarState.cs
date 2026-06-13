@@ -13,21 +13,21 @@ namespace ZoomTracks {
         private CameraController CameraController { get; }
         private InputManager InputManager { get; }
 
+        private Vector3 StartingPosition { get; }
+        private float StartingRotation { get; }
+
         public Vector3 Position { get; private set; }
         private float Rotation {
             get {
-                if (this.Rotation_MostRecentNonZeroVelocity is null) {
+                if (this.Rotation_ForMostRecentNonZeroVelocity is null) {
                     return this.StartingRotation;
                 } else {
-                    return this.Rotation_MostRecentNonZeroVelocity.Value;
+                    return this.Rotation_ForMostRecentNonZeroVelocity.Value;
                 }
             }
         }
-        private float? Rotation_MostRecentNonZeroVelocity { get; set; }
+        private float? Rotation_ForMostRecentNonZeroVelocity { get; set; }
         private Vector3 Velocity { get; set; }
-
-        private Vector3 StartingPosition { get; }
-        private float StartingRotation { get; }
 
         public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
             this.CarSwitcher = carSwitcher;
@@ -137,7 +137,7 @@ namespace ZoomTracks {
             }
 
             if (this.Velocity != Vector3.zero) {
-                this.Rotation_MostRecentNonZeroVelocity = this.Velocity.Get2DRotation();
+                this.Rotation_ForMostRecentNonZeroVelocity = this.Velocity.Get2DRotation();
             }
 
             this.Position += this.Velocity * Time.deltaTime;
@@ -149,7 +149,7 @@ namespace ZoomTracks {
 
         public void ResetPositionRotationVelocity() {
             this.Position = this.StartingPosition;
-            this.Rotation_MostRecentNonZeroVelocity = null;
+            this.Rotation_ForMostRecentNonZeroVelocity = null;
             this.Velocity = Vector3.zero;
         }
     }
