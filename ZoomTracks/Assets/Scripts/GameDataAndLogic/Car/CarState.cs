@@ -31,9 +31,11 @@ namespace ZoomTracks {
             this.CarSwitcher = carSwitcher;
             this.CameraController = cameraController;
             this.InputManager = inputManager;
+
             this.StartingPosition = placeholderCarTransform.position;
             this.StartingRotation = placeholderCarTransform.rotation;
-            this.Reset();
+
+            this.ResetPositionRotationVelocity();
         }
 
         public static float AxialDeadzone(float value, float innerDeadzone, float outerDeadzone) {
@@ -139,7 +141,7 @@ namespace ZoomTracks {
             this.CarSwitcher.CurrentCarTransform.SetPositionAndRotation(this.Position, this.Rotation);
         }
 
-        public void Reset() {
+        public void ResetPositionRotationVelocity() {
             this.Position = this.StartingPosition;
             this.Rotation_MostRecentNonZeroVelocity = null;
             this.Velocity = Vector3.zero;

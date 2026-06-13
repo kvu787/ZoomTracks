@@ -15,7 +15,7 @@ namespace ZoomTracks {
         public bool ResetCarIfColliding() {
             foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
                 if (IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
-                    this.CarState.Reset();
+                    this.CarState.ResetPositionRotationVelocity();
                     return true;
                 }
             }
