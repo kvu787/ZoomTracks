@@ -77,32 +77,32 @@ namespace ZoomTracks {
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraTransformEulerAngleY = this.CameraController.CameraYawWorldSpace;
 
-            if (brakeInput == 0) {
-                Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
+            if (brakeInput == 0f) {
+                Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0f, accelerationInput_xyPlane.y);
                 Vector3 accelerationInput_worldSpace = accelerationInput_xzPlane.Rotate2D(cameraTransformEulerAngleY);
 
-                Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(-1 * this.Rotation);
+                Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(-1f * this.Rotation);
                 accelerationInput_carSpace.x = AxialDeadzone(accelerationInput_carSpace.x, AxialDeadzoneInner, AxialDeadzoneOuter);
-                accelerationInput_carSpace.y = 0;
+                accelerationInput_carSpace.y = 0f;
                 accelerationInput_carSpace.z = AxialDeadzone(accelerationInput_carSpace.z, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace = Vector3.ClampMagnitude(accelerationInput_carSpace, 1f);
 
                 if (accelerationInput_carSpace != Vector3.zero) {
                     Vector3 accelerationOutput_carSpace = default;
-                    if (accelerationInput_carSpace.x > 0) {
+                    if (accelerationInput_carSpace.x > 0f) {
                         accelerationOutput_carSpace.x = accelerationInput_carSpace.x * carDynamic.AccelerationMap.Right;
-                    } else if (accelerationInput_carSpace.x < 0) {
+                    } else if (accelerationInput_carSpace.x < 0f) {
                         accelerationOutput_carSpace.x = accelerationInput_carSpace.x * carDynamic.AccelerationMap.Left;
                     } else {
-                        accelerationOutput_carSpace.x = 0;
+                        accelerationOutput_carSpace.x = 0f;
                     }
-                    accelerationOutput_carSpace.y = 0;
-                    if (accelerationInput_carSpace.z > 0) {
+                    accelerationOutput_carSpace.y = 0f;
+                    if (accelerationInput_carSpace.z > 0f) {
                         accelerationOutput_carSpace.z = accelerationInput_carSpace.z * carDynamic.AccelerationMap.Forward;
-                    } else if (accelerationInput_carSpace.z < 0) {
+                    } else if (accelerationInput_carSpace.z < 0f) {
                         accelerationOutput_carSpace.z = accelerationInput_carSpace.z * carDynamic.AccelerationMap.Reverse;
                     } else {
-                        accelerationOutput_carSpace.z = 0;
+                        accelerationOutput_carSpace.z = 0f;
                     }
 
                     Vector3 accelerationOutput_worldSpace = accelerationOutput_carSpace.Rotate2D(this.Rotation);
@@ -119,7 +119,7 @@ namespace ZoomTracks {
                     if (velocitySqrMagnitude < 0.0001f) {
                         this.Velocity = Vector3.zero;
                     } else {
-                        Vector3 brakeDirection = (-1 * this.Velocity).normalized;
+                        Vector3 brakeDirection = (-1f * this.Velocity).normalized;
                         Vector3 brakeDeltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * brakeDirection;
                         if (brakeDeltaVelocity.sqrMagnitude >= velocitySqrMagnitude) {
                             this.Velocity = Vector3.zero;
@@ -130,7 +130,7 @@ namespace ZoomTracks {
                 }
             }
 
-            if (carDynamic.VelocityLimiter >= 0) {
+            if (carDynamic.VelocityLimiter >= 0f) {
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
 
