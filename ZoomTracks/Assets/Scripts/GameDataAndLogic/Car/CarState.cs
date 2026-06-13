@@ -17,15 +17,7 @@ namespace ZoomTracks {
         private float StartingRotation { get; }
 
         public Vector3 Position { get; private set; }
-        private float Rotation {
-            get {
-                if (this.Rotation_ForMostRecentNonZeroVelocity is null) {
-                    return this.StartingRotation;
-                } else {
-                    return this.Rotation_ForMostRecentNonZeroVelocity.Value;
-                }
-            }
-        }
+        private float Rotation => this.Rotation_ForMostRecentNonZeroVelocity ?? this.StartingRotation;
         private float? Rotation_ForMostRecentNonZeroVelocity { get; set; }
         private Vector3 Velocity { get; set; }
 
