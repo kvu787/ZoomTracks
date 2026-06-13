@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,34 +32,6 @@ namespace ZoomTracks {
             this.Reset_PositionRotationVelocity();
         }
 
-        public static float AxialDeadzone(float value, float innerDeadzone, float outerDeadzone) {
-            if (!(0f <= innerDeadzone && innerDeadzone <= 1f)) {
-                throw new ArgumentException($"Expected: innerDeadzone must be in [0, 1]. Got: innerDeadzone={innerDeadzone}.");
-            }
-            if (!(0f <= outerDeadzone && outerDeadzone <= 1f)) {
-                throw new ArgumentException($"Expected: outerDeadzone must be in [0, 1]. Got: outerDeadzone={outerDeadzone}.");
-            }
-            if (innerDeadzone >= outerDeadzone) {
-                throw new ArgumentException($"Expected: innerDeadzone must be less than outerDeadzone. Got: innerDeadzone={innerDeadzone}, outerDeadzone={outerDeadzone}.");
-            }
-
-            if (value == 0f) {
-                return 0f;
-            }
-
-            float magnitude = Mathf.Abs(value);
-            if (magnitude < innerDeadzone) {
-                return 0f;
-            } else {
-                float sign = Mathf.Sign(value);
-                if (magnitude > outerDeadzone) {
-                    return sign;
-                } else {
-                    return sign * ((magnitude - innerDeadzone) / (outerDeadzone - innerDeadzone));
-                }
-            }
-        }
-
         public void ReadInputAndUpdateState() {
             Gamepad gamepad = this.InputManager.Gamepad;
             if (gamepad == null) {
@@ -77,9 +48,9 @@ namespace ZoomTracks {
                 Vector3 accelerationInput_worldSpace = accelerationInput_xzPlane.Rotate2D(cameraYaw);
 
                 Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(-1f * this.Rotation);
-                accelerationInput_carSpace.x = AxialDeadzone(accelerationInput_carSpace.x, AxialDeadzoneInner, AxialDeadzoneOuter);
+                accelerationInput_carSpace.x = InputUtility.AxialDeadzone(accelerationInput_carSpace.x, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace.y = 0f;
-                accelerationInput_carSpace.z = AxialDeadzone(accelerationInput_carSpace.z, AxialDeadzoneInner, AxialDeadzoneOuter);
+                accelerationInput_carSpace.z = InputUtility.AxialDeadzone(accelerationInput_carSpace.z, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace = Vector3.ClampMagnitude(accelerationInput_carSpace, 1f);
 
                 if (accelerationInput_carSpace != Vector3.zero) {
