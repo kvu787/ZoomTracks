@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarState {
+        // Inner deadzone can be as small as 0.02 for Razer and 8bitdo controllers.
+        // private const float AxialDeadzoneInner = 0.02f;
         private const float AxialDeadzoneInner = 0.05f;
         private const float AxialDeadzoneOuter = 0.95f;
 
