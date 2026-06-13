@@ -113,12 +113,17 @@ namespace ZoomTracks {
                 if (this.Velocity == Vector3.zero) {
                     // Brake is non-zero, but velocity is already zero, so do nothing
                 } else {
-                    Vector3 opposingVec = (-1 * this.Velocity).normalized;
-                    Vector3 deltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * opposingVec;
-                    if (deltaVelocity.sqrMagnitude >= this.Velocity.sqrMagnitude) {
+                    float velocitySqrMagnitude = this.Velocity.sqrMagnitude;
+                    if (velocitySqrMagnitude < 0.0001f) {
                         this.Velocity = Vector3.zero;
                     } else {
-                        this.Velocity += deltaVelocity;
+                        Vector3 brakeDirection = (-1 * this.Velocity).normalized;
+                        Vector3 brakeDeltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * brakeDirection;
+                        if (brakeDeltaVelocity.sqrMagnitude >= velocitySqrMagnitude) {
+                            this.Velocity = Vector3.zero;
+                        } else {
+                            this.Velocity += brakeDeltaVelocity;
+                        }
                     }
                 }
             }
