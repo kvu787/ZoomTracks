@@ -79,8 +79,8 @@ namespace ZoomTracks {
 
             if (brakeInput == 0) {
                 Vector3 accelerationInput_xzPlane = new(accelerationInput_xyPlane.x, 0, accelerationInput_xyPlane.y);
-                Vector3 accelerationInput_worldSpace = Quaternion.Euler(0, cameraTransformEulerAngleY, 0) * accelerationInput_xzPlane;
-                Vector3 accelerationInput_carSpace = Quaternion.Inverse(this.Rotation) * accelerationInput_worldSpace;
+                Vector3 accelerationInput_worldSpace = accelerationInput_xzPlane.Rotate2D(cameraTransformEulerAngleY);
+                Vector3 accelerationInput_carSpace = accelerationInput_worldSpace.Rotate2D(Quaternion.Inverse(this.Rotation));
                 accelerationInput_carSpace.x = AxialDeadzone(accelerationInput_carSpace.x, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace.z = AxialDeadzone(accelerationInput_carSpace.z, AxialDeadzoneInner, AxialDeadzoneOuter);
                 accelerationInput_carSpace.y = 0;
@@ -103,9 +103,8 @@ namespace ZoomTracks {
                     }
                     accelerationOutput_carSpace.y = 0;
 
-                    Vector3 accelerationOutput_worldSpace = this.Rotation * accelerationOutput_carSpace;
+                    Vector3 accelerationOutput_worldSpace = accelerationOutput_carSpace.Rotate2D(this.Rotation);
                     Vector3 deltaVelocity_worldSpace = Time.deltaTime * accelerationOutput_worldSpace;
-                    deltaVelocity_worldSpace.y = 0;
                     this.Velocity += deltaVelocity_worldSpace;
                 } else {
                     // Brake and acceleration are zero, so do nothing
@@ -129,7 +128,7 @@ namespace ZoomTracks {
             }
 
             if (this.Velocity.sqrMagnitude > 0) {
-                this.Rotation_MostRecentNonZeroVelocity = Quaternion.LookRotation(this.Velocity, Vector3.up);
+                this.Rotation_MostRecentNonZeroVelocity = this.Velocity.Get2DRotationQuaternion();
             }
         }
 
