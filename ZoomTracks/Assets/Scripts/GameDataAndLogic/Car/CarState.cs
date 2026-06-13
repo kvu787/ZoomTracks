@@ -139,9 +139,7 @@ namespace ZoomTracks {
             if (this.Velocity != Vector3.zero) {
                 this.Rotation_MostRecentNonZeroVelocity = this.Velocity.Get2DRotation();
             }
-        }
 
-        public void ApplyVelocityToPositionAndRotation() {
             this.Position += this.Velocity * Time.deltaTime;
         }
 
