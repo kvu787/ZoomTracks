@@ -132,7 +132,7 @@ namespace ZoomTracks {
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
 
-            if (this.Velocity.sqrMagnitude > 0) {
+            if (this.Velocity != Vector3.zero) {
                 this.Rotation_MostRecentNonZeroVelocity = this.Velocity.Get2DRotation();
             }
         }
