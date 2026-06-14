@@ -3,9 +3,38 @@ using UnityEngine.InputSystem;
 
 namespace ZoomTracks {
     public class CarState {
-        // Inner deadzone can be as small as 0.02 for Razer and 8bitdo controllers.
-        // private const float AxialDeadzoneInner = 0.02f;
+        /// <summary>
+        /// 1. For an 8BitDo Ultimate 2 Wireless controller:
+        ///    * This controller has built-in hardware deadzones that are enabled by default.
+        ///    * The at-rest analog stick value is always reported as 0.0000152587890625 for both X and Y.
+        ///      * (I don't know why it is 0.0000152587890625 instead of just 0.0.)
+        ///    * Therefore, the minimum safe inner deadzone is 0.0001, which is effectively 0.0.
+        /// 
+        /// 2. For a Razer Wolverine Pro 8K PC controller:
+        ///    * Turn off "Prevent Double Deadzones".
+        ///    * Same as 1.
+        ///
+        /// 3. For a standard Xbox Series controller:
+        ///    * This controller does not have built-in hardware deadzones.
+        ///    * This means the at-rest analog stick value will bounce around from 0.00 to +/-0.02.
+        ///    * The minimum safe inner deadzone is 0.03.
+        ///
+        /// 4. For a standard PlayStation 5 DualSense controller:
+        ///    * Same as 3.
+        ///
+        /// However, just because a controller's minimum safe inner deadzone is N doesn't mean it should be set to N.
+        /// I have set the inner deadzone value to 0.05, which is well above all the minimums for the controllers I use,
+        /// because my thumb's precision is too janky below 0.05.
+        ///
+        /// In general, a player should start by setting the inner deadzone to the minimum for their controller.
+        /// Then, they should test it out and increase the deadzone in small increments (~0.01) until they have
+        /// good control of the thumbstick even at its smallest actuations.
+        /// </summary>
         private const float AxialDeadzoneInner = 0.05f;
+
+        /// <summary>
+        /// This value (0.95) seems to work fine with all controllers I tested. 
+        /// </summary>
         private const float AxialDeadzoneOuter = 0.95f;
 
         private CarSwitcher CarSwitcher { get; }
@@ -40,6 +69,7 @@ namespace ZoomTracks {
 
             float brakeInput = gamepad.leftTrigger.ReadValue();
             Vector2 accelerationInput_xyPlane = Gamepad.current.rightStick.ReadUnprocessedValue();
+            Debug.Log($"{accelerationInput_xyPlane.x.ToExactDecimalString()}, {accelerationInput_xyPlane.y.ToExactDecimalString()}");
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraYaw = this.CameraController.CameraYaw;
 
