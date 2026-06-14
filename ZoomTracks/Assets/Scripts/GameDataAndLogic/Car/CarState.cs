@@ -8,7 +8,7 @@ namespace ZoomTracks {
         ///    * This controller has built-in hardware deadzones that are enabled by default.
         ///    * The at-rest analog stick value is always reported as 0.0000152587890625 for both X and Y.
         ///      * (I don't know why it is 0.0000152587890625 instead of just 0.0.)
-        ///    * Therefore, the minimum safe inner deadzone is 0.0001, which is effectively 0.0.
+        ///    * Therefore, a minimum safe inner deadzone is 0.0001, which is effectively 0.0.
         /// 
         /// 2. For a Razer Wolverine Pro 8K PC controller:
         ///    * Turn off "Prevent Double Deadzones".
@@ -17,7 +17,7 @@ namespace ZoomTracks {
         /// 3. For a standard Xbox Series controller:
         ///    * This controller does not have built-in hardware deadzones.
         ///    * This means the at-rest analog stick value will bounce around from 0.00 to +/-0.02.
-        ///    * The minimum safe inner deadzone is 0.03.
+        ///    * A minimum safe inner deadzone is 0.03.
         ///
         /// 4. For a standard PlayStation 5 DualSense controller:
         ///    * Same as 3.
