@@ -45,7 +45,7 @@ def Main():
     assert len(sceneCollection.children) == 1, "Scene collection must contain exactly one collection"
     assert len(sceneCollection.objects) == 0, "Scene collection cannot contain objects"
 
-    AllowedCollectionNames = (
+    ExpectedCollectionNames = (
         "Barriers",
         "BigCones",
         "Camera",
@@ -60,14 +60,17 @@ def Main():
     # Verify root collection properties
     rootCollection = sceneCollection.children[0]
     assert rootCollection.name == "Collection"
-    assert len(rootCollection.children) == len(AllowedCollectionNames), f"Root collection must contain exactly {len(AllowedCollectionNames)} collection"
     assert len(rootCollection.objects) == 0, "Root collection cannot contain objects"
 
-    # Check for unknown collection names
+    # Ensure correct collections
     collectionNames = [c.name for c in rootCollection.children]
+    for expectedCollectionName in ExpectedCollectionNames:
+        if expectedCollectionName not in collectionNames:
+            raise Exception(f"Missing expected collection name: {expectedCollectionName}")
     for collectionName in collectionNames:
-        if collectionName not in AllowedCollectionNames:
+        if collectionName not in ExpectedCollectionNames:
             raise Exception(f"Disallowed collection name: {collectionName}")
+    assert len(rootCollection.children) == len(ExpectedCollectionNames), f"Root collection must contain exactly {len(ExpectedCollectionNames)} collections"
 
     # Ensure collections are unhidden/hidden
     assert not FindLayerCollection(viewLayer.layer_collection, rootCollection).exclude, "Root collection is hidden"
@@ -108,11 +111,11 @@ def Main():
             flag = True
     assert not flag, "One or more non-uniform scale errors"
 
-    # Check for non-zero pitch or twist for unparented objects
+    # Check for non-zero pitch or roll for unparented objects
     unparentedObjects = sorted([obj for obj in bpy.data.objects if obj.parent is None], key=lambda obj: obj.name)
     for obj in unparentedObjects:
         if obj.name != "CameraPivot":
-            assert obj.rotation_euler.x == 0 and obj.rotation_euler.y == 0, f"{obj.name}: Has a non-zero x (pitch) or y (twist) rotation"
+            assert obj.rotation_euler.x == 0 and obj.rotation_euler.y == 0, f"{obj.name}: Has a non-zero x (pitch) or y (roll) rotation"
 
     # Check for invalid Z-heights for unparented objects
     ValidZHeights = (
