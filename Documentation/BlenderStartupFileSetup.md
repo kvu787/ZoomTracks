@@ -13,7 +13,7 @@ These instructions assume you are using Blender 4.5.x LTS.
 * Then, add the following collections:
 
 ```python
-AllowedCollectionNames = [
+ExpectedCollectionNames = (
     "Barriers",
     "BigCones",
     "Camera",
@@ -23,7 +23,7 @@ AllowedCollectionNames = [
     "Track",
     "Uncategorized",
     "Vehicles",
-]
+)
 ```
 
 # Outliner
