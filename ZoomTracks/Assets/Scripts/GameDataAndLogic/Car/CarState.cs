@@ -125,7 +125,7 @@ namespace ZoomTracks {
                 }
             }
 
-            if (carDynamic.VelocityLimiter >= 0f) {
+            if (carDynamic.VelocityLimiter > 0f) {
                 this.Velocity = Vector3.ClampMagnitude(this.Velocity, carDynamic.VelocityLimiter);
             }
 
