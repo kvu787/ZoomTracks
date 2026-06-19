@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
         private const string UiSceneName = "Ui";
-        private const int InitialTrackSceneIndex = 8;
+        private const int InitialTrackSceneIndex = 9;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
             "Track001",
             "Track002",
@@ -18,6 +18,7 @@ namespace ZoomTracks {
             "Track008",
             "Track009",
             "Track011",
+            "Track012",
         });
         private TimeSpan TimeoutDurationSeconds { get; } = TimeSpan.FromSeconds(0.35);
 
