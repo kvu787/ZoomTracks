@@ -69,7 +69,6 @@ namespace ZoomTracks {
 
             float brakeInput = gamepad.leftTrigger.ReadValue();
             Vector2 accelerationInput_xyPlane = Gamepad.current.rightStick.ReadUnprocessedValue();
-            Debug.Log($"{accelerationInput_xyPlane.x.ToExactDecimalString()}, {accelerationInput_xyPlane.y.ToExactDecimalString()}");
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraYaw = this.CameraController.CameraYaw;
 
