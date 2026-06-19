@@ -52,6 +52,10 @@ namespace ZoomTracks {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
 
+            if (InitialTrackSceneIndex < 0 || InitialTrackSceneIndex > (TrackSceneNames.Count - 1)) {
+                throw new Exception($"Invalid InitialTrackSceneIndex={InitialTrackSceneIndex}. TrackSceneNames.Count={TrackSceneNames.Count}.");
+            }
+
             this.CarControlTimeoutStart = DateTime.MinValue;
             this.InputManager = new InputManager();
 
