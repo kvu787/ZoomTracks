@@ -75,7 +75,7 @@ def Main():
     # Ensure collections are unhidden/hidden
     assert not FindLayerCollection(viewLayer.layer_collection, rootCollection).exclude, "Root collection is hidden"
     for collection in rootCollection.children:
-        if collection.name in ("Camera", "Templates", "Uncategorized"):
+        if collection.name in ("Camera", "Templates"):
             assert FindLayerCollection(viewLayer.layer_collection, collection).exclude, f"This collection should be hidden: {collection.name}"
         else:
             assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude, f"This collection should not be hidden: {collection.name}"
