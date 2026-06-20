@@ -34,6 +34,8 @@ In "Outliner > Filter > Restriction Toggles", enable only these:
 * Eye
 * Monitor
 
+Uncheck: "Outliner > Filter > Filter > Object Contents"
+
 # Viewport
 
 * 3D Viewport > Top-right corner > Gizmos > Camera > Lens = Unchecked
