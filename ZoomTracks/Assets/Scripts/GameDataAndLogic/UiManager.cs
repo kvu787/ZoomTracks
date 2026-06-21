@@ -11,7 +11,7 @@ namespace ZoomTracks {
         }
 
         public void UpdateUi() {
-            this.PlaceholderLabel.text = $"{DateTime.Now}";
+            this.PlaceholderLabel.text = $"{DateTime.Now:dd/MM/yyyy hh:mm:ss tt}";
         }
     }
 }
