@@ -1,0 +1,73 @@
+{
+    "CameraFollowsCarLocation": false,
+    "FollowCameraSize": 30,
+    "StartCarIndex": 1,
+    "Cars": [
+        {
+            "GameObjectName": "SlopeCarGreen",
+            "Dynamic": {
+                "AccelerationMap": {
+                    "Forward": 20,
+                    "Reverse": 120,
+                    "Left": 60,
+                    "Right": 60
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarBlue",
+            "Dynamic": {
+                "AccelerationMap": {
+                    "Forward": 60,
+                    "Reverse": 120,
+                    "Left": 60,
+                    "Right": 60
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarRed",
+            "Dynamic": {
+                "AccelerationMap": {
+                    "Forward": 120,
+                    "Reverse": 240,
+                    "Left": 120,
+                    "Right": 120
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarYellow",
+            "Dynamic": {
+                "AccelerationMap": {
+                    "Forward": 240,
+                    "Reverse": 480,
+                    "Left": 240,
+                    "Right": 240
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarCyan",
+            "Dynamic": {
+                "AccelerationMap": {
+                    "Forward": 480,
+                    "Reverse": 960,
+                    "Left": 480,
+                    "Right": 480
+                }
+            }
+        },
+        {
+            "GameObjectName": "SlopeCarMagenta",
+            "Dynamic": {
+                "AccelerationMap": {
+                    "Forward": 1000,
+                    "Reverse": 2000,
+                    "Left": 200,
+                    "Right": 200
+                }
+            }
+        }
+    ]
+}
