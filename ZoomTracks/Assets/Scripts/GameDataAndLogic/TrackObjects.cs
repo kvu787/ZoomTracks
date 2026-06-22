@@ -44,7 +44,7 @@ namespace ZoomTracks {
                     .Select(obj => obj.GetComponent<BoxCollider>())
                     .ToList()
                     .AsReadOnly();
-            Assert.IsFalse(obstacles.Any(x => x == null));
+            Assert.IsFalse(obstacles.Any(x => x == null), "One or more null colliders found. You probably need to run 'Tools > Setup new track scene'.");
             this.Obstacles = obstacles;
         }
 
