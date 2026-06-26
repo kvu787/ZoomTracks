@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
+        private const bool RecordHitches = true;
+        private HitchLogger HitchLogger { get; set; }
+
         private const string UiSceneName = "Ui";
         private const int InitialTrackSceneIndex = 14;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
@@ -45,6 +48,13 @@ namespace ZoomTracks {
         private void Awake() {
             Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
+
+            this.HitchLogger = new HitchLogger(
+                enabled: true,
+                logOnlyHitches: true,
+                hitchThresholdMs: (1000.0 / 60.0) * 1.1,
+                fileName: $"{DateTime.Now.Ticks}_hitches.csv");
+
             GraphicsSettingsManager.Awake();
             DebugManager.instance.enableRuntimeUI = false;
             Debug.Log($"END: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
@@ -97,6 +107,10 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
+                if (RecordHitches) {
+                    this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
+                }
+
                 this.InputManager.UpdateInputs();
 
                 if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
@@ -128,6 +142,16 @@ namespace ZoomTracks {
 
         private bool InCarControlTimeout() {
             return (DateTime.Now - this.CarControlTimeoutStart) <= this.TimeoutDurationSeconds;
+        }
+
+        private void OnApplicationQuit() {
+            this.HitchLogger?.Dispose();
+            this.HitchLogger = null;
+        }
+
+        private void OnDestroy() {
+            this.HitchLogger?.Dispose();
+            this.HitchLogger = null;
         }
     }
 }
