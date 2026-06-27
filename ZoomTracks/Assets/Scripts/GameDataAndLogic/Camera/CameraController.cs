@@ -20,7 +20,7 @@ namespace ZoomTracks {
         private float RotationOffset { get; set; }
         private float DefaultFixedCameraSize { get; }
         private float DefaultFollowCameraSize { get; }
-        private float OrthographicCameraSize { get; set; }
+        public float OrthographicCameraSize { get; set; }
 
         public CameraController(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, InputManager inputManager) {
             this.CameraFollowSettings = cameraFollowSettings;

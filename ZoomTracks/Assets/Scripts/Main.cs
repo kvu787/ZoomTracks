@@ -100,7 +100,7 @@ namespace ZoomTracks {
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
             this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.CameraController, this.CarState, this.InputManager);
             this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
-            this.UiManager = new UiManager();
+            this.UiManager = new UiManager(this.CameraController);
             Debug.Log("...done");
         }
 
