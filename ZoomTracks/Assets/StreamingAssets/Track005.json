@@ -1,5 +1,5 @@
 {
-    "CameraFollowsCarLocation": true,
+    "CameraFollowsCarLocation": false,
     "FollowCameraSize": 30,
     "CarScale": 1,
     "MinVelocityForRotation": 0.5,

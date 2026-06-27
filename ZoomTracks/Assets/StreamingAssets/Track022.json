@@ -1,7 +1,7 @@
 {
     "CameraFollowsCarLocation": false,
-    "FollowCameraSize": 30,
-    "StartCarIndex": 1,
+    "FollowCameraSize": 23.5,
+    "StartCarIndex": 3,
     "Cars": [
         {
             "GameObjectName": "SlopeCarGreen",

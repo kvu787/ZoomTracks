@@ -10,7 +10,7 @@ namespace ZoomTracks {
         private HitchLogger HitchLogger { get; set; }
 
         private const string UiSceneName = "Ui";
-        private const int InitialTrackSceneIndex = 14;
+        private const int InitialTrackSceneIndex = 13;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
             "Track001",
             "Track002",
