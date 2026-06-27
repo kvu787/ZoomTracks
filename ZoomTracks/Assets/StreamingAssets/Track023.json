@@ -1,16 +1,16 @@
 {
     "CameraFollowsCarLocation": false,
     "FollowCameraSize": 23.5,
-    "StartCarIndex": 1,
+    "StartCarIndex": 0,
     "Cars": [
         {
             "GameObjectName": "SlopeCarGreen",
             "Dynamic": {
                 "AccelerationMap": {
-                    "Forward": 20,
-                    "Reverse": 120,
-                    "Left": 60,
-                    "Right": 60
+                    "Forward": 15,
+                    "Reverse": 100,
+                    "Left": 30,
+                    "Right": 30
                 }
             }
         },
