@@ -113,19 +113,9 @@ namespace ZoomTracks {
 
                 this.InputManager.UpdateInputs();
 
-                if (await this.TrackSwitcher.ReadInputAndSwitchTracksAsync()) {
+                bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
+                if (wasTrackSwitched) {
                     this.InitializeTrack();
-                    GarbageCollectionUtility.ForceGarbageCollection();
-                    Debug.Log($"Unload unused assets...");
-
-                    // TODO:
-                    // Running the following line causes a car object to "flicker" near the center of the screen.
-                    // Commenting out the following line removes that flicker.
-                    // Investigate why.
-                    await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await Resources.UnloadUnusedAssets());
-
-                    Debug.Log($"...done");
-                    GarbageCollectionUtility.ForceGarbageCollection();
                 } else {
                     if (this.CollisionManager.ResetCarIfColliding()) {
                         this.CarControlTimeoutStart = DateTime.Now;
@@ -145,6 +135,14 @@ namespace ZoomTracks {
                 this.CameraController.Update();
                 this.CameraPivotManager.UpdateCameraPivot();
                 this.UiManager.UpdateUi();
+
+                if (wasTrackSwitched) {
+                    GarbageCollectionUtility.ForceGarbageCollection();
+                    Debug.Log($"Unload unused assets...");
+                    await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await Resources.UnloadUnusedAssets());
+                    Debug.Log($"...done");
+                    GarbageCollectionUtility.ForceGarbageCollection();
+                }
 
                 await Awaitable.NextFrameAsync();
             }
