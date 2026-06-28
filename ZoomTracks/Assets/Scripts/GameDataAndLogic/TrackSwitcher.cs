@@ -58,10 +58,6 @@ namespace ZoomTracks {
                 await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]));
                 Debug.Log($"...done");
 
-                Debug.Log($"Unload unused assets...");
-                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await Resources.UnloadUnusedAssets());
-                Debug.Log($"...done");
-
                 Debug.Log($"Load new track scene...");
                 await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
                 Debug.Log($"...done");
