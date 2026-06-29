@@ -28,7 +28,9 @@ namespace ZoomTracks {
             "Track022",
             "Track023",
         });
+
         private TimeSpan TimeoutDurationSeconds { get; } = TimeSpan.FromSeconds(0.35);
+        private bool SkipOneIterationOfCarControlInput { get; set; } = false;
 
         private DateTime CarControlTimeoutStart { get; set; }
         private InputManager InputManager { get; set; }
@@ -118,18 +120,29 @@ namespace ZoomTracks {
                     this.InitializeTrack();
                 } else {
                     if (this.CollisionManager.ResetCarIfColliding()) {
+                        /*
+                        Explanation for collision behavior:
+                        Let frame N be the update iteration that results in the car colliding an obstacle.
+                        This means that the current execution is in frame N+1.
+                        We want frame N to show that car overlapping the obstacle.
+                        We want frame N+1 to reset the car position and skip execution of `this.CarState.ReadInputAndUpdateState()` for at least one frame.
+                        */
                         this.CarControlTimeoutStart = DateTime.Now;
+                        this.SkipOneIterationOfCarControlInput = true;
                     }
+
                     this.CameraController.ReadInputAndChangeCameraSettings();
                     this.CameraPivotManager.ReadInputAndToggle();
                     this.GraphicsSettingsManager.ReadInputAndUpdate();
                     if (this.CarSwitcher.ReadInputAndSwitchCar()) {
                         this.CarState.Reset_PositionRotationVelocity();
                         this.CarControlTimeoutStart = DateTime.Now;
-                    } else if (!this.InCarControlTimeout()) {
+                    } else if (!this.SkipOneIterationOfCarControlInput && !this.InCarControlTimeout()) {
                         this.CarState.ReadInputAndUpdateState();
                     }
                 }
+
+                this.SkipOneIterationOfCarControlInput = false;
 
                 this.CarState.ApplyStateToGameObject();
                 this.CameraController.Update();
