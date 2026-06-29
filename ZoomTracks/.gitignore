@@ -26,6 +26,10 @@
 # If you want to preserve any of this logging, then you should copy/move it to a different folder.
 /MemoryCaptures/
 
+# This stores logged data from doing memory profiling in the Unity game that the user explicitly chooses to save.
+# If you want to preserve any of this logging, then you should copy/move it to a different folder.
+/ProfilerCaptures/
+
 # Visual Studio uses this folder to store user-specific settings.
 /.vs/
 
