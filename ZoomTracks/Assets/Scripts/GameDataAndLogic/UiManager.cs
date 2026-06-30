@@ -14,6 +14,7 @@ namespace ZoomTracks {
         }
 
         public void UpdateUi() {
+            //this.ClockText.SetText(DateTimeUtility.GetDateTimeNowChars_Buffered());
             //this.ClockText.text = $"{DateTime.Now:yyyy/MM/dd hh:mm:ss tt}";
             //this.CameraSizeText.text = $"Camera size: {this.CameraController.OrthographicCameraSize}";
         }
