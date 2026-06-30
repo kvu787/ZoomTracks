@@ -8,8 +8,8 @@ namespace ZoomTracks {
     public class GraphicsSettingsManager {
         private enum MsaaModeEnum {
             Off,
-            Msaa2x,
-            Msaa4x,
+            //Msaa2x,
+            //Msaa4x,
             Msaa8x,
         }
 
@@ -108,8 +108,8 @@ namespace ZoomTracks {
         private void ApplyGraphicsSettings() {
             UniversalRenderPipeline.asset.msaaSampleCount = this.MsaaMode switch {
                 MsaaModeEnum.Off => 1,
-                MsaaModeEnum.Msaa2x => 2,
-                MsaaModeEnum.Msaa4x => 4,
+                //MsaaModeEnum.Msaa2x => 2,
+                //MsaaModeEnum.Msaa4x => 4,
                 MsaaModeEnum.Msaa8x => 8,
                 _ => throw new System.Exception(),
             };
