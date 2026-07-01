@@ -121,6 +121,13 @@ namespace ZoomTracks {
 
                 this.InputManager.UpdateInputs();
 
+                if (this.InputManager.Keyboard != null && this.InputManager.Keyboard.escapeKey.wasPressedThisFrame) {
+                    Application.Quit();
+                }
+                if (this.InputManager.Gamepad != null && this.InputManager.Gamepad.startButton.wasPressedThisFrame) {
+                    Application.Quit();
+                }
+
                 bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
                 if (wasTrackSwitched) {
                     this.InitializeTrack();
