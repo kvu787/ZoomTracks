@@ -43,7 +43,22 @@ namespace ZoomTracks {
         private VsyncModeEnum VsyncMode { get; set; }
         private RenderScaleEnum RenderScale { get; set; }
 
-        public static void Awake() {
+        /// <summary>
+        /// This is necessary to prevent changes to the URP asset from persisting between different game start/stop
+        /// sessions within the same Unity Editor session.
+        /// </summary>
+        public static void UseRuntimeOnlyCopyOfUrpAsset() {
+            Assert.IsNull(GraphicsSettings.defaultRenderPipeline);
+            UniversalRenderPipelineAsset urpOriginal = UniversalRenderPipeline.asset;
+            Assert.IsNotNull(urpOriginal);
+            UniversalRenderPipelineAsset urpRuntimeCopy = Object.Instantiate(urpOriginal);
+            Assert.IsNotNull(urpRuntimeCopy);
+            QualitySettings.renderPipeline = urpRuntimeCopy;
+            UniversalRenderPipelineAsset urp = UniversalRenderPipeline.asset;
+            Assert.IsNotNull(urp);
+        }
+
+        public static void ConfigureSessionGraphicsSettings() {
             UseRuntimeOnlyCopyOfUrpAsset();
             UniversalRenderPipeline.asset.supportsHDR = false;
             QualitySettings.maxQueuedFrames = 0;
@@ -88,21 +103,6 @@ namespace ZoomTracks {
                 }
                 this.ApplyGraphicsSettings();
             }
-        }
-
-        /// <summary>
-        /// This is necessary to prevent changes to the URP asset from persisting between different game start/stop
-        /// sessions within the same Unity Editor session.
-        /// </summary>
-        private static void UseRuntimeOnlyCopyOfUrpAsset() {
-            Assert.IsNull(GraphicsSettings.defaultRenderPipeline);
-            UniversalRenderPipelineAsset urpOriginal = UniversalRenderPipeline.asset;
-            Assert.IsNotNull(urpOriginal);
-            UniversalRenderPipelineAsset urpRuntimeCopy = Object.Instantiate(urpOriginal);
-            Assert.IsNotNull(urpRuntimeCopy);
-            QualitySettings.renderPipeline = urpRuntimeCopy;
-            UniversalRenderPipelineAsset urp = UniversalRenderPipeline.asset;
-            Assert.IsNotNull(urp);
         }
 
         private void ApplyGraphicsSettings() {

@@ -58,7 +58,8 @@ namespace ZoomTracks {
                 fileName: $"{DateTime.Now.Ticks}_hitches.csv");
             this.HitchLogger2 = new HitchLogger2();
 
-            GraphicsSettingsManager.Awake();
+            GraphicsSettingsManager.UseRuntimeOnlyCopyOfUrpAsset();
+            GraphicsSettingsManager.ConfigureSessionGraphicsSettings();
             DebugManager.instance.enableRuntimeUI = false;
             Debug.Log($"END: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
