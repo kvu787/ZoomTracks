@@ -1,0 +1,37 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using UnityEngine;
+using UnityEngine.Assertions;
+
+namespace ZoomTracks {
+    public sealed class HitchLogger2 {
+        private const double FrameDurationThreshold_Milliseconds = ((1.0 / 60.0) * 1.05) * 1000;
+
+        private StreamWriter StreamWriter { get; }
+        private long PreviousFrameTime_Ticks { get; set; }
+
+        public HitchLogger2() {
+            Assert.IsTrue(Directory.Exists(Application.persistentDataPath));
+            string filePath = Path.Combine(Application.persistentDataPath, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss} hitch log 2.txt");
+            Assert.IsFalse(File.Exists(filePath));
+
+            this.StreamWriter = new StreamWriter(filePath);
+            this.PreviousFrameTime_Ticks = Stopwatch.GetTimestamp();
+        }
+
+        public void Update() {
+            long previousFrameTime_Ticks = this.PreviousFrameTime_Ticks;
+            long currentFrameTime_Ticks = Stopwatch.GetTimestamp();
+
+            long frameDuration_Ticks = currentFrameTime_Ticks - previousFrameTime_Ticks;
+            double frameDuration_Milliseconds = (frameDuration_Ticks * (1.0 / Stopwatch.Frequency)) * 1000.0;
+            if (frameDuration_Milliseconds > FrameDurationThreshold_Milliseconds) {
+                this.StreamWriter.WriteLine($"[{DateTime.Now}] Frame {Time.frameCount} took {frameDuration_Milliseconds:F4} ms ({frameDuration_Ticks} ticks)");
+                this.StreamWriter.Flush();
+            }
+
+            this.PreviousFrameTime_Ticks = currentFrameTime_Ticks;
+        }
+    }
+}

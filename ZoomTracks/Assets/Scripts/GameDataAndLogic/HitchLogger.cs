@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
@@ -29,7 +30,7 @@ namespace ZoomTracks {
                 return;
             }
 
-            _ = Directory.CreateDirectory(Application.persistentDataPath);
+            Assert.IsTrue(Directory.Exists(Application.persistentDataPath));
 
             this.LogPath = Path.Combine(Application.persistentDataPath, fileName);
             this.writer = new StreamWriter(this.LogPath, append: false);

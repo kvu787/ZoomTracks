@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
-        private const bool RecordHitches = false;
         private HitchLogger HitchLogger { get; set; }
+        private HitchLogger2 HitchLogger2 { get; set; }
 
         private const string UiSceneName = "Ui";
         private const int InitialTrackSceneIndex = 13;
@@ -56,6 +56,7 @@ namespace ZoomTracks {
                 logOnlyHitches: true,
                 hitchThresholdMs: (1000.0 / 60.0) * 1.1,
                 fileName: $"{DateTime.Now.Ticks}_hitches.csv");
+            this.HitchLogger2 = new HitchLogger2();
 
             GraphicsSettingsManager.Awake();
             DebugManager.instance.enableRuntimeUI = false;
@@ -113,11 +114,8 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
-                if (RecordHitches) {
-#pragma warning disable CS0162 // Unreachable code detected
-                    this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
-#pragma warning restore CS0162 // Unreachable code detected
-                }
+                this.HitchLogger2.Update();
+                //this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
 
                 this.InputManager.UpdateInputs();
 
