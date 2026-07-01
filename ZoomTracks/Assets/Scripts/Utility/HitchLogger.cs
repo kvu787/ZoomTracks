@@ -6,17 +6,16 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
-    public sealed class HitchLogger : IDisposable {
+    public sealed class HitchLogger {
         private readonly bool enabled;
         private readonly bool logOnlyHitches;
         private readonly double hitchThresholdMs;
         private readonly FrameTiming[] frameTimings;
         private readonly Stopwatch stopwatch;
 
-        private StreamWriter writer;
+        private readonly StreamWriter writer;
         private double previousLoopStartMs;
         private bool hasBaseline;
-        private bool disposed;
 
         public string LogPath { get; }
 
@@ -50,7 +49,7 @@ namespace ZoomTracks {
         }
 
         public void LogFrameTimingIfNeeded(string phase) {
-            if (!this.enabled || this.disposed || this.writer == null) {
+            if (!this.enabled || this.writer == null) {
                 return;
             }
 
@@ -117,20 +116,6 @@ namespace ZoomTracks {
             // Hitches are rare, so flushing is useful while investigating.
             // If you suspect this causes a follow-up hitch, remove this and rely on Dispose().
             this.writer.Flush();
-        }
-
-        public void Dispose() {
-            if (this.disposed) {
-                return;
-            }
-
-            this.disposed = true;
-
-            if (this.writer != null) {
-                this.writer.Flush();
-                this.writer.Dispose();
-                this.writer = null;
-            }
         }
 
         private static string FormatMs(double value) {

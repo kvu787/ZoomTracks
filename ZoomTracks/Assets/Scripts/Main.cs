@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
-        private const bool RecordHitches = true;
+        private const bool RecordHitches = false;
         private HitchLogger HitchLogger { get; set; }
 
         private const string UiSceneName = "Ui";
@@ -110,7 +110,9 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 if (RecordHitches) {
+#pragma warning disable CS0162 // Unreachable code detected
                     this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
+#pragma warning restore CS0162 // Unreachable code detected
                 }
 
                 this.InputManager.UpdateInputs();
@@ -163,16 +165,6 @@ namespace ZoomTracks {
 
         private bool InCarControlTimeout() {
             return (DateTime.Now - this.CarControlTimeoutStart) <= this.TimeoutDurationSeconds;
-        }
-
-        private void OnApplicationQuit() {
-            this.HitchLogger?.Dispose();
-            this.HitchLogger = null;
-        }
-
-        private void OnDestroy() {
-            this.HitchLogger?.Dispose();
-            this.HitchLogger = null;
         }
     }
 }
