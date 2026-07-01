@@ -66,6 +66,10 @@ namespace ZoomTracks {
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/Awaitable.html
         private async void Start() {
             Debug.Log($"BEGIN: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+
+            PrintInfoUtility.PrintDisplayMode();
+            PrintInfoUtility.PrintGraphicsInfo();
+
             if (SceneManager.loadedSceneCount != 1) {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
