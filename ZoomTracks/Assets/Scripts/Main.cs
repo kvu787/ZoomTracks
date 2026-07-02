@@ -131,6 +131,16 @@ namespace ZoomTracks {
                     this.HitchLogger2.InsertSpacer();
                 }
 
+                if (this.InputManager.ToggleBetweenBorderlessAndExclusiveFullScreen) {
+                    if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) {
+                        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+                    } else if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen) {
+                        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                    } else {
+                        throw new Exception($"Tried to toggle borderless/fullscreen with an invalid Screen.fullScreenMode of {Screen.fullScreenMode}");
+                    }
+                }
+
                 bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
                 if (wasTrackSwitched) {
                     this.InitializeTrack();
