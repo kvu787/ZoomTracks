@@ -33,5 +33,12 @@ namespace ZoomTracks {
 
             this.PreviousFrameTime_Ticks = currentFrameTime_Ticks;
         }
+
+        public void InsertSpacer() {
+            this.StreamWriter.WriteLine();
+            this.StreamWriter.WriteLine($"[{DateTime.Now}] Spacer ########################################");
+            this.StreamWriter.WriteLine();
+            this.StreamWriter.Flush();
+        }
     }
 }

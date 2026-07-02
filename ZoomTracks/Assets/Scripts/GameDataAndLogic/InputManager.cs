@@ -7,11 +7,22 @@ namespace ZoomTracks {
     public class InputManager {
         public Keyboard Keyboard { get; private set; }
         public Gamepad Gamepad { get; private set; }
+        public bool InsertHitchLogSpacer { get; private set; }
 
         public void UpdateInputs() {
             this.Keyboard = Keyboard.current;
             this.Gamepad = Gamepad.current;
             //this.LogGamepadRightStick();
+
+            this.InsertHitchLogSpacer = false;
+
+            if (this.Keyboard != null) {
+                this.InsertHitchLogSpacer |= this.Keyboard.tabKey.wasPressedThisFrame;
+            }
+
+            if (this.Gamepad != null) {
+                this.InsertHitchLogSpacer |= this.Gamepad.selectButton.wasPressedThisFrame;
+            }
         }
 
         private DateTime LastLogTime = DateTime.MinValue;

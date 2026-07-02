@@ -115,8 +115,8 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
-                this.HitchLogger2.Update();
                 this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
+                this.HitchLogger2.Update();
 
                 this.InputManager.UpdateInputs();
 
@@ -125,6 +125,10 @@ namespace ZoomTracks {
                 }
                 if (this.InputManager.Gamepad != null && this.InputManager.Gamepad.startButton.wasPressedThisFrame) {
                     Application.Quit();
+                }
+
+                if (this.InputManager.InsertHitchLogSpacer) {
+                    this.HitchLogger2.InsertSpacer();
                 }
 
                 bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
