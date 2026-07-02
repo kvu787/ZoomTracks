@@ -14,6 +14,9 @@ opengl, borderless fullscreen, native render resolution:
 opengl, windowed:
 .\ZoomTracks.exe -force-glcore -screen-fullscreen "0" -screen-width "2208" -screen-height "1242"
 
+vulkan, borderless fullscreen, native render resolution:
+.\ZoomTracks.exe -force-vulkan -window-mode "borderless" -screen-width "2560" -screen-height "1440"
+
 vulkan, windowed:
 .\ZoomTracks.exe -force-vulkan -screen-fullscreen "0" -screen-width "2208" -screen-height "1242"
 
