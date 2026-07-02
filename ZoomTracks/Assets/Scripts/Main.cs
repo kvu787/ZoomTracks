@@ -118,6 +118,7 @@ namespace ZoomTracks {
                 this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
                 this.HitchLogger2.Update();
 
+                TimeManager.Update();
                 this.InputManager.UpdateInputs();
 
                 if (this.InputManager.Keyboard != null && this.InputManager.Keyboard.escapeKey.wasPressedThisFrame) {

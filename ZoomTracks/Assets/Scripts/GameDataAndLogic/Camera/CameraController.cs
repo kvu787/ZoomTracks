@@ -170,15 +170,15 @@ namespace ZoomTracks {
         */
 
         private void RotateOffset(float f) {
-            this.RotationOffset += Time.deltaTime * CameraRotationSpeed * f;
+            this.RotationOffset += TimeManager.DeltaTime * CameraRotationSpeed * f;
         }
 
         //private void PanOffset(Vector2 vector2) {
-        //    this.CameraPanOffsetAndPitch.localPosition += Time.deltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
+        //    this.CameraPanOffsetAndPitch.localPosition += TimeManager.DeltaTime * CameraPanSpeed * new Vector3(vector2.x, 0, vector2.y);
         //}
 
         private void Zoom(float zoomOut, float zoomIn) {
-            this.OrthographicCameraSize += Time.deltaTime * CameraZoomSpeed * (zoomOut - zoomIn);
+            this.OrthographicCameraSize += TimeManager.DeltaTime * CameraZoomSpeed * (zoomOut - zoomIn);
             this.OrthographicCameraSize = Mathf.Clamp(this.OrthographicCameraSize, MinOrthographicCameraSize, MaxOrthographicCameraSize);
         }
 
