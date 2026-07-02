@@ -1,15 +1,19 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace ZoomTracks {
     public static class PrintInfoUtility {
         public static void PrintDisplayInfo() {
             Display display = Display.main;
-            Debug.Log($"Render resolution: {display.renderingWidth}*{display.renderingHeight}");
-            Debug.Log($"Window resolution: {Screen.width}*{Screen.height}");
+            Debug.Log($"display.rendering resolution = {display.renderingWidth}*{display.renderingHeight}");
+            Debug.Log($"display.system    resolution = {display.systemWidth}*{display.systemHeight}");
+            Debug.Log($"Screen            resolution = {Screen.width}*{Screen.height}");
 
-            Debug.Log($"Screen.fullScreenMode: {Screen.fullScreenMode}");
-            Debug.Log($"Screen.fullScreen: {Screen.fullScreen}");
+            Debug.Log($"renderScale = {UniversalRenderPipeline.asset.renderScale}");
+
+            Debug.Log($"Screen.fullScreenMode = {Screen.fullScreenMode}");
+            Debug.Log($"Screen.fullScreen     = {Screen.fullScreen}");
 
             switch (Screen.fullScreenMode) {
             case FullScreenMode.ExclusiveFullScreen:
