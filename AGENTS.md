@@ -5,8 +5,11 @@ If you are recommending any edits, put them in the reply to the prompt.
 
 # Available tools
 
-* Python 3 should be in `C:\Users\kevin\AppData\Local\Microsoft\WindowsApps\python.exe`
-* Modern Powershell should be in `C:\Program Files\WindowsApps\Microsoft.PowerShell_7.6.3.0_x64__8wekyb3d8bbwe\pwsh.exe`
+* This should be on Windows 11.
+* These additional tools should be available:
+  * Modern PowerShell
+  * Python
+  * Git
 * A portable installation of Blender should be in `$env:USERPROFILE\Program\blender-4.5.11-windows-x64`
 
 # Info

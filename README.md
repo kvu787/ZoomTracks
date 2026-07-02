@@ -5,4 +5,5 @@
 .\ZoomTracks.exe -force-vulkan
 .\ZoomTracks.exe -force-glcore
 .\ZoomTracks.exe -force-d3d11 -window-mode 'borderless' -screen-fullscreen '1' -timestamps
+.\ZoomTracks.exe -force-d3d11 -screen-fullscreen '0' -screen-width '2208' -screen-height '1242' -timestamps
 ```
