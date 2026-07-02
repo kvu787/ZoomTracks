@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
-using Stopwatch = System.Diagnostics.Stopwatch;
-
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
         private HitchLogger HitchLogger { get; set; }
@@ -71,6 +69,9 @@ namespace ZoomTracks {
         private async void Start() {
             Debug.Log($"BEGIN: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
 
+            PrintInfoUtility.PrintDisplayInfo();
+            PrintInfoUtility.PrintGraphicsInfo();
+
             if (SceneManager.loadedSceneCount != 1) {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
@@ -111,19 +112,9 @@ namespace ZoomTracks {
             Debug.Log("...done");
         }
 
-        private static readonly double TickDuration_MsPerTick = 1000.0 / Stopwatch.Frequency;
-        private static double LastPrintTimeMs = Stopwatch.GetTimestamp() * TickDuration_MsPerTick + 1000.0;
-
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
-                double currentTimeMs = Stopwatch.GetTimestamp() * TickDuration_MsPerTick;
-                if ((currentTimeMs - LastPrintTimeMs) > 1000.0) {
-                    LastPrintTimeMs = currentTimeMs;
-                    PrintInfoUtility.PrintDisplayInfo();
-                    PrintInfoUtility.PrintGraphicsInfo();
-                }
-
                 this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
                 this.HitchLogger2.Update();
 
