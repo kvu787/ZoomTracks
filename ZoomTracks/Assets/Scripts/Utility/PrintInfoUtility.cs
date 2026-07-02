@@ -3,8 +3,12 @@ using UnityEngine.Rendering;
 
 namespace ZoomTracks {
     public static class PrintInfoUtility {
-        public static void PrintDisplayMode() {
-            Debug.Log($"FullScreenMode: {Screen.fullScreenMode}");
+        public static void PrintDisplayInfo() {
+            Display display = Display.main;
+            Debug.Log($"Render resolution: {display.renderingWidth}*{display.renderingHeight}");
+            Debug.Log($"Window resolution: {Screen.width}*{Screen.height}");
+
+            Debug.Log($"Screen.fullScreenMode: {Screen.fullScreenMode}");
             Debug.Log($"Screen.fullScreen: {Screen.fullScreen}");
 
             switch (Screen.fullScreenMode) {

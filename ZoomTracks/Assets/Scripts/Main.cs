@@ -69,7 +69,7 @@ namespace ZoomTracks {
         private async void Start() {
             Debug.Log($"BEGIN: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
 
-            PrintInfoUtility.PrintDisplayMode();
+            PrintInfoUtility.PrintDisplayInfo();
             PrintInfoUtility.PrintGraphicsInfo();
 
             if (SceneManager.loadedSceneCount != 1) {
