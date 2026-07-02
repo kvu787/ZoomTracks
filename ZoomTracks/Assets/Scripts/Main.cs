@@ -52,7 +52,7 @@ namespace ZoomTracks {
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
             this.HitchLogger = new HitchLogger(
-                enabled: true,
+                enabled: false,
                 logOnlyHitches: true,
                 hitchThresholdMs: (1000.0 / 60.0) * 1.1,
                 fileName: $"{DateTime.Now.Ticks}_hitches.csv");
@@ -116,7 +116,7 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
                 this.HitchLogger2.Update();
-                //this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
+                this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
 
                 this.InputManager.UpdateInputs();
 
