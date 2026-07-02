@@ -5,6 +5,18 @@
 .\ZoomTracks.exe -force-vulkan
 .\ZoomTracks.exe -force-glcore
 
+opengl, exclusive fullscreen, native render resolution:
+.\ZoomTracks.exe -force-glcore -window-mode "exclusive" -screen-width "2560" -screen-height "1440"
+
+opengl, borderless fullscreen, native render resolution:
+.\ZoomTracks.exe -force-glcore -window-mode "borderless" -screen-width "2560" -screen-height "1440"
+
+opengl, windowed:
+.\ZoomTracks.exe -force-glcore -screen-fullscreen "0" -screen-width "2208" -screen-height "1242"
+
+vulkan, windowed:
+.\ZoomTracks.exe -force-vulkan -screen-fullscreen "0" -screen-width "2208" -screen-height "1242"
+
 dx12, exclusive fullscreen, native render resolution:
 .\ZoomTracks.exe -force-d3d12 -window-mode "exclusive" -screen-width "2560" -screen-height "1440"
 
