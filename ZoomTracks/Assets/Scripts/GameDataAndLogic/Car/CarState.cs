@@ -101,7 +101,7 @@ namespace ZoomTracks {
                     }
 
                     Vector3 accelerationOutput_worldSpace = accelerationOutput_carSpace.Rotate2D(this.Rotation);
-                    Vector3 deltaVelocity_worldSpace = Time.deltaTime * accelerationOutput_worldSpace;
+                    Vector3 deltaVelocity_worldSpace = TimeManager.DeltaTime * accelerationOutput_worldSpace;
                     this.Velocity += deltaVelocity_worldSpace;
                 } else {
                     // Brake and acceleration are zero, so do nothing
@@ -115,7 +115,7 @@ namespace ZoomTracks {
                         this.Velocity = Vector3.zero;
                     } else {
                         Vector3 brakeDirection = (-1f * this.Velocity).normalized;
-                        Vector3 brakeDeltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * Time.deltaTime * brakeDirection;
+                        Vector3 brakeDeltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * TimeManager.DeltaTime * brakeDirection;
                         if (brakeDeltaVelocity.sqrMagnitude >= velocitySqrMagnitude) {
                             this.Velocity = Vector3.zero;
                         } else {
@@ -133,7 +133,7 @@ namespace ZoomTracks {
                 this.Rotation_ForMostRecentNonZeroVelocity = this.Velocity.Get2DRotation();
             }
 
-            this.Position += this.Velocity * Time.deltaTime;
+            this.Position += this.Velocity * TimeManager.DeltaTime;
         }
 
         public void ApplyStateToGameObject() {
