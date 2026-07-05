@@ -4,7 +4,7 @@ namespace ZoomTracks {
 
         public static void Update() {
             //DeltaTime = UnityEngine.Time.deltaTime;
-            DeltaTime = 1f / 60f;
+            DeltaTime = 1f / 59.95f;
         }
     }
 }

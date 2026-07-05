@@ -61,6 +61,8 @@ namespace ZoomTracks {
             this.Reset_PositionRotationVelocity();
         }
 
+        private static Vector2 myvector = new(-2.25f, 1f);
+
         public void ReadInputAndUpdateState() {
             Gamepad gamepad = this.InputManager.Gamepad;
             if (gamepad == null) {
@@ -69,6 +71,7 @@ namespace ZoomTracks {
 
             float brakeInput = gamepad.leftTrigger.ReadValue();
             Vector2 accelerationInput_xyPlane = gamepad.rightStick.ReadUnprocessedValue();
+            accelerationInput_xyPlane = myvector;
             CarDynamic carDynamic = this.CarSwitcher.CurrentCarDynamic;
             float cameraYaw = this.CameraController.CameraYaw;
 
