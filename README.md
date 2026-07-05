@@ -75,7 +75,6 @@ Do this for all reproductions:
 Reproduction for consistent and immediate stutter:
 * primary: t27hv-20, 2560*1440, 59.95 hz or 74.78 hz
 * secondary: dell u2717d, 2560*1440, 59.95 hz
-* dx11, borderless fullscreen, blit, native render resolution:
 * .\ZoomTracks.exe -force-d3d11 -window-mode "borderless" -force-d3d11-bitblt-model -screen-width "2560" -screen-height "1440"
 
 Reproduction for stutter starting 7 to 10 minutes in:
@@ -92,3 +91,23 @@ game runtime, including at the very start of the game. This overall smoothness i
 stutters. It is just a general visual "smoothness" that you can tell when you play with
 primary+secondary monitor versus just with the primary monitor. So, this must another issue with
 using two monitors in addition to the stuttering issue I was originally investigating.
+
+^^^
+this observation is wrong. i did some more tests and it seems like the increased general smoothness
+i observed was just me running at 75 hz monitor refresh instead of 60 hz like i thought i was
+
+
+Remove-Item -Path "HKCU:\Software\K\ZoomTracks" -Recurse
+
+
+```powershell
+# in admin powershell window
+# $label = "dual monitor"
+$label = "dual monitor dx12 borderless"
+$date = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+$out  = "C:\Users\kevin\Repository\Unity\ZoomTracks\PresentMonCaptures\${date} ${label}.csv"
+C:\Users\kevin\Repository\Unity\ZoomTracks\PresentMon-2.5.1-x64.exe --process_name ZoomTracks.exe --output_file $out --timed 600 --terminate_after_timed
+
+# in standard powershell window
+Remove-Item -Path "HKCU:\Software\K\ZoomTracks" -Recurse; C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe -force-d3d12 -window-mode "borderless" -screen-width "2560" -screen-height "1440"
+```
