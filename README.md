@@ -2,7 +2,7 @@
 
 ![<Images/README pic.png>](<Images/README pic.png>)
 
-# Run configuration
+# Run configurations
 
 ```powershell
 .\ZoomTracks.exe -window-mode "exclusive"
@@ -65,30 +65,33 @@ dx11, borderless fullscreen, blit, native render resolution:
 .\ZoomTracks.exe -force-d3d11 -window-mode "borderless" -force-d3d11-bitblt-model -screen-width "2560" -screen-height "1440"
 ```
 
+# Clear registry keys
+
+```powershell
+Remove-Item -Path "HKCU:\Software\K\ZoomTracks" -Recurse
+```
+
 # Guide for reproducing stutters
+
+With a single monitor, only dx11 with bit blit has stutters.
+With dual monitors, all DirectX configurations have stutters starting 7 to 10 minutes after game start.
+I haven't thoroughly tested Vulkan yet.
 
 Do this for all reproductions:
 * use commit e91fdc8835ef591a30939cd2dcbb26f59c016ebb
 * play the game on the primary monitor
-* play non-fullscreen, maximized windowed, non-theater mode youtube livestream vod with the chat panel open at max quality on an edge browser window on the secondary monitory (example: https://www.youtube.com/watch?v=Tg_4D1dfP-o)
+* play non-fullscreen, maximized windowed, non-theater mode youtube livestream vod with the chat
+  panel open at max quality on an edge browser window on the secondary monitory
+  * Example: https://www.youtube.com/watch?v=Tg_4D1dfP-o
 
-Reproduction for consistent and immediate stutter:
-* primary: t27hv-20, 2560*1440, 59.95 hz or 74.78 hz
-* secondary: dell u2717d, 2560*1440, 59.95 hz
+Reproduction for consistent and immediate stutter, for both single and dual monitor setups:
 * dx11, borderless fullscreen, blit, native render resolution:
 * .\ZoomTracks.exe -force-d3d11 -window-mode "borderless" -force-d3d11-bitblt-model -screen-width "2560" -screen-height "1440"
 
-Reproduction for stutter starting 7 to 10 minutes in:
-* primary: t27hv-20, 2560*1440, 59.95 hz
+Reproduction for stutter starting 7 to 10 minutes in, dual monitor only:
+* primary: lenovo t27hv-20, 2560*1440, 59.95 hz
 * secondary: dell u2717d, 2560*1440, 59.95 hz
 * .\ZoomTracks.exe -force-d3d12 -window-mode "exclusive" -screen-width "2560" -screen-height "1440"
 * .\ZoomTracks.exe -force-d3d12 -window-mode "borderless" -screen-width "2560" -screen-height "1440"
 * .\ZoomTracks.exe -force-d3d11 -window-mode "exclusive" -screen-width "2560" -screen-height "1440"
 * .\ZoomTracks.exe -force-d3d11 -window-mode "borderless" -force-d3d11-flip-model -screen-width "2560" -screen-height "1440"
-
-When the secondary monitor is disconnected (which leaves the primary monitor as the only display),
-I observe no stuttering. Also, I observe that the game looks much "smoother" throughout the whole
-game runtime, including at the very start of the game. This overall smoothness isn't a lack of
-stutters. It is just a general visual "smoothness" that you can tell when you play with
-primary+secondary monitor versus just with the primary monitor. So, this must another issue with
-using two monitors in addition to the stuttering issue I was originally investigating.
