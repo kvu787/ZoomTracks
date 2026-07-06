@@ -13,7 +13,10 @@ def main():
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj
 
-    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
+    # Object Mode > Object > Set Origin > Origin to Geometry
+    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY")
+
+    # Object Mode > Object > Apply > Rotation
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 
 if __name__ == "__main__":
