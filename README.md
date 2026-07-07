@@ -2,6 +2,29 @@
 
 ![<Images/README pic.png>](<Images/README pic.png>)
 
+# Known good run config
+
+The following configuration is the result a lot of testing to eliminate stutters.
+
+* Computer:
+  * Model  = Lenovo Legion 9 18IAX10 (aka Lenovo Legion 9i)
+  * Laptop is closed (so its built-in display should be inactive)
+  * Legion Space > GPU Working Mode = dGPU mode (meaning dGPU only with iGPU disabled)
+* Display:
+  * Model = Lenovo ThinkVision T27hv-20
+  * Resolution = 2560 x 1440
+  * Refresh rate = 59.95 Hz
+* The only active display is a single monitor connected to one of the two Thunderbolt 5 ports on the laptop
+  * Use a DisplayPort to USB-C cable, with the DisplayPort side connected to the monitor and the USB-C side connected to the laptop
+* Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
+* Windows 11 Pro, Version 25H2 (OS Build 26200.8655)
+* Night light disabled
+
+```powershell
+Remove-Item -Path "HKCU:\Software\K\ZoomTracks" -Recurse
+.\ZoomTracks.exe -force-d3d12 -window-mode "borderless" -screen-width "2560" -screen-height "1440"
+```
+
 # Run configurations
 
 ```powershell
