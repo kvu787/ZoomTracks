@@ -14,6 +14,10 @@ The following configuration is the result a lot of testing to eliminate stutters
   * Model = Lenovo ThinkVision T27hv-20
   * Resolution = 2560 x 1440
   * Refresh rate = 59.95 Hz
+  * Reset to factory settings with "OSD > Menu Settings > Factory Reset"
+    * Then, change these settings:
+    * OSD > Monitor Controls > Brightness = 40
+    * OSD > Advanced Settings > Over Drive = Off
 * The only active display is a single monitor connected to one of the two Thunderbolt 5 ports on the laptop
   * Use a DisplayPort to USB-C cable, with the DisplayPort side connected to the monitor and the USB-C side connected to the laptop
 * Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
