@@ -7,22 +7,32 @@
 The following configuration is the result a lot of testing to eliminate stutters.
 
 * Computer:
-  * Model  = Lenovo Legion 9 18IAX10 (aka Lenovo Legion 9i)
+  * Model = Lenovo Legion 9 18IAX10 (aka Lenovo Legion 9i)
+  * CPU = Intel 275HX
+  * GPU = Nvidia 5090 laptop
   * Laptop is closed (so its built-in display should be inactive)
-  * Legion Space > GPU Working Mode = dGPU mode (meaning dGPU only with iGPU disabled)
+  * Legion Space > GPU Working Mode = dGPU mode
+    * This should completely disable the Intel integrated GPU
+    * Verify that "Device Manager > Display Adapters" shows only the discrete GPU
+* Input:
+  * Razer Wolverine V3 Pro 8K PC
+  * Connected via wireless dongle
+  * (Wired should work fine too)
 * Display:
   * Model = Asus PA278CV
   * Resolution = 2560 x 1440
   * Refresh rate = 59.95 Hz
+  * Response time = 5 ms
   * Reset to factory settings with "OSD > System Setup > All Reset"
     * Then, change these settings:
     * OSD > Monitor Controls > Brightness = 25
     * OSD > Image > Trace Free = 0
   * This display is connected via HDMI to the laptop.
   * This is the only active display.
-* Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
-* Windows 11 Pro, Version 25H2 (OS Build 26200.8655)
-* Night light enabled with strength = 50
+* Software
+  * Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
+  * Windows 11 Pro, Version 25H2 (OS Build 26200.8655)
+  * Night light enabled with strength = 50
 
 ```powershell
 Remove-Item -Path "HKCU:\Software\K\ZoomTracks" -Recurse
