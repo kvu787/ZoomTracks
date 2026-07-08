@@ -16,7 +16,8 @@ The following configuration is the result a lot of testing to eliminate stutters
   * Refresh rate = 59.95 Hz
   * Reset to factory settings with "OSD > System Setup > All Reset"
     * Then, change these settings:
-    * OSD > Monitor Controls > Brightness = 28
+    * OSD > Monitor Controls > Brightness = 25
+    * OSD > Image > Trace Free = 0
   * This display is connected via HDMI to the laptop.
   * This is the only active display.
 * Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
