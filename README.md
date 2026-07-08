@@ -25,7 +25,9 @@ The following configuration is the result a lot of testing to eliminate stutters
   * Response time = 5 ms
   * Reset to factory settings with "OSD > System Setup > All Reset"
     * Then, change these settings:
-    * OSD > Monitor Controls > Brightness = 25
+    * OSD > ProArt Preset = Rec. 709 Mode
+    * OSD > ProArt Palette > Brightness = 65
+    * OSD > ProArt Palette > Gamma = 2.2
     * OSD > Image > Trace Free = 0
   * This display is connected via HDMI to the laptop.
   * This is the only active display.
