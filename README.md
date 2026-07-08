@@ -11,18 +11,17 @@ The following configuration is the result a lot of testing to eliminate stutters
   * Laptop is closed (so its built-in display should be inactive)
   * Legion Space > GPU Working Mode = dGPU mode (meaning dGPU only with iGPU disabled)
 * Display:
-  * Model = Lenovo ThinkVision T27hv-20
+  * Model = Asus PA278CV
   * Resolution = 2560 x 1440
   * Refresh rate = 59.95 Hz
-  * Reset to factory settings with "OSD > Menu Settings > Factory Reset"
+  * Reset to factory settings with "OSD > System Setup > All Reset"
     * Then, change these settings:
-    * OSD > Monitor Controls > Brightness = 40
-    * OSD > Advanced Settings > Over Drive = Off
-* The only active display is a single monitor connected to one of the two Thunderbolt 5 ports on the laptop
-  * Use a DisplayPort to USB-C cable, with the DisplayPort side connected to the monitor and the USB-C side connected to the laptop
+    * OSD > Monitor Controls > Brightness = 28
+  * This display is connected via HDMI to the laptop.
+  * This is the only active display.
 * Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
 * Windows 11 Pro, Version 25H2 (OS Build 26200.8655)
-* Night light disabled
+* Night light enabled with strength = 50
 
 ```powershell
 Remove-Item -Path "HKCU:\Software\K\ZoomTracks" -Recurse
