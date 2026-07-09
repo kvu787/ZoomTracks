@@ -51,12 +51,22 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
+            int i = Array.IndexOf(commandLineArgs, "-stutterLogFilePath");
+            if (i == -1) {
+                throw new Exception("-stutterLogFilePath not found in command line arguments");
+            }
+            if ((i + 1) >= commandLineArgs.Length) {
+                throw new Exception("no value found for -stutterLogFilePath");
+            }
+            string stutterLogFilePath = commandLineArgs[i + 1];
+
             this.HitchLogger = new HitchLogger(
                 enabled: false,
                 logOnlyHitches: true,
                 hitchThresholdMs: (1000.0 / 60.0) * 1.1,
                 fileName: $"{DateTime.Now.Ticks}_hitches.csv");
-            this.HitchLogger2 = new HitchLogger2();
+            this.HitchLogger2 = new HitchLogger2(stutterLogFilePath);
 
             GraphicsSettingsManager.UseRuntimeOnlyCopyOfUrpAsset();
             GraphicsSettingsManager.ConfigureSessionGraphicsSettings();

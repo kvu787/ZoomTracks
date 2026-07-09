@@ -44,3 +44,6 @@
 
 # I use this folder when doing a standalone build operation and Unity Editor asks for a folder.
 /MyBuildOutput*/
+
+# I use this folder to consolidate logging output into a convenient place.
+/MyLogOutput*/

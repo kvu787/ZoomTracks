@@ -11,11 +11,8 @@ namespace ZoomTracks {
         private StreamWriter StreamWriter { get; }
         private long PreviousFrameTime_Ticks { get; set; }
 
-        public HitchLogger2() {
-            Assert.IsTrue(Directory.Exists(Application.persistentDataPath));
-            string filePath = Path.Combine(Application.persistentDataPath, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss} hitch log 2.log");
+        public HitchLogger2(string filePath) {
             Assert.IsFalse(File.Exists(filePath));
-
             this.StreamWriter = new StreamWriter(filePath);
             this.PreviousFrameTime_Ticks = Stopwatch.GetTimestamp();
         }
