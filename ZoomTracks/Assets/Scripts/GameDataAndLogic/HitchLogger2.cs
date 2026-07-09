@@ -24,7 +24,7 @@ namespace ZoomTracks {
             long frameDuration_Ticks = currentFrameTime_Ticks - previousFrameTime_Ticks;
             double frameDuration_Milliseconds = (frameDuration_Ticks * (1.0 / Stopwatch.Frequency)) * 1000.0;
             if (frameDuration_Milliseconds > FrameDurationThreshold_Milliseconds) {
-                this.StreamWriter.WriteLine($"[{DateTime.Now}] Frame {Time.frameCount} took {frameDuration_Milliseconds:F4} ms ({frameDuration_Ticks} ticks)");
+                this.StreamWriter.WriteLine($"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz}] Frame {Time.frameCount} took {frameDuration_Milliseconds:F4} ms ({frameDuration_Ticks} ticks)");
                 this.StreamWriter.Flush();
             }
 
@@ -33,7 +33,7 @@ namespace ZoomTracks {
 
         public void InsertSpacer() {
             this.StreamWriter.WriteLine();
-            this.StreamWriter.WriteLine($"[{DateTime.Now}] Spacer ########################################");
+            this.StreamWriter.WriteLine($"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz}] Spacer ########################################");
             this.StreamWriter.WriteLine();
             this.StreamWriter.Flush();
         }
