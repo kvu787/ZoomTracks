@@ -63,6 +63,10 @@ namespace ZoomTracks {
             UniversalRenderPipeline.asset.supportsHDR = false;
             QualitySettings.maxQueuedFrames = 0;
             Application.targetFrameRate = -1;
+
+            Debug.Log($"UniversalRenderPipeline.asset.supportsHDR = {UniversalRenderPipeline.asset.supportsHDR}");
+            Debug.Log($"QualitySettings.maxQueuedFrames = {QualitySettings.maxQueuedFrames}");
+            Debug.Log($"Application.targetFrameRate = {Application.targetFrameRate}");
         }
 
         public GraphicsSettingsManager(CameraController cameraController, InputManager inputManager) {
