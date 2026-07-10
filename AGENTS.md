@@ -15,8 +15,7 @@ If you are recommending any edits, put them in the reply to the prompt.
 # Info
 
 * The root of the Unity Engine game project is the ZoomTracks subfolder.
-* Game logs are in `C:\Users\kevin\AppData\LocalLow\K\ZoomTracks\`.
-* My display is 2560*1440, 60hz.
+* Game logs are in `C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyLogOutput`.
 * Assume that the standalone build of the unity game is up-to-date and in `C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput`.
 
 # While reviewing
