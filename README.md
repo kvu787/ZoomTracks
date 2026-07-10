@@ -10,7 +10,7 @@ So, to play this, you'll probably need to adjust several things.
 
 # Known good run config
 
-The following configuration is the result a lot of testing to eliminate stutters.
+The following configuration is the result a lot of testing to eliminate stutters and get the colors right.
 
 * Computer:
   * Model = Lenovo Legion 9 18IAX10 (aka Lenovo Legion 9i)
@@ -40,6 +40,7 @@ The following configuration is the result a lot of testing to eliminate stutters
 * Software
   * Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
   * Windows 11 Pro, Version 25H2 (OS Build 26200.8655)
+  * Disable "Hardware-accelerated GPU scheduling"
   * Night light enabled with strength = 50
 
 Run the game by double-clicking `Run-ZoomTracks.cmd` in File Explorer.
