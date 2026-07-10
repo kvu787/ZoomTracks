@@ -1,0 +1,733 @@
+2026-07-10T02:12:46.090Z|0x61bc|Mono path[0] = 'C:/Users/kevin/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/ZoomTracks_Data/Managed'
+2026-07-10T02:12:46.090Z|0x61bc|Mono config path = 'C:/Users/kevin/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/MonoBleedingEdge/etc'
+2026-07-10T02:12:46.254Z|0x61bc|Input System module state changed to: Initialized.
+2026-07-10T02:12:46.269Z|0x61bc|[Physics::Module] Initialized fallback backend.
+2026-07-10T02:12:46.269Z|0x61bc|[Physics::Module] Id: 0xdecafbad
+2026-07-10T02:12:46.277Z|0x61bc|Initialize engine version: 6000.3.19f1 (7689f4515d75)
+2026-07-10T02:12:46.277Z|0x61bc|[Subsystems] Discovering subsystems at path C:/Users/kevin/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/ZoomTracks_Data/UnitySubsystems
+2026-07-10T02:12:46.287Z|0x61bc|Forcing GfxDevice: Direct3D 12
+2026-07-10T02:12:46.287Z|0x61bc|GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+2026-07-10T02:12:46.517Z|0x61bc|d3d12: failed to query info queue interface (0x80004002).
+2026-07-10T02:12:46.517Z|0x61bc|Direct3D:
+2026-07-10T02:12:46.517Z|0x61bc|    Version:         Direct3D 12 [level 12.2]
+2026-07-10T02:12:46.517Z|0x61bc|    Renderer:        NVIDIA GeForce RTX 5090 Laptop GPU (ID=0x2c58)
+2026-07-10T02:12:46.517Z|0x61bc|    Vendor:          NVIDIA
+2026-07-10T02:12:46.517Z|0x61bc|    VRAM:            24137 MB
+2026-07-10T02:12:46.517Z|0x61bc|    App VRAM Budget: 23369 MB
+2026-07-10T02:12:46.517Z|0x61bc|    Driver:          32.0.15.9649
+2026-07-10T02:12:46.570Z|0x61bc|Begin MonoManager ReloadAssembly
+2026-07-10T02:12:50.338Z|0x61bc|- Loaded All Assemblies, in  3.768 seconds
+2026-07-10T02:12:50.340Z|0x61bc|- Finished resetting the current domain, in  0.001 seconds
+2026-07-10T02:12:50.340Z|0x61bc|[Physics::Module] Selected backend.
+2026-07-10T02:12:50.340Z|0x61bc|[Physics::Module] Name: PhysX
+2026-07-10T02:12:50.340Z|0x61bc|[Physics::Module] Id: 0xf2b8ea05
+2026-07-10T02:12:50.340Z|0x61bc|[Physics::Module] SDK Version: 4.1.2
+2026-07-10T02:12:50.340Z|0x61bc|[Physics::Module] Integration Version: 1.0.0
+2026-07-10T02:12:50.340Z|0x61bc|[Physics::Module] Threading Mode: Multi-Threaded
+2026-07-10T02:12:50.423Z|0x61bc|ERROR: Shader Hidden/Universal Render Pipeline/DBufferClear shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+<RI> Initializing input.
+2026-07-10T02:12:50.511Z|0x61bc|Using Windows.Gaming.Input
+2026-07-10T02:12:50.536Z|0x6e68|Input System polling thread started.
+2026-07-10T02:12:50.605Z|0x61bc|UnloadTime: 0.504800 ms
+2026-07-10T02:12:50.672Z|0x61bc|BEGIN: Main.Awake on object='GameLoop' in scene='Main'
+2026-07-10T02:12:50.673Z|0x61bc|Log path for standalone exe: C:\Users\kevin\AppData\LocalLow\K\ZoomTracks\Player.log
+2026-07-10T02:12:50.688Z|0x61bc|END: Main.Awake on object='GameLoop' in scene='Main'
+2026-07-10T02:12:50.692Z|0x61bc|BEGIN: Main.Start on object='GameLoop' in scene='Main'
+2026-07-10T02:12:50.692Z|0x61bc|display.rendering resolution = 2560*1440
+2026-07-10T02:12:50.692Z|0x61bc|display.system    resolution = 2560*1440
+2026-07-10T02:12:50.692Z|0x61bc|Screen            resolution = 2560*1440
+2026-07-10T02:12:50.693Z|0x61bc|renderScale = 1
+2026-07-10T02:12:50.694Z|0x61bc|Screen.fullScreenMode = FullScreenWindow
+2026-07-10T02:12:50.694Z|0x61bc|Screen.fullScreen     = True
+2026-07-10T02:12:50.694Z|0x61bc|Running in borderless fullscreen window mode
+2026-07-10T02:12:50.695Z|0x61bc|Graphics API in use: Direct3D12
+2026-07-10T02:12:50.695Z|0x61bc|Graphics device: NVIDIA GeForce RTX 5090 Laptop GPU
+2026-07-10T02:12:50.695Z|0x61bc|Graphics device vendor: NVIDIA
+2026-07-10T02:12:50.695Z|0x61bc|Graphics device version: Direct3D 12 [level 12.2]
+2026-07-10T02:12:50.695Z|0x61bc|Running on Direct3D 12 / DX12
+2026-07-10T02:12:50.695Z|0x61bc|Load UI scene...
+2026-07-10T02:12:50.788Z|0x61bc|Busy 0.239
+2026-07-10T02:12:50.830Z|0x61bc|Busy 0.282
+2026-07-10T02:12:50.831Z|0x61bc|...done
+2026-07-10T02:12:50.831Z|0x61bc|Load initial track scene...
+2026-07-10T02:12:50.896Z|0x61bc|Busy 0.348
+2026-07-10T02:12:50.897Z|0x61bc|Busy 0.349
+2026-07-10T02:12:50.897Z|0x61bc|...done
+2026-07-10T02:12:50.905Z|0x61bc|Initialize track...
+2026-07-10T02:12:50.909Z|0x61bc|...done
+2026-07-10T02:12:50.909Z|0x61bc|END: Main.Start on object='GameLoop' in scene='Main'
+2026-07-10T02:12:50.910Z|0x61bc|BEGIN: Main.UpdateLoopAsync
+2026-07-10T02:19:02.027Z|0x61bc|Unload old track scene...
+2026-07-10T02:19:02.045Z|0x61bc|Busy 371.497
+2026-07-10T02:19:02.045Z|0x61bc|...done
+2026-07-10T02:19:02.045Z|0x61bc|Load new track scene...
+2026-07-10T02:19:02.060Z|0x61bc|Busy 371.512
+2026-07-10T02:19:02.077Z|0x61bc|Busy 371.529
+2026-07-10T02:19:02.093Z|0x61bc|Busy 371.545
+2026-07-10T02:19:02.110Z|0x61bc|Busy 371.562
+2026-07-10T02:19:02.127Z|0x61bc|Busy 371.579
+2026-07-10T02:19:02.144Z|0x61bc|Busy 371.596
+2026-07-10T02:19:02.161Z|0x61bc|Busy 371.613
+2026-07-10T02:19:02.161Z|0x61bc|...done
+2026-07-10T02:19:02.170Z|0x61bc|Initialize track...
+2026-07-10T02:19:02.170Z|0x61bc|...done
+2026-07-10T02:19:02.173Z|0x61bc|Unload unused assets...
+2026-07-10T02:19:02.174Z|0x788|Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:19:02.186Z|0x61bc|Unloading 135 unused Assets to reduce memory usage. Loaded Objects now: 3433.
+2026-07-10T02:19:02.187Z|0x61bc|Total: 9.944700 ms (FindLiveObjects: 0.311200 ms CreateObjectMapping: 0.106200 ms MarkObjects: 2.671600 ms  DeleteObjects: 6.855600 ms)
+
+2026-07-10T02:19:02.187Z|0x61bc|Busy 371.639
+2026-07-10T02:19:02.187Z|0x61bc|...done
+2026-07-10T02:19:03.911Z|0x61bc|Unload old track scene...
+2026-07-10T02:19:03.929Z|0x61bc|Busy 373.381
+2026-07-10T02:19:03.929Z|0x61bc|...done
+2026-07-10T02:19:03.929Z|0x61bc|Load new track scene...
+2026-07-10T02:19:03.945Z|0x61bc|Busy 373.397
+2026-07-10T02:19:03.962Z|0x61bc|Busy 373.414
+2026-07-10T02:19:03.978Z|0x61bc|Busy 373.430
+2026-07-10T02:19:03.995Z|0x61bc|Busy 373.447
+2026-07-10T02:19:03.995Z|0x61bc|...done
+2026-07-10T02:19:03.996Z|0x61bc|Initialize track...
+2026-07-10T02:19:03.997Z|0x61bc|...done
+2026-07-10T02:19:03.999Z|0x61bc|Unload unused assets...
+2026-07-10T02:19:03.999Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:19:04.013Z|0x61bc|Unloading 185 unused Assets to reduce memory usage. Loaded Objects now: 3208.
+2026-07-10T02:19:04.013Z|0x61bc|Total: 1.610400 ms (FindLiveObjects: 0.129700 ms CreateObjectMapping: 0.090600 ms MarkObjects: 1.254800 ms  DeleteObjects: 0.134900 ms)
+
+2026-07-10T02:19:04.013Z|0x61bc|Busy 373.465
+2026-07-10T02:19:04.013Z|0x61bc|...done
+2026-07-10T02:19:04.362Z|0x61bc|Unload old track scene...
+2026-07-10T02:19:04.379Z|0x61bc|Busy 373.831
+2026-07-10T02:19:04.379Z|0x61bc|...done
+2026-07-10T02:19:04.379Z|0x61bc|Load new track scene...
+2026-07-10T02:19:04.395Z|0x61bc|Busy 373.847
+2026-07-10T02:19:04.412Z|0x61bc|Busy 373.864
+2026-07-10T02:19:04.429Z|0x61bc|Busy 373.881
+2026-07-10T02:19:04.445Z|0x61bc|Busy 373.897
+2026-07-10T02:19:04.462Z|0x61bc|Busy 373.914
+2026-07-10T02:19:04.463Z|0x61bc|...done
+2026-07-10T02:19:04.463Z|0x61bc|Initialize track...
+2026-07-10T02:19:04.463Z|0x61bc|...done
+2026-07-10T02:19:04.466Z|0x61bc|Unload unused assets...
+2026-07-10T02:19:04.466Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:19:04.480Z|0x61bc|Unloading 127 unused Assets to reduce memory usage. Loaded Objects now: 3435.
+2026-07-10T02:19:04.480Z|0x61bc|Total: 1.448300 ms (FindLiveObjects: 0.127400 ms CreateObjectMapping: 0.081600 ms MarkObjects: 1.136300 ms  DeleteObjects: 0.102800 ms)
+
+2026-07-10T02:19:04.480Z|0x61bc|Busy 373.932
+2026-07-10T02:19:04.480Z|0x61bc|...done
+2026-07-10T02:19:04.896Z|0x61bc|Unload old track scene...
+2026-07-10T02:19:04.913Z|0x61bc|Busy 374.365
+2026-07-10T02:19:04.913Z|0x61bc|...done
+2026-07-10T02:19:04.913Z|0x61bc|Load new track scene...
+2026-07-10T02:19:04.929Z|0x61bc|Busy 374.381
+2026-07-10T02:19:04.946Z|0x61bc|Busy 374.398
+2026-07-10T02:19:04.963Z|0x61bc|Busy 374.415
+2026-07-10T02:19:04.979Z|0x61bc|Busy 374.431
+2026-07-10T02:19:04.979Z|0x61bc|...done
+2026-07-10T02:19:04.980Z|0x61bc|Initialize track...
+2026-07-10T02:19:04.980Z|0x61bc|...done
+2026-07-10T02:19:04.982Z|0x61bc|Unload unused assets...
+2026-07-10T02:19:04.982Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:19:04.997Z|0x61bc|Unloading 166 unused Assets to reduce memory usage. Loaded Objects now: 3208.
+2026-07-10T02:19:04.997Z|0x61bc|Total: 1.456300 ms (FindLiveObjects: 0.109800 ms CreateObjectMapping: 0.046600 ms MarkObjects: 1.168500 ms  DeleteObjects: 0.131200 ms)
+
+2026-07-10T02:19:04.997Z|0x61bc|Busy 374.449
+2026-07-10T02:19:04.997Z|0x61bc|...done
+2026-07-10T02:26:11.640Z|0x61bc|Unload old track scene...
+2026-07-10T02:26:11.657Z|0x61bc|Busy 801.109
+2026-07-10T02:26:11.657Z|0x61bc|...done
+2026-07-10T02:26:11.657Z|0x61bc|Load new track scene...
+2026-07-10T02:26:11.673Z|0x61bc|Busy 801.125
+2026-07-10T02:26:11.690Z|0x61bc|Busy 801.142
+2026-07-10T02:26:11.707Z|0x61bc|Busy 801.159
+2026-07-10T02:26:11.724Z|0x61bc|Busy 801.176
+2026-07-10T02:26:11.741Z|0x61bc|Busy 801.193
+2026-07-10T02:26:11.741Z|0x61bc|...done
+2026-07-10T02:26:11.743Z|0x61bc|Initialize track...
+2026-07-10T02:26:11.744Z|0x61bc|...done
+2026-07-10T02:26:11.746Z|0x61bc|Unload unused assets...
+2026-07-10T02:26:11.746Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:26:11.759Z|0x61bc|Unloading 127 unused Assets to reduce memory usage. Loaded Objects now: 3435.
+2026-07-10T02:26:11.759Z|0x61bc|Total: 2.269000 ms (FindLiveObjects: 0.188900 ms CreateObjectMapping: 0.225200 ms MarkObjects: 1.745400 ms  DeleteObjects: 0.109300 ms)
+
+2026-07-10T02:26:11.759Z|0x61bc|Busy 801.211
+2026-07-10T02:26:11.759Z|0x61bc|...done
+2026-07-10T02:26:26.502Z|0x61bc|Unload old track scene...
+2026-07-10T02:26:26.519Z|0x61bc|Busy 815.971
+2026-07-10T02:26:26.519Z|0x61bc|...done
+2026-07-10T02:26:26.519Z|0x61bc|Load new track scene...
+2026-07-10T02:26:26.536Z|0x61bc|Busy 815.988
+2026-07-10T02:26:26.552Z|0x61bc|Busy 816.004
+2026-07-10T02:26:26.569Z|0x61bc|Busy 816.021
+2026-07-10T02:26:26.586Z|0x61bc|Busy 816.038
+2026-07-10T02:26:26.602Z|0x61bc|Busy 816.054
+2026-07-10T02:26:26.602Z|0x61bc|...done
+2026-07-10T02:26:26.609Z|0x61bc|Initialize track...
+2026-07-10T02:26:26.610Z|0x61bc|...done
+2026-07-10T02:26:26.611Z|0x61bc|Unload unused assets...
+2026-07-10T02:26:26.612Z|0x788|Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:26:26.620Z|0x61bc|Unloading 166 unused Assets to reduce memory usage. Loaded Objects now: 3052.
+2026-07-10T02:26:26.620Z|0x61bc|Total: 1.552300 ms (FindLiveObjects: 0.096400 ms CreateObjectMapping: 0.047100 ms MarkObjects: 1.273200 ms  DeleteObjects: 0.135500 ms)
+
+2026-07-10T02:26:26.620Z|0x61bc|Busy 816.072
+2026-07-10T02:26:26.620Z|0x61bc|...done
+2026-07-10T02:26:27.119Z|0x61bc|Unload old track scene...
+2026-07-10T02:26:27.136Z|0x61bc|Busy 816.588
+2026-07-10T02:26:27.136Z|0x61bc|...done
+2026-07-10T02:26:27.136Z|0x61bc|Load new track scene...
+2026-07-10T02:26:27.153Z|0x61bc|Busy 816.605
+2026-07-10T02:26:27.169Z|0x61bc|Busy 816.621
+2026-07-10T02:26:27.186Z|0x61bc|Busy 816.638
+2026-07-10T02:26:27.203Z|0x61bc|Busy 816.655
+2026-07-10T02:26:27.220Z|0x61bc|Busy 816.672
+2026-07-10T02:26:27.220Z|0x61bc|...done
+2026-07-10T02:26:27.220Z|0x61bc|Initialize track...
+2026-07-10T02:26:27.221Z|0x61bc|...done
+2026-07-10T02:26:27.224Z|0x61bc|Unload unused assets...
+2026-07-10T02:26:27.224Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:26:27.237Z|0x61bc|Unloading 102 unused Assets to reduce memory usage. Loaded Objects now: 3435.
+2026-07-10T02:26:27.237Z|0x61bc|Total: 1.369600 ms (FindLiveObjects: 0.097800 ms CreateObjectMapping: 0.032300 ms MarkObjects: 1.163000 ms  DeleteObjects: 0.076400 ms)
+
+2026-07-10T02:26:27.237Z|0x61bc|Busy 816.689
+2026-07-10T02:26:27.237Z|0x61bc|...done
+2026-07-10T02:26:27.553Z|0x61bc|Unload old track scene...
+2026-07-10T02:26:27.570Z|0x61bc|Busy 817.022
+2026-07-10T02:26:27.570Z|0x61bc|...done
+2026-07-10T02:26:27.570Z|0x61bc|Load new track scene...
+2026-07-10T02:26:27.586Z|0x61bc|Busy 817.038
+2026-07-10T02:26:27.603Z|0x61bc|Busy 817.055
+2026-07-10T02:26:27.620Z|0x61bc|Busy 817.072
+2026-07-10T02:26:27.637Z|0x61bc|Busy 817.089
+2026-07-10T02:26:27.637Z|0x61bc|...done
+2026-07-10T02:26:27.637Z|0x61bc|Initialize track...
+2026-07-10T02:26:27.637Z|0x61bc|...done
+2026-07-10T02:26:27.639Z|0x61bc|Unload unused assets...
+2026-07-10T02:26:27.639Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:26:27.654Z|0x61bc|Unloading 166 unused Assets to reduce memory usage. Loaded Objects now: 3208.
+2026-07-10T02:26:27.654Z|0x61bc|Total: 1.359500 ms (FindLiveObjects: 0.121700 ms CreateObjectMapping: 0.066700 ms MarkObjects: 1.050100 ms  DeleteObjects: 0.120900 ms)
+
+2026-07-10T02:26:27.654Z|0x61bc|Busy 817.106
+2026-07-10T02:26:27.654Z|0x61bc|...done
+2026-07-10T02:27:33.456Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:33.474Z|0x61bc|Busy 882.926
+2026-07-10T02:27:33.474Z|0x61bc|...done
+2026-07-10T02:27:33.474Z|0x61bc|Load new track scene...
+2026-07-10T02:27:33.490Z|0x61bc|Busy 882.942
+2026-07-10T02:27:33.506Z|0x61bc|Busy 882.958
+2026-07-10T02:27:33.523Z|0x61bc|Busy 882.975
+2026-07-10T02:27:33.540Z|0x61bc|Busy 882.992
+2026-07-10T02:27:33.557Z|0x61bc|Busy 883.009
+2026-07-10T02:27:33.573Z|0x61bc|Busy 883.025
+2026-07-10T02:27:33.573Z|0x61bc|...done
+2026-07-10T02:27:33.581Z|0x61bc|Initialize track...
+2026-07-10T02:27:33.582Z|0x61bc|...done
+2026-07-10T02:27:33.583Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:33.583Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:33.591Z|0x61bc|Unloading 127 unused Assets to reduce memory usage. Loaded Objects now: 3171.
+2026-07-10T02:27:33.591Z|0x61bc|Total: 1.772600 ms (FindLiveObjects: 0.098600 ms CreateObjectMapping: 0.050900 ms MarkObjects: 1.505000 ms  DeleteObjects: 0.117800 ms)
+
+2026-07-10T02:27:33.591Z|0x61bc|Busy 883.043
+2026-07-10T02:27:33.591Z|0x61bc|...done
+2026-07-10T02:27:44.715Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:44.732Z|0x61bc|Busy 894.184
+2026-07-10T02:27:44.732Z|0x61bc|...done
+2026-07-10T02:27:44.733Z|0x61bc|Load new track scene...
+2026-07-10T02:27:44.749Z|0x61bc|Busy 894.201
+2026-07-10T02:27:44.765Z|0x61bc|Busy 894.217
+2026-07-10T02:27:44.782Z|0x61bc|Busy 894.234
+2026-07-10T02:27:44.799Z|0x61bc|Busy 894.251
+2026-07-10T02:27:44.816Z|0x61bc|Busy 894.268
+2026-07-10T02:27:44.816Z|0x61bc|...done
+2026-07-10T02:27:44.818Z|0x61bc|Initialize track...
+2026-07-10T02:27:44.818Z|0x61bc|...done
+2026-07-10T02:27:44.820Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:44.820Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:44.833Z|0x61bc|Unloading 118 unused Assets to reduce memory usage. Loaded Objects now: 3214.
+2026-07-10T02:27:44.833Z|0x61bc|Total: 1.325400 ms (FindLiveObjects: 0.094100 ms CreateObjectMapping: 0.057000 ms MarkObjects: 1.083100 ms  DeleteObjects: 0.091100 ms)
+
+2026-07-10T02:27:44.833Z|0x61bc|Busy 894.285
+2026-07-10T02:27:44.833Z|0x61bc|...done
+2026-07-10T02:27:46.100Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:46.117Z|0x61bc|Busy 895.569
+2026-07-10T02:27:46.117Z|0x61bc|...done
+2026-07-10T02:27:46.117Z|0x61bc|Load new track scene...
+2026-07-10T02:27:46.133Z|0x61bc|Busy 895.585
+2026-07-10T02:27:46.150Z|0x61bc|Busy 895.602
+2026-07-10T02:27:46.167Z|0x61bc|Busy 895.619
+2026-07-10T02:27:46.183Z|0x61bc|Busy 895.635
+2026-07-10T02:27:46.200Z|0x61bc|Busy 895.652
+2026-07-10T02:27:46.217Z|0x61bc|Busy 895.669
+2026-07-10T02:27:46.217Z|0x61bc|...done
+2026-07-10T02:27:46.219Z|0x61bc|Initialize track...
+2026-07-10T02:27:46.220Z|0x61bc|...done
+2026-07-10T02:27:46.222Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:46.222Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:46.234Z|0x61bc|Unloading 129 unused Assets to reduce memory usage. Loaded Objects now: 3280.
+2026-07-10T02:27:46.234Z|0x61bc|Total: 1.387600 ms (FindLiveObjects: 0.111100 ms CreateObjectMapping: 0.063500 ms MarkObjects: 1.115300 ms  DeleteObjects: 0.097600 ms)
+
+2026-07-10T02:27:46.235Z|0x61bc|Busy 895.687
+2026-07-10T02:27:46.235Z|0x61bc|...done
+2026-07-10T02:27:46.634Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:46.651Z|0x61bc|Busy 896.103
+2026-07-10T02:27:46.651Z|0x61bc|...done
+2026-07-10T02:27:46.651Z|0x61bc|Load new track scene...
+2026-07-10T02:27:46.667Z|0x61bc|Busy 896.119
+2026-07-10T02:27:46.684Z|0x61bc|Busy 896.136
+2026-07-10T02:27:46.701Z|0x61bc|Busy 896.153
+2026-07-10T02:27:46.717Z|0x61bc|Busy 896.169
+2026-07-10T02:27:46.717Z|0x61bc|...done
+2026-07-10T02:27:46.717Z|0x61bc|Initialize track...
+2026-07-10T02:27:46.718Z|0x61bc|...done
+2026-07-10T02:27:46.719Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:46.719Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:46.735Z|0x61bc|Unloading 139 unused Assets to reduce memory usage. Loaded Objects now: 3214.
+2026-07-10T02:27:46.735Z|0x61bc|Total: 1.329200 ms (FindLiveObjects: 0.093500 ms CreateObjectMapping: 0.053400 ms MarkObjects: 1.079400 ms  DeleteObjects: 0.102800 ms)
+
+2026-07-10T02:27:46.735Z|0x61bc|Busy 896.187
+2026-07-10T02:27:46.735Z|0x61bc|...done
+2026-07-10T02:27:46.834Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:46.851Z|0x61bc|Busy 896.303
+2026-07-10T02:27:46.851Z|0x61bc|...done
+2026-07-10T02:27:46.851Z|0x61bc|Load new track scene...
+2026-07-10T02:27:46.867Z|0x61bc|Busy 896.319
+2026-07-10T02:27:46.884Z|0x61bc|Busy 896.336
+2026-07-10T02:27:46.900Z|0x61bc|Busy 896.352
+2026-07-10T02:27:46.918Z|0x61bc|Busy 896.370
+2026-07-10T02:27:46.918Z|0x61bc|...done
+2026-07-10T02:27:46.918Z|0x61bc|Initialize track...
+2026-07-10T02:27:46.919Z|0x61bc|...done
+2026-07-10T02:27:46.921Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:46.921Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:46.935Z|0x61bc|Unloading 129 unused Assets to reduce memory usage. Loaded Objects now: 3171.
+2026-07-10T02:27:46.935Z|0x61bc|Total: 1.326100 ms (FindLiveObjects: 0.115600 ms CreateObjectMapping: 0.061600 ms MarkObjects: 1.058100 ms  DeleteObjects: 0.090700 ms)
+
+2026-07-10T02:27:46.935Z|0x61bc|Busy 896.387
+2026-07-10T02:27:46.935Z|0x61bc|...done
+2026-07-10T02:27:47.301Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:47.318Z|0x61bc|Busy 896.770
+2026-07-10T02:27:47.318Z|0x61bc|...done
+2026-07-10T02:27:47.318Z|0x61bc|Load new track scene...
+2026-07-10T02:27:47.334Z|0x61bc|Busy 896.786
+2026-07-10T02:27:47.351Z|0x61bc|Busy 896.803
+2026-07-10T02:27:47.368Z|0x61bc|Busy 896.820
+2026-07-10T02:27:47.384Z|0x61bc|Busy 896.836
+2026-07-10T02:27:47.384Z|0x61bc|...done
+2026-07-10T02:27:47.385Z|0x61bc|Initialize track...
+2026-07-10T02:27:47.385Z|0x61bc|...done
+2026-07-10T02:27:47.388Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:47.388Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:47.402Z|0x61bc|Unloading 118 unused Assets to reduce memory usage. Loaded Objects now: 3208.
+2026-07-10T02:27:47.402Z|0x61bc|Total: 1.282800 ms (FindLiveObjects: 0.110500 ms CreateObjectMapping: 0.063100 ms MarkObjects: 1.014200 ms  DeleteObjects: 0.094800 ms)
+
+2026-07-10T02:27:47.402Z|0x61bc|Busy 896.854
+2026-07-10T02:27:47.402Z|0x61bc|...done
+2026-07-10T02:27:48.185Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:48.202Z|0x61bc|Busy 897.654
+2026-07-10T02:27:48.202Z|0x61bc|...done
+2026-07-10T02:27:48.202Z|0x61bc|Load new track scene...
+2026-07-10T02:27:48.218Z|0x61bc|Busy 897.670
+2026-07-10T02:27:48.235Z|0x61bc|Busy 897.687
+2026-07-10T02:27:48.252Z|0x61bc|Busy 897.704
+2026-07-10T02:27:48.269Z|0x61bc|Busy 897.721
+2026-07-10T02:27:48.269Z|0x61bc|...done
+2026-07-10T02:27:48.269Z|0x61bc|Initialize track...
+2026-07-10T02:27:48.270Z|0x61bc|...done
+2026-07-10T02:27:48.272Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:48.272Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:48.286Z|0x61bc|Unloading 127 unused Assets to reduce memory usage. Loaded Objects now: 3171.
+2026-07-10T02:27:48.286Z|0x61bc|Total: 1.345900 ms (FindLiveObjects: 0.093200 ms CreateObjectMapping: 0.057300 ms MarkObjects: 1.095100 ms  DeleteObjects: 0.100000 ms)
+
+2026-07-10T02:27:48.286Z|0x61bc|Busy 897.738
+2026-07-10T02:27:48.286Z|0x61bc|...done
+2026-07-10T02:27:48.635Z|0x61bc|Unload old track scene...
+2026-07-10T02:27:48.652Z|0x61bc|Busy 898.104
+2026-07-10T02:27:48.652Z|0x61bc|...done
+2026-07-10T02:27:48.652Z|0x61bc|Load new track scene...
+2026-07-10T02:27:48.668Z|0x61bc|Busy 898.120
+2026-07-10T02:27:48.685Z|0x61bc|Busy 898.137
+2026-07-10T02:27:48.702Z|0x61bc|Busy 898.154
+2026-07-10T02:27:48.719Z|0x61bc|Busy 898.171
+2026-07-10T02:27:48.719Z|0x61bc|...done
+2026-07-10T02:27:48.719Z|0x61bc|Initialize track...
+2026-07-10T02:27:48.720Z|0x61bc|...done
+2026-07-10T02:27:48.722Z|0x61bc|Unload unused assets...
+2026-07-10T02:27:48.722Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:27:48.736Z|0x61bc|Unloading 118 unused Assets to reduce memory usage. Loaded Objects now: 3208.
+2026-07-10T02:27:48.736Z|0x61bc|Total: 1.403000 ms (FindLiveObjects: 0.095600 ms CreateObjectMapping: 0.046900 ms MarkObjects: 1.169600 ms  DeleteObjects: 0.090700 ms)
+
+2026-07-10T02:27:48.737Z|0x61bc|Busy 898.189
+2026-07-10T02:27:48.737Z|0x61bc|...done
+2026-07-10T02:28:03.781Z|0x61bc|Unload old track scene...
+2026-07-10T02:28:03.798Z|0x61bc|Busy 913.250
+2026-07-10T02:28:03.798Z|0x61bc|...done
+2026-07-10T02:28:03.798Z|0x61bc|Load new track scene...
+2026-07-10T02:28:03.814Z|0x61bc|Busy 913.266
+2026-07-10T02:28:03.831Z|0x61bc|Busy 913.283
+2026-07-10T02:28:03.848Z|0x61bc|Busy 913.300
+2026-07-10T02:28:03.865Z|0x61bc|Busy 913.317
+2026-07-10T02:28:03.881Z|0x61bc|Busy 913.333
+2026-07-10T02:28:03.881Z|0x61bc|...done
+2026-07-10T02:28:03.882Z|0x61bc|Initialize track...
+2026-07-10T02:28:03.883Z|0x61bc|...done
+2026-07-10T02:28:03.885Z|0x61bc|Unload unused assets...
+2026-07-10T02:28:03.886Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:28:03.899Z|0x61bc|Unloading 127 unused Assets to reduce memory usage. Loaded Objects now: 3435.
+2026-07-10T02:28:03.899Z|0x61bc|Total: 1.441700 ms (FindLiveObjects: 0.098400 ms CreateObjectMapping: 0.057500 ms MarkObjects: 1.185900 ms  DeleteObjects: 0.099600 ms)
+
+2026-07-10T02:28:03.899Z|0x61bc|Busy 913.351
+2026-07-10T02:28:03.899Z|0x61bc|...done
+2026-07-10T02:28:12.404Z|0x61bc|Unload old track scene...
+2026-07-10T02:28:12.421Z|0x61bc|Busy 921.873
+2026-07-10T02:28:12.422Z|0x61bc|...done
+2026-07-10T02:28:12.422Z|0x61bc|Load new track scene...
+2026-07-10T02:28:12.438Z|0x61bc|Busy 921.890
+2026-07-10T02:28:12.454Z|0x61bc|Busy 921.906
+2026-07-10T02:28:12.471Z|0x61bc|Busy 921.923
+2026-07-10T02:28:12.488Z|0x61bc|Busy 921.940
+2026-07-10T02:28:12.488Z|0x61bc|...done
+2026-07-10T02:28:12.489Z|0x61bc|Initialize track...
+2026-07-10T02:28:12.489Z|0x61bc|...done
+2026-07-10T02:28:12.492Z|0x61bc|Unload unused assets...
+2026-07-10T02:28:12.492Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:28:12.506Z|0x61bc|Unloading 166 unused Assets to reduce memory usage. Loaded Objects now: 3208.
+2026-07-10T02:28:12.506Z|0x61bc|Total: 1.394200 ms (FindLiveObjects: 0.117000 ms CreateObjectMapping: 0.057000 ms MarkObjects: 1.100400 ms  DeleteObjects: 0.119600 ms)
+
+2026-07-10T02:28:12.506Z|0x61bc|Busy 921.958
+2026-07-10T02:28:12.506Z|0x61bc|...done
+2026-07-10T02:28:26.582Z|0x61bc|Unload old track scene...
+2026-07-10T02:28:26.600Z|0x61bc|Busy 936.052
+2026-07-10T02:28:26.600Z|0x61bc|...done
+2026-07-10T02:28:26.600Z|0x61bc|Load new track scene...
+2026-07-10T02:28:26.616Z|0x61bc|Busy 936.068
+2026-07-10T02:28:26.632Z|0x61bc|Busy 936.084
+2026-07-10T02:28:26.649Z|0x61bc|Busy 936.101
+2026-07-10T02:28:26.666Z|0x61bc|Busy 936.118
+2026-07-10T02:28:26.666Z|0x61bc|...done
+2026-07-10T02:28:26.667Z|0x61bc|Initialize track...
+2026-07-10T02:28:26.667Z|0x61bc|...done
+2026-07-10T02:28:26.669Z|0x61bc|Unload unused assets...
+2026-07-10T02:28:26.670Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:28:26.684Z|0x61bc|Unloading 127 unused Assets to reduce memory usage. Loaded Objects now: 3435.
+2026-07-10T02:28:26.684Z|0x61bc|Total: 1.416500 ms (FindLiveObjects: 0.102800 ms CreateObjectMapping: 0.059800 ms MarkObjects: 1.156300 ms  DeleteObjects: 0.097300 ms)
+
+2026-07-10T02:28:26.684Z|0x61bc|Busy 936.136
+2026-07-10T02:28:26.684Z|0x61bc|...done
+2026-07-10T02:28:27.316Z|0x61bc|Unload old track scene...
+2026-07-10T02:28:27.333Z|0x61bc|Busy 936.785
+2026-07-10T02:28:27.333Z|0x61bc|...done
+2026-07-10T02:28:27.333Z|0x61bc|Load new track scene...
+2026-07-10T02:28:27.350Z|0x61bc|Busy 936.802
+2026-07-10T02:28:27.367Z|0x61bc|Busy 936.819
+2026-07-10T02:28:27.383Z|0x61bc|Busy 936.835
+2026-07-10T02:28:27.400Z|0x61bc|Busy 936.852
+2026-07-10T02:28:27.400Z|0x61bc|...done
+2026-07-10T02:28:27.401Z|0x61bc|Initialize track...
+2026-07-10T02:28:27.401Z|0x61bc|...done
+2026-07-10T02:28:27.404Z|0x61bc|Unload unused assets...
+2026-07-10T02:28:27.404Z|0x788|Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-07-10T02:28:27.418Z|0x61bc|Unloading 166 unused Assets to reduce memory usage. Loaded Objects now: 3208.
+2026-07-10T02:28:27.418Z|0x61bc|Total: 1.462000 ms (FindLiveObjects: 0.090400 ms CreateObjectMapping: 0.033300 ms MarkObjects: 1.224100 ms  DeleteObjects: 0.113800 ms)
+
+2026-07-10T02:28:27.418Z|0x61bc|Busy 936.870
+2026-07-10T02:28:27.418Z|0x61bc|...done
+2026-07-10T02:34:01.072Z|0x61bc|[Physics::Module] Cleanup current backend.
+2026-07-10T02:34:01.072Z|0x61bc|[Physics::Module] Id: 0xf2b8ea05
+2026-07-10T02:34:01.072Z|0x61bc|Input System module state changed to: ShutdownInProgress.
+2026-07-10T02:34:01.073Z|0x6e68|Input System polling thread stopped.
+2026-07-10T02:34:01.074Z|0x61bc|Input System polling thread exited.
+2026-07-10T02:34:01.074Z|0x61bc|Input System module state changed to: Shutdown.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.083Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.084Z|0x8140|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:34:01.415Z|0x61bc|Memory Statistics:
+2026-07-10T02:34:01.415Z|0x61bc|[ALLOC_TEMP_TLS] TLS Allocator
+2026-07-10T02:34:01.415Z|0x61bc|  StackAllocators : 
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_MAIN]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 4.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 4.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 18]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Loading.PreloadManager]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 93
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 8]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 10]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 16]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 6]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 4]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 276.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 14]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 17]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 3]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 12]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 1]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_AssetGarbageCollectorHelper] x 23
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 5]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 13]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 11]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 2]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 276.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 3]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 0]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 20]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_HIDInput]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 11]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_D3D12 Submission Thread]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 4]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_BatchDeleteObjects]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 6]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 0]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 21]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 5]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 9]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 14]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 13]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_EnlightenWorker] x 24
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 15]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 2]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Background Job.Worker 7]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 32.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 22]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_UnityGfxDeviceWorker]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 9]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 8]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 7]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 1]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 10]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 15]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 19]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Job.Worker 12]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 256.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_TEMP_Loading.AsyncRead]
+2026-07-10T02:34:01.415Z|0x61bc|      Initial Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Current Block Size 64.0 KB
+2026-07-10T02:34:01.415Z|0x61bc|      Overflow Count 0
+2026-07-10T02:34:01.415Z|0x61bc|[ALLOC_DEFAULT] Dual Thread Allocator
+2026-07-10T02:34:01.415Z|0x61bc|  Peak main deferred allocation count 49
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_BUCKET]
+2026-07-10T02:34:01.415Z|0x61bc|      Large Block size 4.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|      Used Block count 1
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_DEFAULT_MAIN]
+2026-07-10T02:34:01.415Z|0x61bc|      Requested Block Size 16.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|      Peak Block count 2
+2026-07-10T02:34:01.415Z|0x61bc|      Peak Large allocation bytes 16.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|    [ALLOC_DEFAULT_THREAD]
+2026-07-10T02:34:01.415Z|0x61bc|      Requested Block Size 16.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|      Peak Block count 1
+2026-07-10T02:34:01.415Z|0x61bc|      Peak Large allocation bytes 16.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|[ALLOC_TEMP_JOB_1_FRAME]
+2026-07-10T02:34:01.415Z|0x61bc|  Initial Block Size 2.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|  Used Block Count 0
+2026-07-10T02:34:01.415Z|0x61bc|  Overflow Count (too large) 0
+2026-07-10T02:34:01.415Z|0x61bc|  Overflow Count (full) 0
+2026-07-10T02:34:01.415Z|0x61bc|[ALLOC_TEMP_JOB_2_FRAMES]
+2026-07-10T02:34:01.415Z|0x61bc|  Initial Block Size 2.0 MB
+2026-07-10T02:34:01.415Z|0x61bc|  Used Block Count 0
+2026-07-10T02:34:01.415Z|0x61bc|  Overflow Count (too large) 0
+2026-07-10T02:34:01.415Z|0x61bc|  Overflow Count (full) 0
+2026-07-10T02:34:01.416Z|0x61bc|[ALLOC_TEMP_JOB_4_FRAMES (JobTemp)]
+2026-07-10T02:34:01.416Z|0x61bc|  Initial Block Size 2.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|  Used Block Count 1
+2026-07-10T02:34:01.416Z|0x61bc|  Overflow Count (too large) 0
+2026-07-10T02:34:01.416Z|0x61bc|  Overflow Count (full) 0
+2026-07-10T02:34:01.416Z|0x61bc|[ALLOC_TEMP_JOB_ASYNC (Background)]
+2026-07-10T02:34:01.416Z|0x61bc|  Initial Block Size 1.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|  Used Block Count 1
+2026-07-10T02:34:01.416Z|0x61bc|  Overflow Count (too large) 0
+2026-07-10T02:34:01.416Z|0x61bc|  Overflow Count (full) 0
+2026-07-10T02:34:01.416Z|0x61bc|[ALLOC_GFX] Dual Thread Allocator
+2026-07-10T02:34:01.416Z|0x61bc|  Peak main deferred allocation count 5
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_BUCKET]
+2026-07-10T02:34:01.416Z|0x61bc|      Large Block size 4.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Used Block count 1
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_GFX_MAIN]
+2026-07-10T02:34:01.416Z|0x61bc|      Requested Block Size 16.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Block count 1
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Large allocation bytes 0 B
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_GFX_THREAD]
+2026-07-10T02:34:01.416Z|0x61bc|      Requested Block Size 16.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Block count 1
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Large allocation bytes 0 B
+2026-07-10T02:34:01.416Z|0x61bc|[ALLOC_CACHEOBJECTS] Dual Thread Allocator
+2026-07-10T02:34:01.416Z|0x61bc|  Peak main deferred allocation count 27
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_BUCKET]
+2026-07-10T02:34:01.416Z|0x61bc|      Large Block size 4.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Used Block count 1
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_CACHEOBJECTS_MAIN]
+2026-07-10T02:34:01.416Z|0x61bc|      Requested Block Size 4.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Block count 3
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Large allocation bytes 2.9 MB
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_CACHEOBJECTS_THREAD]
+2026-07-10T02:34:01.416Z|0x61bc|      Requested Block Size 4.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Block count 2
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Large allocation bytes 0 B
+2026-07-10T02:34:01.416Z|0x61bc|[ALLOC_TYPETREE] Dual Thread Allocator
+2026-07-10T02:34:01.416Z|0x61bc|  Peak main deferred allocation count 0
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_BUCKET]
+2026-07-10T02:34:01.416Z|0x61bc|      Large Block size 4.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Used Block count 1
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_TYPETREE_MAIN]
+2026-07-10T02:34:01.416Z|0x61bc|      Requested Block Size 2.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Block count 1
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Large allocation bytes 0 B
+2026-07-10T02:34:01.416Z|0x61bc|    [ALLOC_TYPETREE_THREAD]
+2026-07-10T02:34:01.416Z|0x61bc|      Requested Block Size 2.0 MB
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Block count 1
+2026-07-10T02:34:01.416Z|0x61bc|      Peak Large allocation bytes 0 B
+2026-07-10T02:34:01.416Z|0x61bc|Internal: There are remaining Allocations on the JobTempAlloc. This is a leak, and will impact performance
+2026-07-10T02:34:01.416Z|0x61bc|To Debug, run app with -diag-job-temp-memory-leak-validation cmd line argument. This will output the callstacks of the leaked allocations.

@@ -1,0 +1,354 @@
+2026-07-10T02:38:50.385Z|0x9ed4|Mono path[0] = 'C:/Users/kevin/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/ZoomTracks_Data/Managed'
+2026-07-10T02:38:50.385Z|0x9ed4|Mono config path = 'C:/Users/kevin/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/MonoBleedingEdge/etc'
+2026-07-10T02:38:50.400Z|0x9ed4|Input System module state changed to: Initialized.
+2026-07-10T02:38:50.418Z|0x9ed4|[Physics::Module] Initialized fallback backend.
+2026-07-10T02:38:50.419Z|0x9ed4|[Physics::Module] Id: 0xdecafbad
+2026-07-10T02:38:50.422Z|0x9ed4|Initialize engine version: 6000.3.19f1 (7689f4515d75)
+2026-07-10T02:38:50.422Z|0x9ed4|[Subsystems] Discovering subsystems at path C:/Users/kevin/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/ZoomTracks_Data/UnitySubsystems
+2026-07-10T02:38:50.423Z|0x9ed4|Forcing GfxDevice: Direct3D 11
+2026-07-10T02:38:50.423Z|0x9ed4|GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+2026-07-10T02:38:50.534Z|0x9ed4|Direct3D:
+2026-07-10T02:38:50.534Z|0x9ed4|    Version:  Direct3D 11.0 [level 11.1]
+2026-07-10T02:38:50.534Z|0x9ed4|    Renderer: NVIDIA GeForce RTX 5090 Laptop GPU (ID=0x2c58)
+2026-07-10T02:38:50.534Z|0x9ed4|    Vendor:   NVIDIA
+2026-07-10T02:38:50.534Z|0x9ed4|    VRAM:     24137 MB
+2026-07-10T02:38:50.534Z|0x9ed4|    Driver:   32.0.15.9649
+2026-07-10T02:38:50.566Z|0x9ed4|Begin MonoManager ReloadAssembly
+2026-07-10T02:38:50.645Z|0x9ed4|- Loaded All Assemblies, in  0.080 seconds
+2026-07-10T02:38:50.647Z|0x9ed4|- Finished resetting the current domain, in  0.001 seconds
+2026-07-10T02:38:50.647Z|0x9ed4|[Physics::Module] Selected backend.
+2026-07-10T02:38:50.647Z|0x9ed4|[Physics::Module] Name: PhysX
+2026-07-10T02:38:50.647Z|0x9ed4|[Physics::Module] Id: 0xf2b8ea05
+2026-07-10T02:38:50.647Z|0x9ed4|[Physics::Module] SDK Version: 4.1.2
+2026-07-10T02:38:50.647Z|0x9ed4|[Physics::Module] Integration Version: 1.0.0
+2026-07-10T02:38:50.647Z|0x9ed4|[Physics::Module] Threading Mode: Multi-Threaded
+2026-07-10T02:38:50.707Z|0x9ed4|ERROR: Shader Hidden/Universal Render Pipeline/DBufferClear shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+<RI> Initializing input.
+2026-07-10T02:38:50.786Z|0x9ed4|Using Windows.Gaming.Input
+2026-07-10T02:38:50.810Z|0x8e14|Input System polling thread started.
+2026-07-10T02:38:50.826Z|0x9ed4|UnloadTime: 0.388300 ms
+2026-07-10T02:38:50.895Z|0x9ed4|BEGIN: Main.Awake on object='GameLoop' in scene='Main'
+2026-07-10T02:38:50.895Z|0x9ed4|Log path for standalone exe: C:\Users\kevin\AppData\LocalLow\K\ZoomTracks\Player.log
+2026-07-10T02:38:50.912Z|0x9ed4|END: Main.Awake on object='GameLoop' in scene='Main'
+2026-07-10T02:38:50.915Z|0x9ed4|BEGIN: Main.Start on object='GameLoop' in scene='Main'
+2026-07-10T02:38:50.916Z|0x9ed4|display.rendering resolution = 2560*1440
+2026-07-10T02:38:50.916Z|0x9ed4|display.system    resolution = 2560*1440
+2026-07-10T02:38:50.916Z|0x9ed4|Screen            resolution = 2560*1440
+2026-07-10T02:38:50.917Z|0x9ed4|renderScale = 1
+2026-07-10T02:38:50.918Z|0x9ed4|Screen.fullScreenMode = FullScreenWindow
+2026-07-10T02:38:50.918Z|0x9ed4|Screen.fullScreen     = True
+2026-07-10T02:38:50.918Z|0x9ed4|Running in borderless fullscreen window mode
+2026-07-10T02:38:50.918Z|0x9ed4|Graphics API in use: Direct3D11
+2026-07-10T02:38:50.919Z|0x9ed4|Graphics device: NVIDIA GeForce RTX 5090 Laptop GPU
+2026-07-10T02:38:50.919Z|0x9ed4|Graphics device vendor: NVIDIA
+2026-07-10T02:38:50.919Z|0x9ed4|Graphics device version: Direct3D 11.0 [level 11.1]
+2026-07-10T02:38:50.919Z|0x9ed4|Running on Direct3D 11 / DX11
+2026-07-10T02:38:50.919Z|0x9ed4|Load UI scene...
+2026-07-10T02:38:50.999Z|0x9ed4|Busy 0.178
+2026-07-10T02:38:51.031Z|0x9ed4|Busy 0.210
+2026-07-10T02:38:51.031Z|0x9ed4|...done
+2026-07-10T02:38:51.031Z|0x9ed4|Load initial track scene...
+2026-07-10T02:38:51.095Z|0x9ed4|Busy 0.274
+2026-07-10T02:38:51.096Z|0x9ed4|Busy 0.275
+2026-07-10T02:38:51.096Z|0x9ed4|...done
+2026-07-10T02:38:51.099Z|0x9ed4|Initialize track...
+2026-07-10T02:38:51.103Z|0x9ed4|...done
+2026-07-10T02:38:51.103Z|0x9ed4|END: Main.Start on object='GameLoop' in scene='Main'
+2026-07-10T02:38:51.104Z|0x9ed4|BEGIN: Main.UpdateLoopAsync
+2026-07-10T02:54:46.955Z|0x9ed4|[Physics::Module] Cleanup current backend.
+2026-07-10T02:54:46.955Z|0x9ed4|[Physics::Module] Id: 0xf2b8ea05
+2026-07-10T02:54:46.955Z|0x9ed4|Input System module state changed to: ShutdownInProgress.
+2026-07-10T02:54:46.956Z|0x8e14|Input System polling thread stopped.
+2026-07-10T02:54:46.956Z|0x9ed4|Input System polling thread exited.
+2026-07-10T02:54:46.956Z|0x9ed4|Input System module state changed to: Shutdown.
+2026-07-10T02:54:46.962Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.962Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:46.963Z|0xc1c0|GarbageCollector disposing of GraphicsBuffer. Please use GraphicsBuffer.Release() or .Dispose() to manually release the buffer.
+2026-07-10T02:54:47.251Z|0x9ed4|Memory Statistics:
+2026-07-10T02:54:47.251Z|0x9ed4|[ALLOC_TEMP_TLS] TLS Allocator
+2026-07-10T02:54:47.251Z|0x9ed4|  StackAllocators : 
+2026-07-10T02:54:47.251Z|0x9ed4|    [ALLOC_TEMP_MAIN]
+2026-07-10T02:54:47.251Z|0x9ed4|      Initial Block Size 4.0 MB
+2026-07-10T02:54:47.251Z|0x9ed4|      Current Block Size 4.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 18]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Loading.PreloadManager]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 13
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 8]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 10]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 16]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 6]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 4]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 14]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 17]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 3]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 12]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 1]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_AssetGarbageCollectorHelper] x 23
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 5]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 13]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 11]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 2]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 276.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 3]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 0]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 20]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_HIDInput]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 11]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 4]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_BatchDeleteObjects]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 6]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 0]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 9]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 21]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 5]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 14]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 13]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_EnlightenWorker] x 24
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 15]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 2]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Background Job.Worker 7]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 32.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 22]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_UnityGfxDeviceWorker]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 9]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 8]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 7]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 1]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 10]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 15]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 19]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Job.Worker 12]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 256.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TEMP_Loading.AsyncRead]
+2026-07-10T02:54:47.252Z|0x9ed4|      Initial Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Current Block Size 64.0 KB
+2026-07-10T02:54:47.252Z|0x9ed4|      Overflow Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_DEFAULT] Dual Thread Allocator
+2026-07-10T02:54:47.252Z|0x9ed4|  Peak main deferred allocation count 49
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_BUCKET]
+2026-07-10T02:54:47.252Z|0x9ed4|      Large Block size 4.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Used Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_DEFAULT_MAIN]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 16.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 2
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 16.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_DEFAULT_THREAD]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 16.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 16.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_TEMP_JOB_1_FRAME]
+2026-07-10T02:54:47.252Z|0x9ed4|  Initial Block Size 2.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|  Used Block Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (too large) 0
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (full) 0
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_TEMP_JOB_2_FRAMES]
+2026-07-10T02:54:47.252Z|0x9ed4|  Initial Block Size 2.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|  Used Block Count 0
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (too large) 0
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (full) 0
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_TEMP_JOB_4_FRAMES (JobTemp)]
+2026-07-10T02:54:47.252Z|0x9ed4|  Initial Block Size 2.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|  Used Block Count 1
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (too large) 0
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (full) 0
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_TEMP_JOB_ASYNC (Background)]
+2026-07-10T02:54:47.252Z|0x9ed4|  Initial Block Size 1.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|  Used Block Count 1
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (too large) 0
+2026-07-10T02:54:47.252Z|0x9ed4|  Overflow Count (full) 0
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_GFX] Dual Thread Allocator
+2026-07-10T02:54:47.252Z|0x9ed4|  Peak main deferred allocation count 2
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_BUCKET]
+2026-07-10T02:54:47.252Z|0x9ed4|      Large Block size 4.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Used Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_GFX_MAIN]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 16.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 0 B
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_GFX_THREAD]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 16.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 0 B
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_CACHEOBJECTS] Dual Thread Allocator
+2026-07-10T02:54:47.252Z|0x9ed4|  Peak main deferred allocation count 2
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_BUCKET]
+2026-07-10T02:54:47.252Z|0x9ed4|      Large Block size 4.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Used Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_CACHEOBJECTS_MAIN]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 4.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 3
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 2.9 MB
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_CACHEOBJECTS_THREAD]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 4.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 2
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 0 B
+2026-07-10T02:54:47.252Z|0x9ed4|[ALLOC_TYPETREE] Dual Thread Allocator
+2026-07-10T02:54:47.252Z|0x9ed4|  Peak main deferred allocation count 0
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_BUCKET]
+2026-07-10T02:54:47.252Z|0x9ed4|      Large Block size 4.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Used Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TYPETREE_MAIN]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 2.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 0 B
+2026-07-10T02:54:47.252Z|0x9ed4|    [ALLOC_TYPETREE_THREAD]
+2026-07-10T02:54:47.252Z|0x9ed4|      Requested Block Size 2.0 MB
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Block count 1
+2026-07-10T02:54:47.252Z|0x9ed4|      Peak Large allocation bytes 0 B
+2026-07-10T02:54:47.252Z|0x9ed4|Internal: There are remaining Allocations on the JobTempAlloc. This is a leak, and will impact performance
+2026-07-10T02:54:47.252Z|0x9ed4|To Debug, run app with -diag-job-temp-memory-leak-validation cmd line argument. This will output the callstacks of the leaked allocations.
