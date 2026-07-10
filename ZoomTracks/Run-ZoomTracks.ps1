@@ -7,7 +7,7 @@ New-Item -ItemType "Directory" -Path $logFolderPath
 $presentMonLogFilePath  = "$($logFolderPath)\PresentMon.csv"
 Start-Process `
   -FilePath "C:\Users\kevin\Program\PresentMon-2.5.1-x64.exe" `
-  -ArgumentList "--process_name `"ZoomTracks.exe`" --output_file `"$($presentMonLogFilePath)`" --terminate_on_proc_exit" `
+  -ArgumentList "--process_name `"ZoomTracks.exe`" --output_file `"$($presentMonLogFilePath)`"" `
   -Verb "RunAs"
 
 $registryPath = "HKCU:\Software\K\ZoomTracks"
