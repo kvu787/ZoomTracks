@@ -40,7 +40,7 @@ The following configuration is the result a lot of testing to eliminate stutters
 * Software
   * Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
   * Windows 11 Pro, Version 25H2 (OS Build 26200.8655)
-  * Disable "Hardware-accelerated GPU scheduling"
+  * To avoid stutters in fullscreen (exclusive or borderless modes), disable "Hardware-accelerated GPU scheduling"
   * Night light enabled with strength = 50
 
 Run the game by double-clicking `Run-ZoomTracks.cmd` in File Explorer.
