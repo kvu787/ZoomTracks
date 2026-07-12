@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -52,6 +53,9 @@ namespace ZoomTracks {
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
             string[] commandLineArgs = Environment.GetCommandLineArgs();
+            if (commandLineArgs.Contains("-useDefaultLogPaths")) {
+                this.HitchLogger2 = new HitchLogger2($"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\"));
+            } else {
             int i = Array.IndexOf(commandLineArgs, "-stutterLogFilePath");
             if (i == -1) {
                 throw new Exception("-stutterLogFilePath not found in command line arguments");
@@ -60,13 +64,14 @@ namespace ZoomTracks {
                 throw new Exception("no value found for -stutterLogFilePath");
             }
             string stutterLogFilePath = commandLineArgs[i + 1];
+                this.HitchLogger2 = new HitchLogger2(stutterLogFilePath);
+            }
 
             this.HitchLogger = new HitchLogger(
                 enabled: false,
                 logOnlyHitches: true,
                 hitchThresholdMs: (1000.0 / 60.0) * 1.1,
                 fileName: $"{DateTime.Now.Ticks}_hitches.csv");
-            this.HitchLogger2 = new HitchLogger2(stutterLogFilePath);
 
             GraphicsSettingsManager.UseRuntimeOnlyCopyOfUrpAsset();
             GraphicsSettingsManager.ConfigureSessionGraphicsSettings();
