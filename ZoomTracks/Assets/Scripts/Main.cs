@@ -10,6 +10,7 @@ namespace ZoomTracks {
         private HitchLogger HitchLogger { get; set; }
         private HitchLogger2 HitchLogger2 { get; set; }
 
+        private const string StutterLogFilePathFlag = "-stutterLogFilePath";
         private const string UiSceneName = "Ui";
         private const int InitialTrackSceneIndex = 13;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
@@ -53,18 +54,18 @@ namespace ZoomTracks {
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
             string[] commandLineArgs = Environment.GetCommandLineArgs();
-            if (commandLineArgs.Contains("-useDefaultLogPaths")) {
-                this.HitchLogger2 = new HitchLogger2($"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\"));
-            } else {
-                int i = Array.IndexOf(commandLineArgs, "-stutterLogFilePath");
-                if (i == -1) {
-                    throw new Exception("-stutterLogFilePath not found in command line arguments");
+            if (commandLineArgs.Contains(StutterLogFilePathFlag)) {
+                int i = Array.IndexOf(commandLineArgs, StutterLogFilePathFlag);
+                if (i != commandLineArgs.Length - 2) {
+                    throw new Exception($"If {StutterLogFilePathFlag} is provided, it must be at the end of the command line arguments");
                 }
                 if ((i + 1) >= commandLineArgs.Length) {
-                    throw new Exception("no value found for -stutterLogFilePath");
+                    throw new Exception($"No value found for {StutterLogFilePathFlag}");
                 }
                 string stutterLogFilePath = commandLineArgs[i + 1];
                 this.HitchLogger2 = new HitchLogger2(stutterLogFilePath);
+            } else {
+                this.HitchLogger2 = new HitchLogger2($"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\"));
             }
 
             this.HitchLogger = new HitchLogger(
