@@ -7,13 +7,11 @@ namespace ZoomTracks {
         public static void PrintDisplayInfo() {
             Display display = Display.main;
             Debug.Log($"display.rendering resolution = {display.renderingWidth}*{display.renderingHeight}");
-            Debug.Log($"display.system    resolution = {display.systemWidth}*{display.systemHeight}");
-            Debug.Log($"Screen            resolution = {Screen.width}*{Screen.height}");
-
-            Debug.Log($"renderScale = {UniversalRenderPipeline.asset.renderScale}");
-
-            Debug.Log($"Screen.fullScreenMode = {Screen.fullScreenMode}");
-            Debug.Log($"Screen.fullScreen     = {Screen.fullScreen}");
+            Debug.Log($"display.system resolution    = {display.systemWidth}*{display.systemHeight}");
+            Debug.Log($"Screen resolution            = {Screen.width}*{Screen.height}");
+            Debug.Log($"renderScale                  = {UniversalRenderPipeline.asset.renderScale}");
+            Debug.Log($"Screen.fullScreenMode        = {Screen.fullScreenMode}");
+            Debug.Log($"Screen.fullScreen            = {Screen.fullScreen}");
 
             switch (Screen.fullScreenMode) {
             case FullScreenMode.ExclusiveFullScreen:
@@ -35,10 +33,10 @@ namespace ZoomTracks {
 
         public static void PrintGraphicsInfo() {
             GraphicsDeviceType api = SystemInfo.graphicsDeviceType;
-            Debug.Log($"Graphics API in use: {api}");
-            Debug.Log($"Graphics device: {SystemInfo.graphicsDeviceName}");
-            Debug.Log($"Graphics device vendor: {SystemInfo.graphicsDeviceVendor}");
-            Debug.Log($"Graphics device version: {SystemInfo.graphicsDeviceVersion}");
+            Debug.Log($"Graphics API in use     = {api}");
+            Debug.Log($"Graphics device         = {SystemInfo.graphicsDeviceName}");
+            Debug.Log($"Graphics device vendor  = {SystemInfo.graphicsDeviceVendor}");
+            Debug.Log($"Graphics device version = {SystemInfo.graphicsDeviceVersion}");
 
             if (api == GraphicsDeviceType.Direct3D11) {
                 Debug.Log("Running on Direct3D 11 / DX11");
@@ -47,6 +45,11 @@ namespace ZoomTracks {
             } else {
                 Debug.Log($"Running on something else: {api}");
             }
+
+            Debug.Log($"UniversalRenderPipeline.asset.supportsHDR = {UniversalRenderPipeline.asset.supportsHDR}");
+            Debug.Log($"QualitySettings.maxQueuedFrames           = {QualitySettings.maxQueuedFrames}");
+            Debug.Log($"Application.targetFrameRate               = {Application.targetFrameRate}");
+            Debug.Log($"QualitySettings.vSyncCount                = {QualitySettings.vSyncCount}");
         }
     }
 }
