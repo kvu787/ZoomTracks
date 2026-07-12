@@ -56,14 +56,14 @@ namespace ZoomTracks {
             if (commandLineArgs.Contains("-useDefaultLogPaths")) {
                 this.HitchLogger2 = new HitchLogger2($"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\"));
             } else {
-            int i = Array.IndexOf(commandLineArgs, "-stutterLogFilePath");
-            if (i == -1) {
-                throw new Exception("-stutterLogFilePath not found in command line arguments");
-            }
-            if ((i + 1) >= commandLineArgs.Length) {
-                throw new Exception("no value found for -stutterLogFilePath");
-            }
-            string stutterLogFilePath = commandLineArgs[i + 1];
+                int i = Array.IndexOf(commandLineArgs, "-stutterLogFilePath");
+                if (i == -1) {
+                    throw new Exception("-stutterLogFilePath not found in command line arguments");
+                }
+                if ((i + 1) >= commandLineArgs.Length) {
+                    throw new Exception("no value found for -stutterLogFilePath");
+                }
+                string stutterLogFilePath = commandLineArgs[i + 1];
                 this.HitchLogger2 = new HitchLogger2(stutterLogFilePath);
             }
 
@@ -155,6 +155,7 @@ namespace ZoomTracks {
                     } else {
                         throw new Exception($"Tried to toggle borderless/fullscreen with an invalid Screen.fullScreenMode of {Screen.fullScreenMode}");
                     }
+                    Debug.Log($"Fullscreen mode changed to {Screen.fullScreenMode}");
                 }
 
                 bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();

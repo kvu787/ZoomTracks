@@ -20,8 +20,8 @@ namespace ZoomTracks {
             this.InsertHitchLogSpacer |= this.Gamepad?.selectButton.wasPressedThisFrame ?? false;
 
             this.ToggleBetweenBorderlessAndExclusiveFullScreen = false;
-            this.ToggleBetweenBorderlessAndExclusiveFullScreen |= this.Keyboard?.backquoteKey.wasPressedThisFrame ?? false;
-            this.ToggleBetweenBorderlessAndExclusiveFullScreen |= this.Gamepad?.rightStickButton.wasPressedThisFrame ?? false;
+            //this.ToggleBetweenBorderlessAndExclusiveFullScreen |= this.Keyboard?.backquoteKey.wasPressedThisFrame ?? false;
+            //this.ToggleBetweenBorderlessAndExclusiveFullScreen |= this.Gamepad?.rightStickButton.wasPressedThisFrame ?? false;
         }
 
         private DateTime LastLogTime = DateTime.MinValue;
