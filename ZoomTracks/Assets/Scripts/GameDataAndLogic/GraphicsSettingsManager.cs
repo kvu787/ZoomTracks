@@ -32,6 +32,7 @@ namespace ZoomTracks {
             Scale0_25,
             Scale0_5,
             Scale1,
+            Scale1_5,
             Scale2,
         }
 
@@ -145,8 +146,9 @@ namespace ZoomTracks {
                 RenderScaleEnum.Scale0_125 => 0.125f,
                 RenderScaleEnum.Scale0_25 => 0.25f,
                 RenderScaleEnum.Scale0_5 => 0.5f,
-                RenderScaleEnum.Scale1 => 1,
-                RenderScaleEnum.Scale2 => 2,
+                RenderScaleEnum.Scale1 => 1f,
+                RenderScaleEnum.Scale1_5 => 1.5f,
+                RenderScaleEnum.Scale2 => 2f,
                 _ => throw new System.Exception()
             };
         }
