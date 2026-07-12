@@ -80,12 +80,6 @@ namespace ZoomTracks {
         }
 
         public void ReadInputAndUpdate() {
-            //if (this.CameraData.antialiasing == AntialiasingMode.TemporalAntiAliasing) {
-            //    Debug.Log($"msaa={UniversalRenderPipeline.asset.msaaSampleCount}, aa={this.CameraData.antialiasing}, taaQuality={this.CameraData.taaSettings.quality}, vsync={QualitySettings.vSyncCount}, renderScale={UniversalRenderPipeline.asset.renderScale}");
-            //} else {
-            //    Debug.Log($"msaa={UniversalRenderPipeline.asset.msaaSampleCount}, aa={this.CameraData.antialiasing}, vsync={QualitySettings.vSyncCount}, renderScale={UniversalRenderPipeline.asset.renderScale}");
-            //}
-
             if (this.InputManager.Gamepad != null) {
                 Gamepad gamepad = this.InputManager.Gamepad;
                 if (!gamepad.leftShoulder.IsPressed()) {
