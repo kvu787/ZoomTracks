@@ -9,6 +9,7 @@ namespace ZoomTracks {
         public Gamepad Gamepad { get; private set; }
         public bool InsertHitchLogSpacer { get; private set; }
         public bool ToggleBetweenBorderlessAndExclusiveFullScreen { get; private set; }
+        public bool ToggleBetweenFixedAndFollowCamera { get; private set; }
 
         public void UpdateInputs() {
             this.Keyboard = Keyboard.current;
@@ -16,12 +17,16 @@ namespace ZoomTracks {
             //this.LogGamepadRightStick();
 
             this.InsertHitchLogSpacer = false;
-            this.InsertHitchLogSpacer |= this.Keyboard?.enterKey.wasPressedThisFrame ?? false;
-            this.InsertHitchLogSpacer |= this.Gamepad?.selectButton.wasPressedThisFrame ?? false;
+            //this.InsertHitchLogSpacer |= this.Keyboard?.enterKey.wasPressedThisFrame ?? false;
+            //this.InsertHitchLogSpacer |= this.Gamepad?.selectButton.wasPressedThisFrame ?? false;
 
             this.ToggleBetweenBorderlessAndExclusiveFullScreen = false;
             //this.ToggleBetweenBorderlessAndExclusiveFullScreen |= this.Keyboard?.backquoteKey.wasPressedThisFrame ?? false;
             //this.ToggleBetweenBorderlessAndExclusiveFullScreen |= this.Gamepad?.rightStickButton.wasPressedThisFrame ?? false;
+
+            this.ToggleBetweenFixedAndFollowCamera = false;
+            this.ToggleBetweenFixedAndFollowCamera |= this.Keyboard?.enterKey.wasPressedThisFrame ?? false;
+            this.ToggleBetweenFixedAndFollowCamera |= this.Gamepad?.selectButton.wasPressedThisFrame ?? false;
         }
 
         private DateTime LastLogTime = DateTime.MinValue;
