@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     public sealed class HitchLogger2 {
@@ -12,7 +11,6 @@ namespace ZoomTracks {
         private long PreviousFrameTime_Ticks { get; set; }
 
         public HitchLogger2(string filePath) {
-            Assert.IsFalse(File.Exists(filePath));
             this.StreamWriter = new StreamWriter(filePath);
             this.PreviousFrameTime_Ticks = Stopwatch.GetTimestamp();
         }
