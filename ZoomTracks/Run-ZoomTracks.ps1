@@ -29,6 +29,13 @@ $zoomTracksProcess = `
         -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 179.84 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
         -PassThru
 
+# # Main external screen, 120 hz, borderless exclusive fullscreen
+# $zoomTracksProcess = `
+#     Start-Process `
+#         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
+#         -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 120 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+#         -PassThru
+
 # # Main external screen, 60 hz, borderless exclusive fullscreen
 # $zoomTracksProcess = `
 #     Start-Process `
