@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Numerics;
 
 namespace ZoomTracks {
-    public static class FloatExactDecimal {
+    public static class FloatExtensions {
         public static string ToExactDecimalString(this float value, bool preserveNegativeZero = false) {
             uint bits = SingleToUInt32BitsUnity(value);
 

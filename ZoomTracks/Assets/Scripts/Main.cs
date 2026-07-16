@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +12,7 @@ namespace ZoomTracks {
         private HitchLogger2 HitchLogger2 { get; set; }
 
         private const string StutterLogFilePathFlag = "-stutterLogFilePath";
+        private const string RefreshRateFlag = "-refreshRate";
         private const string UiSceneName = "Ui";
         private const int InitialTrackSceneIndex = 13;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
@@ -35,6 +37,7 @@ namespace ZoomTracks {
         private bool SkipOneIterationOfCarControlInput { get; set; } = false;
 
         private DateTime CarControlTimeoutStart { get; set; }
+        private TimeManager TimeManager { get; set; }
         private InputManager InputManager { get; set; }
         private TrackSwitcher TrackSwitcher { get; set; }
 
@@ -97,6 +100,20 @@ namespace ZoomTracks {
             }
 
             this.CarControlTimeoutStart = DateTime.MinValue;
+
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
+            Assert.IsTrue(commandLineArgs.Contains(RefreshRateFlag));
+            int i = Array.IndexOf(commandLineArgs, RefreshRateFlag);
+            if ((i + 1) >= commandLineArgs.Length) {
+                throw new Exception($"No value found for {RefreshRateFlag}");
+            }
+            float refreshRate = ParseUtility.ParseFloat(commandLineArgs[i + 1]);
+            if (refreshRate <= 0f) {
+                this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
+            } else {
+                this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
+            }
+
             this.InputManager = new InputManager();
 
             Debug.Log($"Load UI scene...");
@@ -118,10 +135,10 @@ namespace ZoomTracks {
             Debug.Log("Initialize track...");
             this.CameraFollowSettings = new CameraFollowSettings(this.TrackSwitcher.CurrentTrackJson);
             this.TrackObjects = new TrackObjects();
-            this.CameraController = new CameraController(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
+            this.CameraController = new CameraController(this.CameraFollowSettings, this.TrackSwitcher.CurrentTrackJson, this.InputManager, this.TimeManager);
             this.GraphicsSettingsManager = new GraphicsSettingsManager(this.CameraController, this.InputManager);
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
-            this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager);
+            this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager, this.TimeManager);
             this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.CameraController, this.CarState, this.InputManager);
             this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
             this.UiManager = new UiManager(this.CameraController);
@@ -134,7 +151,7 @@ namespace ZoomTracks {
                 this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
                 this.HitchLogger2.Update();
 
-                TimeManager.Update();
+                this.TimeManager.Update();
                 this.InputManager.UpdateInputs();
 
                 if (this.InputManager.Keyboard != null && this.InputManager.Keyboard.escapeKey.wasPressedThisFrame) {

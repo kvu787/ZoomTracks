@@ -1,10 +1,30 @@
-namespace ZoomTracks {
-    public static class TimeManager {
-        public static float DeltaTime { get; private set; }
+using System;
+using UnityEngine;
 
-        public static void Update() {
-            //DeltaTime = UnityEngine.Time.deltaTime;
-            DeltaTime = 1f / 59.95f; // Use exact frequency as reported by "Settings > System > Display > Advanced display"
+namespace ZoomTracks {
+    public class TimeManager {
+        private float RefreshRate { get; set; }
+        private bool UseTimeDeltaTime { get; set; }
+
+        public TimeManager(float? refreshRate, bool useTimeDeltaTime) {
+            this.UseTimeDeltaTime = useTimeDeltaTime;
+            if (!this.UseTimeDeltaTime && (refreshRate == null || (refreshRate.Value <= 0f))) {
+                throw new ArgumentException();
+            }
+
+            if (!this.UseTimeDeltaTime) {
+                this.RefreshRate = refreshRate.Value;
+            }
+        }
+
+        public float DeltaTime { get; private set; }
+
+        public void Update() {
+            if (this.UseTimeDeltaTime) {
+                this.DeltaTime = Time.deltaTime;
+            } else {
+                this.DeltaTime = 1f / this.RefreshRate;
+            }
         }
     }
 }

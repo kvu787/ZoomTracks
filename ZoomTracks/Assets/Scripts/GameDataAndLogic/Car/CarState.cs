@@ -40,6 +40,7 @@ namespace ZoomTracks {
         private CarSwitcher CarSwitcher { get; }
         private CameraController CameraController { get; }
         private InputManager InputManager { get; }
+        private TimeManager TimeManager { get; }
 
         private Vector3 StartingPosition { get; }
         private float StartingRotation { get; }
@@ -50,10 +51,11 @@ namespace ZoomTracks {
 
         private float Rotation => this.Rotation_ForMostRecentNonZeroVelocity ?? this.StartingRotation;
 
-        public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager) {
+        public CarState(Transform placeholderCarTransform, CarSwitcher carSwitcher, CameraController cameraController, InputManager inputManager, TimeManager timeManager) {
             this.CarSwitcher = carSwitcher;
             this.CameraController = cameraController;
             this.InputManager = inputManager;
+            this.TimeManager = timeManager;
 
             this.StartingPosition = placeholderCarTransform.position;
             this.StartingRotation = placeholderCarTransform.rotation.eulerAngles.y;
@@ -101,7 +103,7 @@ namespace ZoomTracks {
                     }
 
                     Vector3 accelerationOutput_worldSpace = accelerationOutput_carSpace.Rotate2D(this.Rotation);
-                    Vector3 deltaVelocity_worldSpace = TimeManager.DeltaTime * accelerationOutput_worldSpace;
+                    Vector3 deltaVelocity_worldSpace = this.TimeManager.DeltaTime * accelerationOutput_worldSpace;
                     this.Velocity += deltaVelocity_worldSpace;
                 } else {
                     // Brake and acceleration are zero, so do nothing
@@ -115,7 +117,7 @@ namespace ZoomTracks {
                         this.Velocity = Vector3.zero;
                     } else {
                         Vector3 brakeDirection = (-1f * this.Velocity).normalized;
-                        Vector3 brakeDeltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * TimeManager.DeltaTime * brakeDirection;
+                        Vector3 brakeDeltaVelocity = carDynamic.AccelerationMap.Reverse * brakeInput * this.TimeManager.DeltaTime * brakeDirection;
                         if (brakeDeltaVelocity.sqrMagnitude >= velocitySqrMagnitude) {
                             this.Velocity = Vector3.zero;
                         } else {
@@ -133,7 +135,7 @@ namespace ZoomTracks {
                 this.Rotation_ForMostRecentNonZeroVelocity = this.Velocity.Get2DRotation();
             }
 
-            this.Position += this.Velocity * TimeManager.DeltaTime;
+            this.Position += this.Velocity * this.TimeManager.DeltaTime;
         }
 
         public void ApplyStateToGameObject() {

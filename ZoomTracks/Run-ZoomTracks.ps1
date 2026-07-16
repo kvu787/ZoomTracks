@@ -18,12 +18,24 @@ if (Test-Path $registryPath) {
 Write-Host "HERE *****************************"
 
 $unityLogFilePath = "$($logFolderPath)\Unity.log"
+
+# Use exact frequency as reported by "Settings > System > Display > Advanced display"
+$refreshRate = 179.84
+
 $stutterLogFilePath = "$($logFolderPath)\Stutter.log"
 
+# Borderless exclusive mode
 $zoomTracksProcess = `
     Start-Process `
         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-        -ArgumentList "-force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -log-memory-performance-stats -timestamps -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+        -ArgumentList "-force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -log-memory-performance-stats -timestamps -refreshRate $($refreshRate) -stutterLogFilePath `"$($stutterLogFilePath)`"" `
         -PassThru
+
+# Windowed mode
+# $zoomTracksProcess = `
+#     Start-Process `
+#         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
+#         -ArgumentList "-force-d3d12 -screen-fullscreen 0 -screen-width 2208 -screen-height 1242 -logFile `"$($unityLogFilePath)`" -log-memory-performance-stats -timestamps -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+#         -PassThru
 
 Wait-Process -Id $zoomTracksProcess.Id

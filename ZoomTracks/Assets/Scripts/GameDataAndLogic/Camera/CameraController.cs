@@ -12,6 +12,7 @@ namespace ZoomTracks {
 
         private CameraFollowSettings CameraFollowSettings { get; }
         private InputManager InputManager { get; }
+        private TimeManager TimeManager { get; }
 
         private Transform CameraYawOffset { get; }
         private Transform CameraPanOffsetAndPitch { get; }
@@ -22,9 +23,10 @@ namespace ZoomTracks {
         private float DefaultFollowCameraSize { get; }
         public float OrthographicCameraSize { get; set; }
 
-        public CameraController(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, InputManager inputManager) {
+        public CameraController(CameraFollowSettings cameraFollowSettings, TrackJson trackJson, InputManager inputManager, TimeManager timeManager) {
             this.CameraFollowSettings = cameraFollowSettings;
             this.InputManager = inputManager;
+            this.TimeManager = timeManager;
 
             this.CameraYawOffset = GameObject.Find(nameof(this.CameraYawOffset)).transform;
             this.CameraPanOffsetAndPitch = GameObject.Find(nameof(this.CameraPanOffsetAndPitch)).transform;
@@ -170,7 +172,7 @@ namespace ZoomTracks {
         */
 
         private void RotateOffset(float f) {
-            this.RotationOffset += TimeManager.DeltaTime * CameraRotationSpeed * f;
+            this.RotationOffset += this.TimeManager.DeltaTime * CameraRotationSpeed * f;
         }
 
         //private void PanOffset(Vector2 vector2) {
@@ -178,7 +180,7 @@ namespace ZoomTracks {
         //}
 
         private void Zoom(float zoomOut, float zoomIn) {
-            this.OrthographicCameraSize += TimeManager.DeltaTime * CameraZoomSpeed * (zoomOut - zoomIn);
+            this.OrthographicCameraSize += this.TimeManager.DeltaTime * CameraZoomSpeed * (zoomOut - zoomIn);
             this.OrthographicCameraSize = Mathf.Clamp(this.OrthographicCameraSize, MinOrthographicCameraSize, MaxOrthographicCameraSize);
         }
 
