@@ -10,16 +10,25 @@ So, to play this, you'll probably need to adjust several things.
 
 # Known good run config
 
-The following configuration is the result a lot of testing to eliminate stutters and get the colors right.
+The following configuration is the result a lot of testing to eliminate stutters and to get the colors right.
 
 * Computer:
   * Model = Lenovo Legion 9 18IAX10 (aka Lenovo Legion 9i)
   * CPU = Intel 275HX
   * GPU = Nvidia 5090 laptop
   * Laptop is closed (so its built-in display should be inactive)
-  * Legion Space > GPU Working Mode = dGPU mode
-    * This should completely disable the Intel integrated GPU
-    * Verify that "Device Manager > Display Adapters" shows only the discrete GPU
+  * Use the default setting of "Legion Space > GPU Working Mode = Hybrid Mode".
+  * Use "Legion Space > GPU Working Mode > Hybrid Mode > Smart iGPU Mode = Off".
+    * I've never tried setting this to "On" or "Auto".
+    * It's supposed to intelligently turn off the dGPU to save power, but that is irrelevant for my current desktop-only usage because the external monitors require the dGPU.
+  * Don't use "Legion Space > GPU Working Mode = dGPU Mode".
+    * I have observed several issues with dGPU mode.
+    * 1. Using external monitors while having the laptop lid closed leads to odd display issues, such as stuttering after waking from sleep when the external monitors have significantly different refresh rates.
+    * 2. Connecting certain monitors using Thunderbolt 5 USB-C (laptop side) to DisplayPort (monitor side) leads to the NV-Failsafe issue and the inability to display anything other than 640*480 resolution.
+      * This was observed with the PA278CGRV, but not with the PA278CV.
+      * Workarounds included connecting the PA278CGRV via HDMI to HDMI or via USB-C to USB-C.
+    * 3. The laptop runs abnormally hot even when idling.
+    * 4. I didn't observe the supposed benefits of dGPU-only mode, which are improved performance and theoretically simpler operation.
 * Input:
   * Razer Wolverine V3 Pro 8K PC
   * Connected via wireless dongle
