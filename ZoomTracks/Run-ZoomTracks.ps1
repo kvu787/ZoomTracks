@@ -22,46 +22,18 @@ $stutterLogFilePath = "$($logFolderPath)\Stutter.log"
 # Use exact frequency as reported by "Settings > System > Display > Advanced display"
 # $refreshRate = 179.84
 
-# Main external screen, 180 hz, borderless exclusive fullscreen
+# Main monitor, 4K, 240 hz, borderless fullscreen
 $zoomTracksProcess = `
     Start-Process `
         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-        -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 179.84 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+        -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 3840 -screen-height 2160 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 240.08 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
         -PassThru
 
-# # Main external screen, 120 hz, borderless exclusive fullscreen
+# # Main monitor, 4K, 240 hz, exclusive fullscreen
 # $zoomTracksProcess = `
 #     Start-Process `
 #         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-#         -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 120 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
-#         -PassThru
-
-# # Main external screen, 60 hz, borderless exclusive fullscreen
-# $zoomTracksProcess = `
-#     Start-Process `
-#         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-#         -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 59.95 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
-#         -PassThru
-
-# # Main external screen, 180 hz, windowed
-# $zoomTracksProcess = `
-#     Start-Process `
-#         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-#         -ArgumentList "-monitor 1 -force-d3d12 -screen-fullscreen 0 -screen-width 2208 -screen-height 1242 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 179.84 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
-#         -PassThru
-
-# # Laptop screen, windowed, 240 hz
-# $zoomTracksProcess = `
-#     Start-Process `
-#         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-#         -ArgumentList "-monitor 2 -force-d3d12 -screen-fullscreen 0 -screen-width 960 -screen-height 540 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 240 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
-#         -PassThru
-
-# # Laptop screen, windowed, 75 hz
-# $zoomTracksProcess = `
-#     Start-Process `
-#         -FilePath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-#         -ArgumentList "-monitor 2 -force-d3d12 -screen-fullscreen 0 -screen-width 960 -screen-height 540 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 75 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+#         -ArgumentList "-monitor 1 -force-d3d12 -window-mode exclusive -screen-width 3840 -screen-height 2160 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 240.08 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
 #         -PassThru
 
 Wait-Process -Id $zoomTracksProcess.Id
