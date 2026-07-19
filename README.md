@@ -29,6 +29,8 @@ The following configuration is the result a lot of testing to eliminate stutters
       * Workarounds included connecting the PA278CGRV via HDMI to HDMI or via USB-C to USB-C.
     * 3. The laptop runs abnormally hot even when idling.
     * 4. I didn't observe the supposed benefits of dGPU-only mode, which are improved performance and theoretically simpler operation.
+    * 5. dGPU mode fails to run the built-in screen, a 4k@240Hz external monitor, and a 1440p@60Hz external monitor simultaneously.
+    * 6. Having multiple external monitors at different refresh rates connected leads to occasional "blinking" on some monitors.
 * Input:
   * Razer Wolverine V3 Pro 8K PC
   * Connected via wireless dongle
