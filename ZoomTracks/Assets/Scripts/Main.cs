@@ -56,30 +56,10 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
-            string[] commandLineArgs = Environment.GetCommandLineArgs();
-            if (commandLineArgs.Contains(StutterLogFilePathFlag)) {
-                int i = Array.IndexOf(commandLineArgs, StutterLogFilePathFlag);
-                if (i != commandLineArgs.Length - 2) {
-                    throw new Exception($"If {StutterLogFilePathFlag} is provided, it must be at the end of the command line arguments");
-                }
-                if ((i + 1) >= commandLineArgs.Length) {
-                    throw new Exception($"No value found for {StutterLogFilePathFlag}");
-                }
-                string stutterLogFilePath = commandLineArgs[i + 1];
-                this.HitchLogger2 = new HitchLogger2(stutterLogFilePath);
-            } else {
-                this.HitchLogger2 = new HitchLogger2($"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\"));
-            }
-
-            this.HitchLogger = new HitchLogger(
-                enabled: false,
-                logOnlyHitches: true,
-                hitchThresholdMs: (1000.0 / 60.0) * 1.1,
-                fileName: $"{DateTime.Now.Ticks}_hitches.csv");
-
             GraphicsSettingsManager.UseRuntimeOnlyCopyOfUrpAsset();
             GraphicsSettingsManager.ConfigureSessionGraphicsSettings();
             DebugManager.instance.enableRuntimeUI = false;
+
             Debug.Log($"END: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
         }
 
@@ -102,17 +82,41 @@ namespace ZoomTracks {
             this.CarControlTimeoutStart = DateTime.MinValue;
 
             string[] commandLineArgs = Environment.GetCommandLineArgs();
-            Assert.IsTrue(commandLineArgs.Contains(RefreshRateFlag));
-            int i = Array.IndexOf(commandLineArgs, RefreshRateFlag);
-            if ((i + 1) >= commandLineArgs.Length) {
-                throw new Exception($"No value found for {RefreshRateFlag}");
+            {
+                Assert.IsTrue(commandLineArgs.Contains(RefreshRateFlag));
+                int i = Array.IndexOf(commandLineArgs, RefreshRateFlag);
+                if ((i + 1) >= commandLineArgs.Length) {
+                    throw new Exception($"No value found for {RefreshRateFlag}");
+                }
+                float refreshRate = ParseUtility.ParseFloat(commandLineArgs[i + 1]);
+                if (refreshRate <= 0f) {
+                    this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
+                    Debug.Log("Using Time.deltaTime for the timestep, which means a variable timestep");
+                } else {
+                    this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
+                    Debug.Log($"Using refresh rate of {refreshRate} Hz for the timestep, which means a fixed timestep");
+                }
             }
-            float refreshRate = ParseUtility.ParseFloat(commandLineArgs[i + 1]);
-            if (refreshRate <= 0f) {
-                this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
+
+            if (commandLineArgs.Contains(StutterLogFilePathFlag)) {
+                int i = Array.IndexOf(commandLineArgs, StutterLogFilePathFlag);
+                if (i != commandLineArgs.Length - 2) {
+                    throw new Exception($"If {StutterLogFilePathFlag} is provided, it must be at the end of the command line arguments");
+                }
+                if ((i + 1) >= commandLineArgs.Length) {
+                    throw new Exception($"No value found for {StutterLogFilePathFlag}");
+                }
+                string stutterLogFilePath = commandLineArgs[i + 1];
+                this.HitchLogger2 = new HitchLogger2(stutterLogFilePath, this.TimeManager);
             } else {
-                this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
+                this.HitchLogger2 = new HitchLogger2($"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\"), this.TimeManager);
             }
+
+            this.HitchLogger = new HitchLogger(
+                enabled: false,
+                logOnlyHitches: true,
+                hitchThresholdMs: (1000.0 / 60.0) * 1.1,
+                fileName: $"{DateTime.Now.Ticks}_hitches.csv");
 
             this.InputManager = new InputManager();
 

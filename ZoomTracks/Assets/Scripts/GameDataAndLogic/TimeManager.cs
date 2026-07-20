@@ -3,8 +3,15 @@ using UnityEngine;
 
 namespace ZoomTracks {
     public class TimeManager {
-        private float RefreshRate { get; set; }
-        private bool UseTimeDeltaTime { get; set; }
+        /// <summary>
+        /// Assume this remains constant during runtime.
+        /// </summary>
+        public float RefreshRate { get; set; }
+
+        /// <summary>
+        /// Assume this remains constant during runtime.
+        /// </summary>
+        public bool UseTimeDeltaTime { get; set; }
 
         public TimeManager(float? refreshRate, bool useTimeDeltaTime) {
             this.UseTimeDeltaTime = useTimeDeltaTime;
