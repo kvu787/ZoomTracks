@@ -36,4 +36,6 @@ $zoomTracksProcess = `
 #         -ArgumentList "-monitor 1 -force-d3d12 -window-mode exclusive -screen-width 3840 -screen-height 2160 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate 240.08 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
 #         -PassThru
 
+$process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::High
+Write-Host "Launched with PID=$($process.Id)"
 Wait-Process -Id $zoomTracksProcess.Id
