@@ -91,7 +91,7 @@ namespace ZoomTracks {
                 float refreshRate = ParseUtility.ParseFloat(commandLineArgs[i + 1]);
                 if (refreshRate <= 0f) {
                     this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
-                    Debug.Log("Using Time.deltaTime for the timestep, which means a variable timestep");
+                    Debug.Log("Received invalid refresh rate, so using Time.deltaTime for the timestep, which means a variable timestep");
                 } else {
                     this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
                     Debug.Log($"Using refresh rate of {refreshRate} Hz for the timestep, which means a fixed timestep");
