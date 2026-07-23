@@ -12,11 +12,13 @@ namespace ZoomTracks {
 
         private double FrameDurationThreshold_Milliseconds { get; }
 
+        private const double ThresholdFactor = 1.2;
+
         public HitchLogger2(string filePath, TimeManager timeManager) {
             this.StreamWriter = new StreamWriter(filePath);
             this.PreviousFrameTime_Ticks = Stopwatch.GetTimestamp();
             this.TimeManager = timeManager;
-            this.FrameDurationThreshold_Milliseconds = ((1.0 / this.TimeManager.RefreshRate) * 1.05) * 1000;
+            this.FrameDurationThreshold_Milliseconds = ((1.0 / this.TimeManager.RefreshRate) * ThresholdFactor) * 1000;
         }
 
         public void Update() {
