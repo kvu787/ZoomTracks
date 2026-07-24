@@ -15,8 +15,10 @@ namespace ZoomTracks {
         private const double ThresholdFactor = 1.2;
 
         public HitchLogger2(string filePath, TimeManager timeManager) {
+            this.TimeManager = timeManager;
             if (this.TimeManager.UseTimeDeltaTime) {
                 UnityEngine.Debug.Log("Using variable delta, so HitchLogger2 won't report stutters");
+                return;
             }
 
             this.StreamWriter = new StreamWriter(filePath);
