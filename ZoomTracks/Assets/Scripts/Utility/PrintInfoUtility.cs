@@ -32,6 +32,8 @@ namespace ZoomTracks {
         }
 
         public static void PrintGraphicsInfo() {
+            Debug.Log($"SystemInfo.renderingThreadingMode = {SystemInfo.renderingThreadingMode}");
+
             GraphicsDeviceType api = SystemInfo.graphicsDeviceType;
             Debug.Log($"Graphics API in use     = {api}");
             Debug.Log($"Graphics device         = {SystemInfo.graphicsDeviceName}");

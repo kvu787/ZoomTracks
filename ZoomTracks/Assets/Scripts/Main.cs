@@ -56,6 +56,10 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
+            if (SystemInfo.renderingThreadingMode != RenderingThreadingMode.Direct) {
+                throw new Exception("SystemInfo.renderingThreadingMode must be RenderingThreadingMode.Direct");
+            }
+
             GraphicsSettingsManager.UseRuntimeOnlyCopyOfUrpAsset();
             GraphicsSettingsManager.ConfigureSessionGraphicsSettings();
             DebugManager.instance.enableRuntimeUI = false;
