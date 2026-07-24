@@ -8,6 +8,61 @@ So, to play this, you'll probably need to adjust several things.
 
 ![<Images/README pic.png>](<Images/README pic.png>)
 
+# Known good run config (July 21 2026)
+
+* print out SystemInfo.renderingThreadingMode and ensure it is set to RenderingThreadingMode.Direct
+  * SystemInfo.renderingThreadingMode cannot be directly set.
+  * To get it to return RenderingThreadingMode.Direct, you need to do these two things:
+    * Disable graphics jobs
+    * Disable multithreaded rendering
+* add -force-gfx-direct to command line arg
+* disable v-sync by default, both in project settings (quality settings) and c# code
+* disable graphics jobs
+* project settings:
+  * use flip model swapchain for dx11
+  * disable graphics jobs
+  * use dx11 by moving it to the first item in graphics apis list
+
+
+& "C:\Program Files\Unity\Hub\Editor\6000.3.19f1\Editor\Unity.exe" -projectPath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks" -force-d3d11
+& "C:\Program Files\Unity\Hub\Editor\6000.3.19f1\Editor\Unity.exe" -projectPath "C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks"
+
+NVCP warning
+* i speculate that there could be things that cause nvcp config to get into a "bad state"
+* example: switching between hybrid and dgpu mode
+* the reason i suspect this is that the laptop's built-in display is visible in NVCP in dgpu mode, but invisible in NVCP in hybrid mode.
+* so the question is: when switching between hybrid and dgpu mode, is the NVCP config properly "migrated"?
+* currently, the only way to know for sure is to do a clean driver reinstall after toggling between hybrid/dgpu mode, which is cumbersome
+* you can also to "restore defaults" for each section in NVCP, but that seems less certain than a clean driver reinstall
+
+general setup
+* use dgpu-only mode, not hybrid mode
+  * i think that hybrid mode works fine, but i've done more testing with dgpu mode
+* monitor = Asus ROG Strix Pulsar XG27AQNGV
+* install nvidia 596.49 and select "clean installation"
+  * this ensures that all nvcp settings are reset to default
+  * unfortunately, it seems like the only way to guarantee that all nvcp settings are reset to default is to do a full driver installation and select "clean install"
+* enable gsync and pulsar
+* set monitor refresh rate to max (360hz) in nvcp
+* disable vsync and any kind of frame rate limiter both in the game code and in external tools
+* nvcp:
+  * in global settings, set "Preferred graphics processor" to "High-performance NVIDIA processor"
+  * in global settings, set power management mode to maximum in nvcp
+  * create exe-specific profiles and set "max refresh rate" as desired
+
+nvidia control panel profile
+* set up g-sync = enabled for fullscreen
+* max frame rate = min of 120, max of 315
+* low latency mode = ultra
+* monitor technology = g-sync
+* power management mode = prefer maximum performance
+* vertical sync = on
+
+do not change any of the windows graphics settings from default:
+* hags should stay on
+* optimizations for windowed games should stay on
+* variable refresh rate should stay on
+
 # Known good run config
 
 The following configuration is the result a lot of testing to eliminate stutters and to get the colors right.
