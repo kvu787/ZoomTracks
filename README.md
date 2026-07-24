@@ -31,6 +31,7 @@ The following configuration is the result a lot of testing to eliminate stutters
     * 4. I didn't observe the supposed benefits of dGPU-only mode, which are improved performance and theoretically simpler operation.
     * 5. dGPU mode fails to run the built-in screen, a 4k@240Hz external monitor, and a 1440p@60Hz external monitor simultaneously.
     * 6. Having multiple external monitors at different refresh rates connected leads to occasional "blinking" on some monitors.
+    * 7. Can't change the brightness of the laptop screen via "Settings > System > Display" or fn+F5/F6
 * Input:
   * Razer Wolverine V3 Pro 8K PC
   * Connected via wireless dongle
@@ -50,6 +51,9 @@ The following configuration is the result a lot of testing to eliminate stutters
   * This is the only active display.
 * Software
   * Nvidia Studio Driver 596.36 or GeForce Game Ready Driver 596.49
+    * DON'T install the Nvidia App.
+    * Some configuration operations in the Nvidia App are buggy. Example: per-program G-Sync settings
+    * Only use the Nvidia Control Panel.
   * Windows 11 Pro, Version 25H2 (OS Build 26200.8655)
   * To avoid stutters in fullscreen (exclusive or borderless modes), disable "Hardware-accelerated GPU scheduling"
   * Night light enabled with strength = 50
