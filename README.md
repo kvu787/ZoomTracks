@@ -1,3 +1,41 @@
+# temp run config
+
+Change a variety of things to achieve min input latency, max locked fps conformance, and max motion clarity
+These are the committed changes:
+
+* Pass in -1 for -refreshRate to use Time.deltaTime for the timestep
+  * Passing in R for -refreshRate where R matches the "Max Frame Rate" setting in NVCP probably also works
+* Disable VSync by setting "Project Settings > Quality > VSync Count" = "Don't Sync"
+* Disable the ability to toggle VSync in-game
+* Switch from dx12 to dx11 by moving dx11 to the first item in the list of "Project Settings > Player > Other Settings > Graphics API for Windows"
+* Enable "Project Settings > Player > Resolution and Presentation > Standalone Player Options > Use DXGI flip model swapchain for D3D11"
+* Disable graphics jobs by disabling "Project Settings > Player > Other Settings > Graphics Jobs"
+* Disable multithreaded rendering by passing in the "-force-gfx-direct" command line argument to ZoomTracks.exe
+* Set SystemInfo.renderingThreadingMode to RenderingThreadingMode.Direct, which is automatically set after disabling graphics jobs and disabling multithreaded rendering
+
+This was performance tested with the below configuration.
+
+Note that the NVCP config is ***not*** automatically set or verified by the game. It must be manually configured by the player ***before*** launching ZoomTracks.exe.
+
+* Borderless fullscreen windowed at native resolution
+* Monitor with Nvidia G-Sync and Nvidia Pulsar
+  * Example: XG27AQNGV
+  * Set resolution to 2560*1440 and refresh rate to 360 Hz in Nvidia Control Panel (NVCP)
+  * Enable Pulsar in the monitor OSD
+  * If available, enable the monitor's built-in fps counter via the monitor OSD
+    * Confirm that this OSD fps counter changes from 360 to the "NVCP Max Frame Rate" while running ZoomTracks.exe
+    * This ensures that G-SYNC is working as expected
+* In NVCP, configure this:
+  * Set "Display > Set up G-SYNC > Apply following changes." = "Enable G-SYNC, G-SYNC Compatible + Enable for full screen mode"
+  * Enable "Top bar > Display > G-SYNC Indicator" to confirm G-SYNC is active while playing ZoomTracks.exe
+  * Create a custom profile for ZoomTracks.exe in "3D Settings > Manage 3D settings > Program Settings" with the following overrides:
+    * Low Latency Mode = Ultra
+    * Max Frame Rate = 240 FPS
+      * Anything from 120 to 315 FPS should work too
+    * Monitor Technology = G-SYNC
+    * Power Management Mode = Prefer Maximum Performance
+    * Vertical sync = On
+
 # NOTE
 
 Anyone can play this game, but it is configured specifically for my setup and preferences.
