@@ -4,12 +4,14 @@ $ErrorActionPreference = "Stop"
 $logFolderPath = "C:\Users\k\Repository\Unity\ZoomTracks\ZoomTracks\MyLogOutput\$(Get-Date -Format "yyyy-MM-dd_HH-mm-ss")"
 New-Item -ItemType "Directory" -Path $logFolderPath
 
-# PresentMon
-$presentMonLogFilePath  = "$($logFolderPath)\PresentMon.csv"
-Start-Process `
-  -FilePath "C:\Users\k\Program\PresentMon-2.5.1-x64.exe" `
-  -ArgumentList "--process_name `"ZoomTracks.exe`" --output_file `"$($presentMonLogFilePath)`"" `
-  -Verb "RunAs"
+$presentMonPath = "$env:UserProfile\Program\PresentMon-2.5.1-x64.exe"
+if (Test-Path $presentMonPath) {
+    $presentMonLogFilePath  = "$($logFolderPath)\PresentMon.csv"
+    Start-Process `
+        -FilePath $presentMonPath `
+        -ArgumentList "--process_name `"ZoomTracks.exe`" --output_file `"$($presentMonLogFilePath)`"" `
+        -Verb "RunAs"
+}
 
 $registryPath = "HKCU:\Software\K\ZoomTracks"
 if (Test-Path $registryPath) {
