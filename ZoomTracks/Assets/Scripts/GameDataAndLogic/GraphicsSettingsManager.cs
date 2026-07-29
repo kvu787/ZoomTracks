@@ -101,6 +101,7 @@ namespace ZoomTracks {
         }
 
         private void ApplyGraphicsSettings() {
+            Debug.Log("Executing ApplyGraphicsSettings...");
             UniversalRenderPipeline.asset.msaaSampleCount = this.MsaaMode switch {
                 MsaaModeEnum.Off => 1,
                 //MsaaModeEnum.Msaa2x => 2,
