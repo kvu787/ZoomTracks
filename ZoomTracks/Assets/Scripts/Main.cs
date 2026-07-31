@@ -203,7 +203,7 @@ namespace ZoomTracks {
                     Debug.Log("Received zero or negative refresh rate, so using Time.deltaTime for the timestep, which means a variable timestep");
                     this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
                 } else {
-                    Debug.Log($"Using refresh rate of {refreshRate} Hz for the timestep, which means a fixed timestep");
+                    Debug.Log($"Received a refresh rate of {refreshRate} Hz, which means a fixed delta and recording stutters");
                     this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
                 }
             } else {
