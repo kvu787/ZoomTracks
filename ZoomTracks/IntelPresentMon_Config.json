@@ -10,7 +10,7 @@
             {
                "key": 0,
                "metric": {
-                  "metricId": 11,
+                  "metricId": 62,
                   "arrayIndex": 0,
                   "deviceId": 0,
                   "statId": 1,
@@ -23,10 +23,10 @@
                   "a": 1
                },
                "fillColor": {
-                  "r": 57,
-                  "g": 210,
-                  "b": 250,
-                  "a": 0.09803921568627451
+                  "r": 0,
+                  "g": 0,
+                  "b": 0,
+                  "a": 0
                },
                "axisAffinity": 0
             },
@@ -46,33 +46,33 @@
                   "a": 1
                },
                "fillColor": {
-                  "r": 57,
-                  "g": 210,
-                  "b": 250,
-                  "a": 0.09803921568627451
+                  "r": 0,
+                  "g": 0,
+                  "b": 0,
+                  "a": 0
                },
                "axisAffinity": 0
             },
             {
                "key": 2,
                "metric": {
-                  "metricId": 62,
+                  "metricId": 11,
                   "arrayIndex": 0,
                   "deviceId": 0,
                   "statId": 1,
                   "desiredUnitId": 0
                },
                "lineColor": {
-                  "r": 0,
-                  "g": 0,
+                  "r": 255,
+                  "g": 255,
                   "b": 255,
                   "a": 1
                },
                "fillColor": {
-                  "r": 57,
-                  "g": 210,
-                  "b": 250,
-                  "a": 0.09803921568627451
+                  "r": 0,
+                  "g": 0,
+                  "b": 0,
+                  "a": 0
                },
                "axisAffinity": 0
             }
@@ -139,7 +139,7 @@
             {
                "key": 3,
                "metric": {
-                  "metricId": 85,
+                  "metricId": 8,
                   "arrayIndex": 0,
                   "deviceId": 0,
                   "statId": 12,
@@ -152,10 +152,10 @@
                   "a": 1
                },
                "fillColor": {
-                  "r": 57,
-                  "g": 210,
-                  "b": 250,
-                  "a": 0.09803921568627451
+                  "r": 0,
+                  "g": 0,
+                  "b": 0,
+                  "a": 0
                },
                "axisAffinity": 0
             },
@@ -175,33 +175,33 @@
                   "a": 1
                },
                "fillColor": {
-                  "r": 57,
-                  "g": 210,
-                  "b": 250,
-                  "a": 0.09803921568627451
+                  "r": 0,
+                  "g": 0,
+                  "b": 0,
+                  "a": 0
                },
                "axisAffinity": 0
             },
             {
                "key": 5,
                "metric": {
-                  "metricId": 8,
+                  "metricId": 85,
                   "arrayIndex": 0,
-                  "statId": 12,
                   "deviceId": 0,
+                  "statId": 12,
                   "desiredUnitId": 0
                },
                "lineColor": {
-                  "r": 0,
-                  "g": 0,
+                  "r": 255,
+                  "g": 255,
                   "b": 255,
                   "a": 1
                },
                "fillColor": {
-                  "r": 57,
-                  "g": 210,
-                  "b": 250,
-                  "a": 0.09803921568627451
+                  "r": 0,
+                  "g": 0,
+                  "b": 0,
+                  "a": 0
                },
                "axisAffinity": 0
             }
