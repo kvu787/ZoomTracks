@@ -80,44 +80,7 @@ namespace ZoomTracks {
 
             this.CarControlTimeoutStart = DateTime.MinValue;
 
-            string[] commandLineArgs = Environment.GetCommandLineArgs();
-
-            if (commandLineArgs.Contains(RefreshRateFlag)) {
-                int i = Array.IndexOf(commandLineArgs, RefreshRateFlag);
-                if ((i + 1) >= commandLineArgs.Length) {
-                    throw new Exception($"No value found for {RefreshRateFlag}");
-                }
-                float refreshRate = ParseUtility.ParseFloat(commandLineArgs[i + 1]);
-                if (refreshRate <= 0f) {
-                    Debug.Log("Received zero or negative refresh rate, so using Time.deltaTime for the timestep, which means a variable timestep");
-                    this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
-                } else {
-                    Debug.Log($"Using refresh rate of {refreshRate} Hz for the timestep, which means a fixed timestep");
-                    this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
-                }
-            } else {
-                Debug.Log($"Didn't receive {RefreshRateFlag} flag, so using Time.deltaTime for the timestep, which means a variable timestep");
-                this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
-            }
-
-            {
-                string stutterLogFilePath;
-                if (commandLineArgs.Contains(StutterLogFilePathFlag)) {
-                    int i = Array.IndexOf(commandLineArgs, StutterLogFilePathFlag);
-                    if (i != commandLineArgs.Length - 2) {
-                        throw new Exception($"If {StutterLogFilePathFlag} is provided, it must be at the end of the command line arguments");
-                    }
-                    if ((i + 1) >= commandLineArgs.Length) {
-                        throw new Exception($"No value found for {StutterLogFilePathFlag}");
-                    }
-                    stutterLogFilePath = commandLineArgs[i + 1];
-                    Debug.Log($"Using a file path specified from the command line for stutter log: ${stutterLogFilePath}");
-                } else {
-                    stutterLogFilePath = $"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\");
-                    Debug.Log($"Didn't receive {StutterLogFilePathFlag} flag, so using the default file path for stutter log: ${stutterLogFilePath}");
-                }
-                this.HitchLogger2 = new HitchLogger2(stutterLogFilePath, this.TimeManager);
-            }
+            this.ProcessCommandLineArguments();
 
             this.HitchLogger = new HitchLogger(
                 enabled: false,
@@ -235,6 +198,47 @@ namespace ZoomTracks {
 
         private bool InCarControlTimeout() {
             return (DateTime.Now - this.CarControlTimeoutStart) <= this.TimeoutDurationSeconds;
+        }
+
+        private void ProcessCommandLineArguments() {
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
+
+            if (commandLineArgs.Contains(RefreshRateFlag)) {
+                int i = Array.IndexOf(commandLineArgs, RefreshRateFlag);
+                if ((i + 1) >= commandLineArgs.Length) {
+                    throw new Exception($"No value found for {RefreshRateFlag}");
+                }
+                float refreshRate = ParseUtility.ParseFloat(commandLineArgs[i + 1]);
+                if (refreshRate <= 0f) {
+                    Debug.Log("Received zero or negative refresh rate, so using Time.deltaTime for the timestep, which means a variable timestep");
+                    this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
+                } else {
+                    Debug.Log($"Using refresh rate of {refreshRate} Hz for the timestep, which means a fixed timestep");
+                    this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
+                }
+            } else {
+                Debug.Log($"Didn't receive {RefreshRateFlag} flag, so using Time.deltaTime for the timestep, which means a variable timestep");
+                this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
+            }
+
+            {
+                string stutterLogFilePath;
+                if (commandLineArgs.Contains(StutterLogFilePathFlag)) {
+                    int i = Array.IndexOf(commandLineArgs, StutterLogFilePathFlag);
+                    if (i != commandLineArgs.Length - 2) {
+                        throw new Exception($"If {StutterLogFilePathFlag} is provided, it must be at the end of the command line arguments");
+                    }
+                    if ((i + 1) >= commandLineArgs.Length) {
+                        throw new Exception($"No value found for {StutterLogFilePathFlag}");
+                    }
+                    stutterLogFilePath = commandLineArgs[i + 1];
+                    Debug.Log($"Using a file path specified from the command line for stutter log: ${stutterLogFilePath}");
+                } else {
+                    stutterLogFilePath = $"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\");
+                    Debug.Log($"Didn't receive {StutterLogFilePathFlag} flag, so using the default file path for stutter log: ${stutterLogFilePath}");
+                }
+                this.HitchLogger2 = new HitchLogger2(stutterLogFilePath, this.TimeManager);
+            }
         }
     }
 }
