@@ -90,26 +90,31 @@ namespace ZoomTracks {
                 }
                 float refreshRate = ParseUtility.ParseFloat(commandLineArgs[i + 1]);
                 if (refreshRate <= 0f) {
+                    Debug.Log("Received zero or negative refresh rate, so using Time.deltaTime for the timestep, which means a variable timestep");
                     this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
-                    Debug.Log("Received invalid refresh rate, so using Time.deltaTime for the timestep, which means a variable timestep");
                 } else {
-                    this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
                     Debug.Log($"Using refresh rate of {refreshRate} Hz for the timestep, which means a fixed timestep");
+                    this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
                 }
             }
 
-            if (commandLineArgs.Contains(StutterLogFilePathFlag)) {
-                int i = Array.IndexOf(commandLineArgs, StutterLogFilePathFlag);
-                if (i != commandLineArgs.Length - 2) {
-                    throw new Exception($"If {StutterLogFilePathFlag} is provided, it must be at the end of the command line arguments");
+            {
+                string stutterLogFilePath;
+                if (commandLineArgs.Contains(StutterLogFilePathFlag)) {
+                    int i = Array.IndexOf(commandLineArgs, StutterLogFilePathFlag);
+                    if (i != commandLineArgs.Length - 2) {
+                        throw new Exception($"If {StutterLogFilePathFlag} is provided, it must be at the end of the command line arguments");
+                    }
+                    if ((i + 1) >= commandLineArgs.Length) {
+                        throw new Exception($"No value found for {StutterLogFilePathFlag}");
+                    }
+                    stutterLogFilePath = commandLineArgs[i + 1];
+                    Debug.Log($"Using a file path specified from the command line for stutter log: ${stutterLogFilePath}");
+                } else {
+                    stutterLogFilePath = $"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\");
+                    Debug.Log($"Using the default file path for stutter log: ${stutterLogFilePath}");
                 }
-                if ((i + 1) >= commandLineArgs.Length) {
-                    throw new Exception($"No value found for {StutterLogFilePathFlag}");
-                }
-                string stutterLogFilePath = commandLineArgs[i + 1];
                 this.HitchLogger2 = new HitchLogger2(stutterLogFilePath, this.TimeManager);
-            } else {
-                this.HitchLogger2 = new HitchLogger2($"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\"), this.TimeManager);
             }
 
             this.HitchLogger = new HitchLogger(
