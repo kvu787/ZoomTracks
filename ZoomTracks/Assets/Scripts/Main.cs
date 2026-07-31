@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
-        private HitchLogger HitchLogger { get; set; }
         private HitchLogger2 HitchLogger2 { get; set; }
 
         private const string RefreshRateFlag = "-refreshRate";
@@ -79,15 +78,7 @@ namespace ZoomTracks {
             }
 
             this.CarControlTimeoutStart = DateTime.MinValue;
-
             this.ProcessCommandLineArguments();
-
-            this.HitchLogger = new HitchLogger(
-                enabled: false,
-                logOnlyHitches: true,
-                hitchThresholdMs: (1000.0 / 60.0) * 1.1,
-                fileName: $"{DateTime.Now.Ticks}_hitches.csv");
-
             this.InputManager = new InputManager();
 
             Debug.Log($"Load UI scene...");
@@ -122,7 +113,6 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
-                this.HitchLogger.LogFrameTimingIfNeeded("UpdateLoopStart");
                 this.HitchLogger2.Update();
 
                 this.TimeManager.Update();
