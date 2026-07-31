@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
@@ -11,8 +10,8 @@ namespace ZoomTracks {
         private HitchLogger HitchLogger { get; set; }
         private HitchLogger2 HitchLogger2 { get; set; }
 
-        private const string StutterLogFilePathFlag = "-stutterLogFilePath";
         private const string RefreshRateFlag = "-refreshRate";
+        private const string StutterLogFilePathFlag = "-stutterLogFilePath";
         private const string UiSceneName = "Ui";
         private const int InitialTrackSceneIndex = 13;
         private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
@@ -82,8 +81,8 @@ namespace ZoomTracks {
             this.CarControlTimeoutStart = DateTime.MinValue;
 
             string[] commandLineArgs = Environment.GetCommandLineArgs();
-            {
-                Assert.IsTrue(commandLineArgs.Contains(RefreshRateFlag));
+
+            if (commandLineArgs.Contains(RefreshRateFlag)) {
                 int i = Array.IndexOf(commandLineArgs, RefreshRateFlag);
                 if ((i + 1) >= commandLineArgs.Length) {
                     throw new Exception($"No value found for {RefreshRateFlag}");
@@ -96,6 +95,9 @@ namespace ZoomTracks {
                     Debug.Log($"Using refresh rate of {refreshRate} Hz for the timestep, which means a fixed timestep");
                     this.TimeManager = new TimeManager(refreshRate, useTimeDeltaTime: false);
                 }
+            } else {
+                Debug.Log($"Didn't receive {RefreshRateFlag} flag, so using Time.deltaTime for the timestep, which means a variable timestep");
+                this.TimeManager = new TimeManager(refreshRate: null, useTimeDeltaTime: true);
             }
 
             {
@@ -112,7 +114,7 @@ namespace ZoomTracks {
                     Debug.Log($"Using a file path specified from the command line for stutter log: ${stutterLogFilePath}");
                 } else {
                     stutterLogFilePath = $"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\");
-                    Debug.Log($"Using the default file path for stutter log: ${stutterLogFilePath}");
+                    Debug.Log($"Didn't receive {StutterLogFilePathFlag} flag, so using the default file path for stutter log: ${stutterLogFilePath}");
                 }
                 this.HitchLogger2 = new HitchLogger2(stutterLogFilePath, this.TimeManager);
             }
