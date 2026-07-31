@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 
 namespace ZoomTracks {
-    public sealed class HitchLogger2 {
+    public sealed class StutterLogger {
         private StreamWriter StreamWriter { get; }
         private long PreviousFrameTime_Ticks { get; set; }
 
@@ -14,10 +14,10 @@ namespace ZoomTracks {
 
         private const double ThresholdFactor = 1.2;
 
-        public HitchLogger2(string filePath, TimeManager timeManager) {
+        public StutterLogger(string filePath, TimeManager timeManager) {
             this.TimeManager = timeManager;
             if (this.TimeManager.UseTimeDeltaTime) {
-                UnityEngine.Debug.Log("Using variable delta, so HitchLogger2 won't report stutters");
+                UnityEngine.Debug.Log("Using variable delta, so StutterLogger won't report stutters");
                 return;
             }
 

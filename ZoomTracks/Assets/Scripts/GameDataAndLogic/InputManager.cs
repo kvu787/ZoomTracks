@@ -7,7 +7,7 @@ namespace ZoomTracks {
     public class InputManager {
         public Keyboard Keyboard { get; private set; }
         public Gamepad Gamepad { get; private set; }
-        public bool InsertHitchLogSpacer { get; private set; }
+        public bool InsertStutterLogSpacer { get; private set; }
         public bool ToggleBetweenBorderlessAndExclusiveFullScreen { get; private set; }
         public bool ToggleBetweenFixedAndFollowCamera { get; private set; }
 
@@ -16,7 +16,7 @@ namespace ZoomTracks {
             this.Gamepad = Gamepad.current;
             //this.LogGamepadRightStick();
 
-            this.InsertHitchLogSpacer = false;
+            this.InsertStutterLogSpacer = false;
             //this.InsertHitchLogSpacer |= this.Keyboard?.enterKey.wasPressedThisFrame ?? false;
             //this.InsertHitchLogSpacer |= this.Gamepad?.selectButton.wasPressedThisFrame ?? false;
 

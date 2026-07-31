@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public class Main : MonoBehaviour {
-        private HitchLogger2 HitchLogger2 { get; set; }
+        private StutterLogger StutterLogger { get; set; }
 
         private const string RefreshRateFlag = "-refreshRate";
         private const string StutterLogFilePathFlag = "-stutterLogFilePath";
@@ -113,7 +113,7 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
-                this.HitchLogger2.Update();
+                this.StutterLogger.Update();
 
                 this.TimeManager.Update();
                 this.InputManager.UpdateInputs();
@@ -125,8 +125,8 @@ namespace ZoomTracks {
                     Application.Quit();
                 }
 
-                if (this.InputManager.InsertHitchLogSpacer) {
-                    this.HitchLogger2.InsertSpacer();
+                if (this.InputManager.InsertStutterLogSpacer) {
+                    this.StutterLogger.InsertSpacer();
                 }
 
                 if (this.InputManager.ToggleBetweenBorderlessAndExclusiveFullScreen) {
@@ -227,7 +227,7 @@ namespace ZoomTracks {
                     stutterLogFilePath = $"{Application.persistentDataPath}/Stutter.log".Replace("/", "\\");
                     Debug.Log($"Didn't receive {StutterLogFilePathFlag} flag, so using the default file path for stutter log: ${stutterLogFilePath}");
                 }
-                this.HitchLogger2 = new HitchLogger2(stutterLogFilePath, this.TimeManager);
+                this.StutterLogger = new StutterLogger(stutterLogFilePath, this.TimeManager);
             }
         }
     }
