@@ -41,7 +41,7 @@ $stutterLogFilePath = "$($logFolderPath)\Stutter.log"
 $process = `
     Start-Process `
         -FilePath "C:\Users\k\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-        -ArgumentList "-monitor 1 -force-d3d12 -force-gfx-direct -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate -1 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+        -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate -1 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
         -PassThru
 
 $process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::High
