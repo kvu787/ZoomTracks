@@ -7,8 +7,8 @@ namespace ZoomTracks {
     public class GraphicsSettingsManager {
         private enum MsaaModeEnum {
             Off,
-            //Msaa2x,
-            //Msaa4x,
+            Msaa2x,
+            Msaa4x,
             Msaa8x,
         }
 
@@ -87,12 +87,14 @@ namespace ZoomTracks {
 
             if (this.InputManager.NextMsaaMode) {
                 this.MsaaMode = this.MsaaMode.Next();
+                this.TaaMode = TaaModeEnum.Off;
                 wasAnyGraphicsSettingChanged = true;
-            }
-            if (this.InputManager.NextTaaMode) {
+            } else if (this.InputManager.NextTaaMode) {
+                this.MsaaMode = MsaaModeEnum.Off;
                 this.TaaMode = this.TaaMode.Next();
                 wasAnyGraphicsSettingChanged = true;
             }
+
             if (this.InputManager.NextVsyncMode) {
                 this.VsyncMode = this.VsyncMode.Next();
                 wasAnyGraphicsSettingChanged = true;
@@ -109,29 +111,15 @@ namespace ZoomTracks {
 
         private void ApplyGraphicsSettings() {
             Debug.Log("Executing ApplyGraphicsSettings...");
-            UniversalRenderPipeline.asset.msaaSampleCount = this.MsaaMode switch {
-                MsaaModeEnum.Off => 1,
-                //MsaaModeEnum.Msaa2x => 2,
-                //MsaaModeEnum.Msaa4x => 4,
-                MsaaModeEnum.Msaa8x => 8,
-                _ => throw new System.Exception(),
-            };
 
-            if (this.TaaMode == TaaModeEnum.Off) {
-                this.CameraData.renderPostProcessing = false;
-                this.CameraData.antialiasing = AntialiasingMode.None;
+            if (this.MsaaMode == MsaaModeEnum.Off) {
+                this.ApplyMsaaMode();
+                this.ApplyTaaMode();
+            } else if (this.TaaMode == TaaModeEnum.Off) {
+                this.ApplyTaaMode();
+                this.ApplyMsaaMode();
             } else {
-                this.CameraData.renderPostProcessing = true;
-                this.CameraData.antialiasing = AntialiasingMode.TemporalAntiAliasing;
-                this.CameraData.taaSettings.quality = this.TaaMode switch {
-                    TaaModeEnum.Off => throw new System.Exception(),
-                    TaaModeEnum.VeryLow => TemporalAAQuality.VeryLow,
-                    TaaModeEnum.Low => TemporalAAQuality.Low,
-                    TaaModeEnum.Medium => TemporalAAQuality.Medium,
-                    TaaModeEnum.High => TemporalAAQuality.High,
-                    TaaModeEnum.VeryHigh => TemporalAAQuality.VeryHigh,
-                    _ => throw new System.Exception(),
-                };
+                throw new System.Exception("Cannot have MSAA and TAA enabled simultaneously");
             }
 
             QualitySettings.vSyncCount = this.VsyncMode switch {
@@ -152,6 +140,35 @@ namespace ZoomTracks {
                 RenderScaleEnum.Scale2 => 2f,
                 _ => throw new System.Exception()
             };
+        }
+
+        private void ApplyMsaaMode() {
+            UniversalRenderPipeline.asset.msaaSampleCount = this.MsaaMode switch {
+                MsaaModeEnum.Off => 1,
+                MsaaModeEnum.Msaa2x => 2,
+                MsaaModeEnum.Msaa4x => 4,
+                MsaaModeEnum.Msaa8x => 8,
+                _ => throw new System.Exception(),
+            };
+        }
+
+        private void ApplyTaaMode() {
+            if (this.TaaMode == TaaModeEnum.Off) {
+                this.CameraData.renderPostProcessing = false;
+                this.CameraData.antialiasing = AntialiasingMode.None;
+            } else {
+                this.CameraData.renderPostProcessing = true;
+                this.CameraData.antialiasing = AntialiasingMode.TemporalAntiAliasing;
+                this.CameraData.taaSettings.quality = this.TaaMode switch {
+                    TaaModeEnum.Off => throw new System.Exception(),
+                    TaaModeEnum.VeryLow => TemporalAAQuality.VeryLow,
+                    TaaModeEnum.Low => TemporalAAQuality.Low,
+                    TaaModeEnum.Medium => TemporalAAQuality.Medium,
+                    TaaModeEnum.High => TemporalAAQuality.High,
+                    TaaModeEnum.VeryHigh => TemporalAAQuality.VeryHigh,
+                    _ => throw new System.Exception(),
+                };
+            }
         }
     }
 }
