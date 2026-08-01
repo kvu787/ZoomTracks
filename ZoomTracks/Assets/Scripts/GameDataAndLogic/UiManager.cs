@@ -7,12 +7,14 @@ namespace ZoomTracks {
         private TMP_Text ClockText { get; }
         private TMP_Text CameraSizeText { get; }
         private TMP_Text DisplayModeText { get; }
+        private TMP_Text FpsText { get; }
         private CameraController CameraController { get; }
 
         public UiManager(CameraController cameraController) {
             this.ClockText = GameObject.Find(nameof(this.ClockText)).GetComponent<TMP_Text>();
             this.CameraSizeText = GameObject.Find(nameof(this.CameraSizeText)).GetComponent<TMP_Text>();
             this.DisplayModeText = GameObject.Find(nameof(this.DisplayModeText)).GetComponent<TMP_Text>();
+            this.FpsText = GameObject.Find(nameof(this.FpsText)).GetComponent<TMP_Text>();
             this.CameraController = cameraController;
         }
 
@@ -27,6 +29,7 @@ namespace ZoomTracks {
                 FullScreenMode.MaximizedWindow => "Display mode: Windowed max",
                 _ => throw new Exception($"Unrecognized FullScreenMode: {Screen.fullScreenMode}"),
             };
+            this.FpsText.text = $"FPS: {1.0f / Time.deltaTime:F2}";
         }
     }
 }
