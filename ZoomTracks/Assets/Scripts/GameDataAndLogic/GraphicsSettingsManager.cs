@@ -76,7 +76,7 @@ namespace ZoomTracks {
 
             this.MsaaMode = MsaaModeEnum.Off;
             this.TaaMode = TaaModeEnum.Off;
-            this.VsyncMode = VsyncModeEnum.Off;
+            this.VsyncMode = VsyncModeEnum.EveryVBlank;
             this.RenderScale = RenderScaleEnum.Scale1;
 
             this.ApplyGraphicsSettings();
