@@ -20,8 +20,8 @@ namespace ZoomTracks {
         public bool ToggleBetweenBorderlessAndExclusiveFullScreen { get; private set; }
         public bool NextMsaaMode { get; private set; }
         public bool NextTaaMode { get; private set; }
-        public bool NextRenderScale { get; private set; }
         public bool NextVsyncMode { get; private set; }
+        public bool NextRenderScale { get; private set; }
 
         public bool InsertStutterLogSpacer { get; private set; }
 

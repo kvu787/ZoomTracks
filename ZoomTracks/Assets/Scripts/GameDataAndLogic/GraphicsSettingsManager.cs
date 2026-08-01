@@ -24,6 +24,9 @@ namespace ZoomTracks {
         private enum VsyncModeEnum {
             Off,
             EveryVBlank,
+            EveryTwoVBlanks,
+            EveryThreeVBlanks,
+            EveryFourVBlanks,
         }
 
         private enum RenderScaleEnum {
@@ -40,7 +43,7 @@ namespace ZoomTracks {
 
         private MsaaModeEnum MsaaMode { get; set; }
         private TaaModeEnum TaaMode { get; set; }
-        //private VsyncModeEnum VsyncMode { get; set; }
+        private VsyncModeEnum VsyncMode { get; set; }
         private RenderScaleEnum RenderScale { get; set; }
 
         /// <summary>
@@ -71,7 +74,7 @@ namespace ZoomTracks {
 
             this.MsaaMode = MsaaModeEnum.Off;
             this.TaaMode = TaaModeEnum.Off;
-            //this.VsyncMode = VsyncModeEnum.EveryVBlank;
+            this.VsyncMode = VsyncModeEnum.EveryVBlank;
             this.RenderScale = RenderScaleEnum.Scale1;
 
             this.CameraData.taaSettings = TemporalAA.Settings.Create();
@@ -90,8 +93,8 @@ namespace ZoomTracks {
                 wasAnyGraphicsSettingChanged = true;
             }
             if (this.InputManager.NextVsyncMode) {
-                //this.VsyncMode = this.VsyncMode.Next();
-                //wasAnyGraphicsSettingChanged = true;
+                this.VsyncMode = this.VsyncMode.Next();
+                wasAnyGraphicsSettingChanged = true;
             }
             if (this.InputManager.NextRenderScale) {
                 this.RenderScale = this.RenderScale.Next();
@@ -130,11 +133,14 @@ namespace ZoomTracks {
                 };
             }
 
-            //QualitySettings.vSyncCount = this.VsyncMode switch {
-            //    VsyncModeEnum.Off => 0,
-            //    VsyncModeEnum.EveryVBlank => 1,
-            //    _ => throw new System.Exception(),
-            //};
+            QualitySettings.vSyncCount = this.VsyncMode switch {
+                VsyncModeEnum.Off => 0,
+                VsyncModeEnum.EveryVBlank => 1,
+                VsyncModeEnum.EveryTwoVBlanks => 2,
+                VsyncModeEnum.EveryThreeVBlanks => 3,
+                VsyncModeEnum.EveryFourVBlanks => 4,
+                _ => throw new System.Exception(),
+            };
 
             UniversalRenderPipeline.asset.renderScale = this.RenderScale switch {
                 RenderScaleEnum.Scale0_125 => 0.125f,
