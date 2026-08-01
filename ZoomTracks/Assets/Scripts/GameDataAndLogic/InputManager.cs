@@ -47,6 +47,9 @@ namespace ZoomTracks {
             this.NextVsyncMode = isLeftShoulderPressed && this.Gamepad.xButton.wasPressedThisFrame;
             this.NextRenderScale = isLeftShoulderPressed && this.Gamepad.yButton.wasPressedThisFrame;
 
+            this.NextTaaMode = false;
+            this.NextVsyncMode = false;
+
             this.InsertStutterLogSpacer = false;
         }
 
