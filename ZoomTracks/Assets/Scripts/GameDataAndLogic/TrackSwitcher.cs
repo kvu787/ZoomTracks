@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
@@ -24,26 +23,11 @@ namespace ZoomTracks {
         public TrackJson CurrentTrackJson { get; private set; }
 
         public async Awaitable<bool> ReadInputAndSwitchTracksAsync() {
-            bool isPrevTrack = false;
-            bool isNextTrack = false;
-
-            if (this.InputManager.Keyboard != null) {
-                Keyboard keyboard = this.InputManager.Keyboard;
-                isPrevTrack = isPrevTrack || keyboard.aKey.wasPressedThisFrame;
-                isNextTrack = isNextTrack || keyboard.gKey.wasPressedThisFrame;
-            }
-
-            if (this.InputManager.Gamepad != null) {
-                Gamepad gamepad = this.InputManager.Gamepad;
-                isPrevTrack = isPrevTrack || gamepad.dpad.down.wasPressedThisFrame;
-                isNextTrack = isNextTrack || gamepad.dpad.up.wasPressedThisFrame;
-            }
-
-            if (isPrevTrack == isNextTrack) {
+            if (this.InputManager.PreviousTrack == this.InputManager.NextTrack) {
                 return false;
             } else {
                 int newTrackIndex;
-                if (isPrevTrack) {
+                if (this.InputManager.PreviousTrack) {
                     newTrackIndex = this.CurrentTrackSceneIndex.CyclePrev(this.TrackSceneNames.Count);
                 } else /* if (isNextTrack) */ {
                     newTrackIndex = this.CurrentTrackSceneIndex.CycleNext(this.TrackSceneNames.Count);

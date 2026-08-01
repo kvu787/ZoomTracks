@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -80,22 +79,26 @@ namespace ZoomTracks {
         }
 
         public void ReadInputAndUpdate() {
-            if (this.InputManager.Gamepad != null) {
-                Gamepad gamepad = this.InputManager.Gamepad;
-                if (!gamepad.leftShoulder.IsPressed()) {
-                    return;
-                }
-                if (gamepad.aButton.wasPressedThisFrame) {
-                    this.MsaaMode = this.MsaaMode.Next();
-                } else if (gamepad.bButton.wasPressedThisFrame) {
-                    this.TaaMode = this.TaaMode.Next();
-                } else if (gamepad.xButton.wasPressedThisFrame) {
-                    //this.VsyncMode = this.VsyncMode.Next();
-                } else if (gamepad.yButton.wasPressedThisFrame) {
-                    this.RenderScale = this.RenderScale.Next();
-                } else {
-                    return;
-                }
+            bool wasAnyGraphicsSettingChanged = false;
+
+            if (this.InputManager.NextMsaaMode) {
+                this.MsaaMode = this.MsaaMode.Next();
+                wasAnyGraphicsSettingChanged = true;
+            }
+            if (this.InputManager.NextTaaMode) {
+                this.TaaMode = this.TaaMode.Next();
+                wasAnyGraphicsSettingChanged = true;
+            }
+            if (this.InputManager.NextVsyncMode) {
+                //this.VsyncMode = this.VsyncMode.Next();
+                //wasAnyGraphicsSettingChanged = true;
+            }
+            if (this.InputManager.NextRenderScale) {
+                this.RenderScale = this.RenderScale.Next();
+                wasAnyGraphicsSettingChanged = true;
+            }
+
+            if (wasAnyGraphicsSettingChanged) {
                 this.ApplyGraphicsSettings();
             }
         }

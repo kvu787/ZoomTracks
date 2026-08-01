@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
@@ -39,24 +38,11 @@ namespace ZoomTracks {
         public CarDynamic CurrentCarDynamic => this.CurrentCar.Dynamic;
 
         public bool ReadInputAndSwitchCar() {
-            bool isPrevCar = false;
-            bool isNextCar = false;
-            if (this.InputManager.Keyboard != null) {
-                Keyboard keyboard = this.InputManager.Keyboard;
-                isPrevCar = isPrevCar || keyboard.cKey.wasPressedThisFrame;
-                isNextCar = isNextCar || keyboard.vKey.wasPressedThisFrame;
-            }
-            if (this.InputManager.Gamepad != null) {
-                Gamepad gamepad = this.InputManager.Gamepad;
-                isPrevCar = isPrevCar || gamepad.dpad.left.wasPressedThisFrame;
-                isNextCar = isNextCar || gamepad.dpad.right.wasPressedThisFrame;
-            }
-
-            if (isPrevCar == isNextCar) {
+            if (this.InputManager.PreviousCar == this.InputManager.NextCar) {
                 return false;
             } else {
                 this.CurrentCarGameObject.SetActive(false);
-                if (isNextCar) {
+                if (this.InputManager.NextCar) {
                     this.CurrentCarIndex = this.CurrentCarIndex.CycleNext(this.Cars.Count);
                 } else /* if (isPrevCar) */ {
                     this.CurrentCarIndex = this.CurrentCarIndex.CyclePrev(this.Cars.Count);

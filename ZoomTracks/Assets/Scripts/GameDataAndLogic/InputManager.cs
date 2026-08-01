@@ -7,14 +7,30 @@ namespace ZoomTracks {
     public class InputManager {
         public Keyboard Keyboard { get; private set; }
         public Gamepad Gamepad { get; private set; }
+        public bool QuitGame { get; private set; }
         public bool InsertStutterLogSpacer { get; private set; }
         public bool ToggleBetweenBorderlessAndExclusiveFullScreen { get; private set; }
         public bool ToggleBetweenFixedAndFollowCamera { get; private set; }
+
+        public bool PreviousTrack { get; private set; }
+        public bool NextTrack { get; private set; }
+
+        public bool PreviousCar { get; private set; }
+        public bool NextCar { get; private set; }
+
+        public bool NextMsaaMode { get; private set; }
+        public bool NextTaaMode { get; private set; }
+        public bool NextRenderScale { get; private set; }
+        public bool NextVsyncMode { get; private set; }
 
         public void UpdateInputs() {
             this.Keyboard = Keyboard.current;
             this.Gamepad = Gamepad.current;
             //this.LogGamepadRightStick();
+
+            this.QuitGame = false;
+            this.QuitGame |= this.Keyboard?.escapeKey.wasPressedThisFrame ?? false;
+            this.QuitGame |= this.Gamepad?.startButton.wasPressedThisFrame ?? false;
 
             this.InsertStutterLogSpacer = false;
             //this.InsertHitchLogSpacer |= this.Keyboard?.enterKey.wasPressedThisFrame ?? false;
@@ -27,6 +43,35 @@ namespace ZoomTracks {
             this.ToggleBetweenFixedAndFollowCamera = false;
             this.ToggleBetweenFixedAndFollowCamera |= this.Keyboard?.enterKey.wasPressedThisFrame ?? false;
             this.ToggleBetweenFixedAndFollowCamera |= this.Gamepad?.selectButton.wasPressedThisFrame ?? false;
+
+            this.PreviousTrack = false;
+            this.PreviousTrack |= this.Gamepad?.dpad.down.wasPressedThisFrame ?? false;
+            this.NextTrack = false;
+            this.NextTrack |= this.Gamepad?.dpad.up.wasPressedThisFrame ?? false;
+
+            this.PreviousCar = false;
+            this.PreviousCar |= this.Gamepad?.dpad.left.wasPressedThisFrame ?? false;
+            this.NextCar = false;
+            this.NextCar |= this.Gamepad?.dpad.right.wasPressedThisFrame ?? false;
+
+            this.NextMsaaMode = false;
+            this.NextTaaMode = false;
+            this.NextVsyncMode = false;
+            this.NextRenderScale = false;
+            if (this.Gamepad != null && this.Gamepad.leftShoulder.isPressed) {
+                if (this.Gamepad.aButton.wasPressedThisFrame) {
+                    this.NextMsaaMode = true;
+                }
+                if (this.Gamepad.bButton.wasPressedThisFrame) {
+                    this.NextTaaMode = true;
+                }
+                if (this.Gamepad.xButton.wasPressedThisFrame) {
+                    this.NextVsyncMode = true;
+                }
+                if (this.Gamepad.yButton.wasPressedThisFrame) {
+                    this.NextRenderScale = true;
+                }
+            }
         }
 
         private DateTime LastLogTime = DateTime.MinValue;
