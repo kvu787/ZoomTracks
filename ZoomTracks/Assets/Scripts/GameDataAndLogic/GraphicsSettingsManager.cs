@@ -72,12 +72,13 @@ namespace ZoomTracks {
             this.CameraData = cameraController.CameraData;
             this.InputManager = inputManager;
 
+            this.CameraData.taaSettings = TemporalAA.Settings.Create();
+
             this.MsaaMode = MsaaModeEnum.Off;
             this.TaaMode = TaaModeEnum.Off;
-            this.VsyncMode = VsyncModeEnum.EveryVBlank;
+            this.VsyncMode = VsyncModeEnum.Off;
             this.RenderScale = RenderScaleEnum.Scale1;
 
-            this.CameraData.taaSettings = TemporalAA.Settings.Create();
             this.ApplyGraphicsSettings();
         }
 
