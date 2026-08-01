@@ -64,7 +64,7 @@ namespace ZoomTracks {
         public static void ConfigureSessionGraphicsSettings() {
             UseRuntimeOnlyCopyOfUrpAsset();
             UniversalRenderPipeline.asset.supportsHDR = false;
-            QualitySettings.maxQueuedFrames = 0;
+            QualitySettings.maxQueuedFrames = 1;
             Application.targetFrameRate = -1;
         }
 
