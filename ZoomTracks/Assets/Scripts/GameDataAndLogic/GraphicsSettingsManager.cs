@@ -144,6 +144,13 @@ namespace ZoomTracks {
                 RenderScaleEnum.Scale2 => 2f,
                 _ => throw new System.Exception()
             };
+
+            Debug.Log($"MSAA = {this.MsaaMode}");
+            Debug.Log($"TAA = {this.TaaMode}");
+            Debug.Log($"VSync = {this.VsyncMode}");
+            Debug.Log($"RenderScale = {this.RenderScale}");
+
+            Debug.Log("...finished executing ApplyGraphicsSettings");
         }
 
         private void ApplyMsaaMode() {
