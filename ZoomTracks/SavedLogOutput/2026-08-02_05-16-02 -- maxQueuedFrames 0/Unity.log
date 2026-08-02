@@ -1,0 +1,74 @@
+2026-08-02T12:16:04.240Z|0x8830|Mono path[0] = 'C:/Users/k/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/ZoomTracks_Data/Managed'
+2026-08-02T12:16:04.240Z|0x8830|Mono config path = 'C:/Users/k/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/MonoBleedingEdge/etc'
+2026-08-02T12:16:04.373Z|0x8830|Input System module state changed to: Initialized.
+2026-08-02T12:16:04.374Z|0x8830|[Physics::Module] Initialized fallback backend.
+2026-08-02T12:16:04.374Z|0x8830|[Physics::Module] Id: 0xdecafbad
+2026-08-02T12:16:04.382Z|0x8830|Initialize engine version: 6000.3.21f1 (c02631ffc030)
+2026-08-02T12:16:04.383Z|0x8830|[Subsystems] Discovering subsystems at path C:/Users/k/Repository/Unity/ZoomTracks/ZoomTracks/MyBuildOutput/ZoomTracks_Data/UnitySubsystems
+2026-08-02T12:16:04.383Z|0x8830|Forcing GfxDevice: Direct3D 12
+2026-08-02T12:16:04.383Z|0x8830|GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+2026-08-02T12:16:04.594Z|0x8830|d3d12: failed to query info queue interface (0x80004002).
+2026-08-02T12:16:04.594Z|0x8830|Direct3D:
+2026-08-02T12:16:04.594Z|0x8830|    Version:         Direct3D 12 [level 12.2]
+2026-08-02T12:16:04.594Z|0x8830|    Renderer:        NVIDIA GeForce RTX 5090 Laptop GPU (ID=0x2c58)
+2026-08-02T12:16:04.594Z|0x8830|    Vendor:          NVIDIA
+2026-08-02T12:16:04.594Z|0x8830|    VRAM:            24137 MB
+2026-08-02T12:16:04.594Z|0x8830|    App VRAM Budget: 23369 MB
+2026-08-02T12:16:04.594Z|0x8830|    Driver:          32.0.15.9649
+2026-08-02T12:16:04.637Z|0x8830|Begin MonoManager ReloadAssembly
+2026-08-02T12:16:07.406Z|0x8830|- Loaded All Assemblies, in  2.769 seconds
+2026-08-02T12:16:07.407Z|0x8830|- Finished resetting the current domain, in  0.001 seconds
+2026-08-02T12:16:07.407Z|0x8830|[Physics::Module] Selected backend.
+2026-08-02T12:16:07.407Z|0x8830|[Physics::Module] Name: PhysX
+2026-08-02T12:16:07.407Z|0x8830|[Physics::Module] Id: 0xf2b8ea05
+2026-08-02T12:16:07.407Z|0x8830|[Physics::Module] SDK Version: 4.1.2
+2026-08-02T12:16:07.407Z|0x8830|[Physics::Module] Integration Version: 1.0.0
+2026-08-02T12:16:07.407Z|0x8830|[Physics::Module] Threading Mode: Multi-Threaded
+2026-08-02T12:16:07.476Z|0x8830|ERROR: Shader Hidden/Universal Render Pipeline/DBufferClear shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+<RI> Initializing input.
+2026-08-02T12:16:07.527Z|0x8830|Using Windows.Gaming.Input
+2026-08-02T12:16:07.553Z|0x2b00|Input System polling thread started.
+2026-08-02T12:16:07.612Z|0x8830|UnloadTime: 0.741700 ms
+2026-08-02T12:16:07.710Z|0x8830|BEGIN: Main.Awake on object='GameLoop' in scene='Main'
+2026-08-02T12:16:07.710Z|0x8830|Log path for standalone exe: C:\Users\k\AppData\LocalLow\K\ZoomTracks\Player.log
+2026-08-02T12:16:07.713Z|0x8830|END: Main.Awake on object='GameLoop' in scene='Main'
+2026-08-02T12:16:07.717Z|0x8830|BEGIN: Main.Start on object='GameLoop' in scene='Main'
+2026-08-02T12:16:07.718Z|0x8830|display.rendering resolution = 2560*1440
+2026-08-02T12:16:07.718Z|0x8830|display.system resolution    = 2560*1440
+2026-08-02T12:16:07.718Z|0x8830|Screen resolution            = 2560*1440
+2026-08-02T12:16:07.719Z|0x8830|renderScale                  = 1
+2026-08-02T12:16:07.720Z|0x8830|Screen.fullScreenMode        = FullScreenWindow
+2026-08-02T12:16:07.720Z|0x8830|Screen.fullScreen            = True
+2026-08-02T12:16:07.720Z|0x8830|Running in borderless fullscreen window mode
+2026-08-02T12:16:07.720Z|0x8830|SystemInfo.renderingThreadingMode = NativeGraphicsJobsSplitThreading
+2026-08-02T12:16:07.721Z|0x8830|Graphics API in use     = Direct3D12
+2026-08-02T12:16:07.721Z|0x8830|Graphics device         = NVIDIA GeForce RTX 5090 Laptop GPU
+2026-08-02T12:16:07.721Z|0x8830|Graphics device vendor  = NVIDIA
+2026-08-02T12:16:07.721Z|0x8830|Graphics device version = Direct3D 12 [level 12.2]
+2026-08-02T12:16:07.721Z|0x8830|Running on Direct3D 12 / DX12
+2026-08-02T12:16:07.721Z|0x8830|UniversalRenderPipeline.asset.supportsHDR = False
+2026-08-02T12:16:07.721Z|0x8830|QualitySettings.maxQueuedFrames           = 0
+2026-08-02T12:16:07.721Z|0x8830|Application.targetFrameRate               = -1
+2026-08-02T12:16:07.721Z|0x8830|QualitySettings.vSyncCount                = 0
+2026-08-02T12:16:07.723Z|0x8830|Received zero or negative refresh rate, so using Time.deltaTime for the timestep, which means a variable timestep
+2026-08-02T12:16:07.723Z|0x8830|Using a file path specified from the command line for stutter log: $C:\Users\k\Repository\Unity\ZoomTracks\ZoomTracks\MyLogOutput\2026-08-02_05-16-02\Stutter.log
+2026-08-02T12:16:07.723Z|0x8830|Using variable delta, so StutterLogger won't report stutters
+2026-08-02T12:16:07.723Z|0x8830|Load UI scene...
+2026-08-02T12:16:07.812Z|0x8830|Busy 0.246
+2026-08-02T12:16:07.854Z|0x8830|Busy 0.289
+2026-08-02T12:16:07.854Z|0x8830|...done
+2026-08-02T12:16:07.854Z|0x8830|Load initial track scene...
+2026-08-02T12:16:07.911Z|0x8830|Busy 0.346
+2026-08-02T12:16:07.911Z|0x8830|Busy 0.346
+2026-08-02T12:16:07.911Z|0x8830|...done
+2026-08-02T12:16:07.914Z|0x8830|Initialize track...
+2026-08-02T12:16:07.917Z|0x8830|Executing ApplyGraphicsSettings...
+2026-08-02T12:16:07.918Z|0x8830|...done
+2026-08-02T12:16:07.918Z|0x8830|END: Main.Start on object='GameLoop' in scene='Main'
+2026-08-02T12:16:07.919Z|0x8830|BEGIN: Main.UpdateLoopAsync
+2026-08-02T12:16:38.612Z|0x8830|[Physics::Module] Cleanup current backend.
+2026-08-02T12:16:38.612Z|0x8830|[Physics::Module] Id: 0xf2b8ea05
+2026-08-02T12:16:38.612Z|0x8830|Input System module state changed to: ShutdownInProgress.
+2026-08-02T12:16:38.613Z|0x2b00|Input System polling thread stopped.
+2026-08-02T12:16:38.613Z|0x8830|Input System polling thread exited.
+2026-08-02T12:16:38.613Z|0x8830|Input System module state changed to: Shutdown.
