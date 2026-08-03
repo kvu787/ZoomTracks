@@ -1,3 +1,7 @@
+# How to run smoothly
+
+Refer to "Recommended setup for Unity and Godot games" in https://github.com/kvu787/SharedTools/blob/main/README.md.
+
 # temp run config
 
 Change a variety of things to achieve min input latency, max locked fps conformance, and max motion clarity
