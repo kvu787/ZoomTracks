@@ -1,3 +1,19 @@
+# NOTE
+
+Anyone can play this game, but it is configured specifically for my setup and preferences.
+
+So, to play this, you'll probably need to adjust several things.
+
+# Screenshot
+
+![<Images/README pic.png>](<Images/README pic.png>)
+
+# Description
+
+The following is a succinct and accurate description of the game. This is especially helpful to provide to AI tools, because they often assume additional features and complexity that are inaccurate.
+
+Zoom Tracks is a purely 2D racing game with a 3/4 overhead visual presentation. All physics, collision, movement, steering, and gameplay calculations occur on a flat 2D plane. The environment is completely static and can be represented by a flattened 2D image. The vehicle is the only moving and rotating visual element and may be rendered as a 3D mesh purely for appearance. When the vehicle is rendered in 3D, it uses a stylized unlit shader. Alternatively, the game can be fully visually represented with 2D shapes on a 2D plane. There is no elevation, 3D physics, dynamic lighting, shadows, foreground occlusion, or other moving world elements.
+
 # How to run smoothly
 
 Refer to "Recommended setup for Unity and Godot games" in https://github.com/kvu787/SharedTools/blob/main/README.md.
@@ -39,16 +55,6 @@ Note that the NVCP config is ***not*** automatically set or verified by the game
     * Monitor Technology = G-SYNC
     * Power Management Mode = Prefer Maximum Performance
     * Vertical sync = On
-
-# NOTE
-
-Anyone can play this game, but it is configured specifically for my setup and preferences.
-
-So, to play this, you'll probably need to adjust several things.
-
-# Screenshot
-
-![<Images/README pic.png>](<Images/README pic.png>)
 
 # Known good run config (July 21 2026)
 
