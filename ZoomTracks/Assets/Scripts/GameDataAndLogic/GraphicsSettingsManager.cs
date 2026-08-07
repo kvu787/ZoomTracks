@@ -80,7 +80,9 @@ namespace ZoomTracks {
 
             this.CameraData.taaSettings = TemporalAA.Settings.Create();
 
-            this.MsaaMode = MsaaModeEnum.Off;
+            // Combine this with MFAA=On in Nvidia Control Panel
+            this.MsaaMode = MsaaModeEnum.Msaa8x;
+
             this.TaaMode = TaaModeEnum.Off;
             this.VsyncMode = VsyncModeEnum.Off;
             this.RenderScale = RenderScaleEnum.Scale1;
