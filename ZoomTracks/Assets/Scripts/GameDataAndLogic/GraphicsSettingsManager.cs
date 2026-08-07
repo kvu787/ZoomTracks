@@ -65,8 +65,10 @@ namespace ZoomTracks {
             UseRuntimeOnlyCopyOfUrpAsset();
             UniversalRenderPipeline.asset.supportsHDR = false;
 
-            // NOTE: When running with an empty main loop, maxQueuedFrames = 1 runs at ~1200 fps
-            // while maxQueuedFrames = 2 runs at ~2400 fps.
+            // When running with an empty main loop:
+            // maxQueuedFrames = 1 runs at ~1200 fps
+            // maxQueuedFrames = 2 runs at ~2400 fps
+            // maxQueuedFrames = 3+ runs at ~2900 fps
             QualitySettings.maxQueuedFrames = 1;
 
             Application.targetFrameRate = -1;
