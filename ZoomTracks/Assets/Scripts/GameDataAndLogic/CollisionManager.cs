@@ -2,20 +2,17 @@ using UnityEngine;
 
 namespace ZoomTracks {
     public class CollisionManager {
-        private CarState CarState { get; }
         private CarSwitcher CarSwitcher { get; }
         private TrackObjects TrackObjects { get; }
 
-        public CollisionManager(TrackObjects trackObjects, CarSwitcher carSwitcher, CarState carState) {
+        public CollisionManager(TrackObjects trackObjects, CarSwitcher carSwitcher) {
             this.TrackObjects = trackObjects;
             this.CarSwitcher = carSwitcher;
-            this.CarState = carState;
         }
 
-        public bool ResetCarIfColliding() {
+        public bool IsCarColliding() {
             foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
                 if (IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
-                    this.CarState.Reset_PositionRotationVelocity();
                     return true;
                 }
             }

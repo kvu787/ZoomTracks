@@ -105,7 +105,7 @@ namespace ZoomTracks {
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager, this.TimeManager);
             this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.CameraController, this.CarState, this.InputManager);
-            this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher, this.CarState);
+            this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController);
             Debug.Log("...done");
         }
@@ -140,7 +140,7 @@ namespace ZoomTracks {
                 if (wasTrackSwitched) {
                     this.InitializeTrack();
                 } else {
-                    if (this.CollisionManager.ResetCarIfColliding()) {
+                    if (this.InputManager.ResetCar || this.CollisionManager.IsCarColliding()) {
                         /*
                         Explanation for collision behavior:
                         Let frame N be the update iteration that results in the car colliding an obstacle.
@@ -148,6 +148,7 @@ namespace ZoomTracks {
                         We want frame N to show that car overlapping the obstacle.
                         We want frame N+1 to reset the car position and skip execution of `this.CarState.ReadInputAndUpdateState()` for at least one frame.
                         */
+                        this.CarState.Reset_PositionRotationVelocity();
                         this.CarControlTimeoutStart = DateTime.Now;
                         this.SkipOneIterationOfCarControlInput = true;
                     }

@@ -23,6 +23,8 @@ namespace ZoomTracks {
         public bool NextVsyncMode { get; private set; }
         public bool NextRenderScale { get; private set; }
 
+        public bool ResetCar { get; private set; }
+
         public bool InsertStutterLogSpacer { get; private set; }
 
         public void UpdateInputs() {
@@ -46,6 +48,8 @@ namespace ZoomTracks {
             this.NextTaaMode = isLeftShoulderPressed && this.Gamepad.bButton.wasPressedThisFrame;
             this.NextVsyncMode = isLeftShoulderPressed && this.Gamepad.xButton.wasPressedThisFrame;
             this.NextRenderScale = isLeftShoulderPressed && this.Gamepad.yButton.wasPressedThisFrame;
+
+            this.ResetCar = this.Gamepad != null && !this.Gamepad.leftShoulder.isPressed && this.Gamepad.xButton.wasPressedThisFrame;
 
             this.InsertStutterLogSpacer = false;
         }
