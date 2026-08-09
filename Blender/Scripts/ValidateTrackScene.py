@@ -145,6 +145,12 @@ def Main():
         for vertex in obj.data.vertices:
             assert vertex.co.z == 0, f"{obj.name}: Has vertex with non-zero Z-coordinate: Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}"
 
+    # Check material backface culling
+    for material in bpy.data.materials:
+        assert not material.use_backface_culling
+        assert not material.use_backface_culling_shadow
+        assert material.use_backface_culling_lightprobe_volume
+
     # Print out subd levels
     for obj in bpy.data.objects:
         for modifier in obj.modifiers:
