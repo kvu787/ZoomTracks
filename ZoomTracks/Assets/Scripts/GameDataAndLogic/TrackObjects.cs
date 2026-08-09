@@ -8,7 +8,7 @@ namespace ZoomTracks {
     public class TrackObjects {
         private static IReadOnlyList<string> ObstaclePrefixes { get; } = Array.AsReadOnly(new[] {
             "Barrier",
-            "BigCone",
+            "BigConeBase",
             "Cone",
             "VehicleRoad",
         });

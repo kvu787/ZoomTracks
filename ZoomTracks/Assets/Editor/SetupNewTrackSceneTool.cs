@@ -8,15 +8,9 @@ using UnityEngine.SceneManagement;
 
 namespace ZoomTracks {
     public static class SetupNewTrackSceneTool {
-        private static IReadOnlyList<string> MeshColliderPrefixes { get; } = Array.AsReadOnly(new[] {
-            "Road",
-            "Grass",
-            "Gravel",
-        });
-
         private static IReadOnlyList<string> BoxColliderPrefixes { get; } = Array.AsReadOnly(new[] {
             "Barrier",
-            "BigCone",
+            "BigConeBase",
             "CheckeredLine",
             "Checkpoint",
             "Cone",
@@ -30,13 +24,10 @@ namespace ZoomTracks {
             if (allObjects.Length == 0) {
                 throw new Exception("No objects found in scene");
             }
-            Scene scene = allObjects[0].scene;
-            foreach (GameObject gameObject in allObjects.Where(obj => MeshColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
-                _ = gameObject.AddComponent<MeshCollider>();
-            }
             foreach (GameObject gameObject in allObjects.Where(obj => BoxColliderPrefixes.Any(prefix => obj.name.StartsWith(prefix)))) {
                 _ = gameObject.AddComponent<BoxCollider>();
             }
+            Scene scene = allObjects[0].scene;
             _ = EditorSceneManager.MarkSceneDirty(scene);
             _ = EditorSceneManager.SaveScene(scene);
         }
