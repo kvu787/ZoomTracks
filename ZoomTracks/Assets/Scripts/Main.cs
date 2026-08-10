@@ -29,6 +29,7 @@ namespace ZoomTracks {
             "Track021",
             "Track022",
             "Track023",
+            "Track030",
         });
 
         private TimeSpan TimeoutDurationSeconds { get; } = TimeSpan.FromSeconds(0.35);
