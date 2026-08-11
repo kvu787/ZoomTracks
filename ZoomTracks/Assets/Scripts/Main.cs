@@ -137,6 +137,31 @@ namespace ZoomTracks {
                     Debug.Log($"Fullscreen mode changed to {Screen.fullScreenMode}");
                 }
 
+                //
+                // Update lap time
+                //
+                // If car intersects with next checkpoint:
+                //   If next checkpoint is checkered line:
+                //     Set previous lap time to current lap time
+                //     Check if lap time beats best lap time
+                //     Reset current lap time
+                //     Update next checkpoint
+                //   Else:
+                //     Update next checkpoint
+                //
+                // Keep the current track's lap times in memory
+                // Non-current track's lap times are guaranteed to be on disk
+                //
+                // One JSON file for each track
+                //
+                // Save to file for these events:
+                // - Switch track
+                // - Switch car
+                // - Reset car
+                // - OnApplicationQuit
+                // - OnApplicationPause
+                //
+
                 bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
                 if (wasTrackSwitched) {
                     this.InitializeTrack();
