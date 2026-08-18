@@ -16,7 +16,7 @@ If you are recommending any edits, put them in the reply to the prompt.
   * Modern PowerShell
   * Python
   * Git
-* A portable installation of Blender should be in `$env:USERPROFILE\Program\blender-4.5.11-windows-x64`
+* A portable installation of Blender should be in `%UserProfile%\Program\blender*`
 
 # Info
 
