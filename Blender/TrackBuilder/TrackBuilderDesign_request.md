@@ -106,8 +106,11 @@ The island meshes are flat meshes that fill the inner track outlines.
 - The buffer is one-sided:
   - The outer barrier extends outward from the outer track outline, into the ground and away from the track mesh
   - Each inner barrier extends inward from its inner track outline, into its island and away from the track mesh
-- A barrier footprint must have no positive-area overlap with the track mesh footprint
-- A barrier may share its original outline boundary with the track mesh
+- The interior of a barrier footprint must not overlap the interior of the track mesh footprint
+  - Their intersection must be limited to their shared outline boundary and must not contain any two-dimensional region
+- The complete track-facing boundary of each barrier must coincide exactly with its corresponding evaluated outer or inner track outline
+  - The track-facing boundary must not deviate from, approximate, or be offset from the evaluated outline
+  - This exact shared boundary must also be the corresponding boundary of the track mesh
 - Use round joins at outline vertices
   - Circular arcs may be approximated by straight segments
   - The approximation must use at least eight straight segments per 90 degrees of arc
