@@ -10,8 +10,17 @@ Clockwise (CW) and counterclockwise (CCW) are defined as viewed from global +Z l
 
 ## Script inputs
 
-`W` and `H` are script parameters and must be finite values greater than zero.
-`W` may be oversized; this is allowed and must not be rejected during validation.
+The script has the following parameters:
+
+- `W`: Barrier thickness; must be a finite value greater than zero
+- `H`: Barrier height; must be a finite value greater than zero
+- `segment_length`: Maximum target length of a colored barrier segment, measured along an input outline; must be a finite value greater than zero
+- `material_names`: Ordered list of Blender material names used for the repeating barrier-color sequence
+  - The list must contain at least one item
+  - Every item must be a non-empty string naming an existing material in `bpy.data.materials`
+  - Repeated material names are allowed
+
+`W` may be oversized; this is allowed and must not be rejected during validation. Oversized values are handled by unioning self-overlapping buffered regions, clipping the outer barrier to the available ground, and allowing an inner barrier to consume its entire island.
 
 ## Inputs
 
@@ -55,10 +64,12 @@ All inputs and parameters must be validated before an existing `Output` collecti
 - Boundaries must not touch
 - An inner outline must not be nested inside another inner outline
 - A small floating-point tolerance must be used when validating Z-coordinates, intersections, and containment
+- `W`, `H`, `segment_length`, and `material_names` must satisfy all requirements in the Script inputs section
+- Every name in `material_names` must resolve to an existing Blender material
 
 ## What the script does
 
-Given this input, the script must generate flat meshes (called fill meshes) that represent the ground, track, and enclosed islands. It must also generate rectangular prism meshes that form the inner and outer track barriers.
+Given this input, the script must generate flat meshes (called fill meshes) that represent the ground, track, and enclosed islands. It must also generate continuous, one-sided, thickened barrier meshes from the outer and inner track outlines.
 
 The fill meshes must be properly triangulated. Each fill mesh must fill its intended region without overlapping faces or faces that cross an outline boundary. Each fill mesh must be assigned the material from its corresponding input outline object.
 
@@ -88,29 +99,59 @@ The island meshes are flat meshes that fill the inner track outlines.
 
 ### Barrier meshes
 
-- Do not explicitly assign a material to the barrier meshes. A default material assigned automatically by Blender is acceptable.
-- Unlike the fill meshes, the barrier meshes are not purely two-dimensional.
-- Each barrier mesh must be a perfect rectangular prism with a Z-height of exactly `H`.
-- For each outer track edge, create a rectangular prism that follows the edge exactly, extends `W` meters into the ground away from the track, and extends `H` meters along the positive Z-axis.
-- For each inner track edge, create a rectangular prism that follows the edge exactly, extends `W` meters into the island away from the track, and extends `H` meters along the positive Z-axis.
-- Each barrier mesh must meet the following requirements:
-  - Its origin is at the center of its geometry in XY and at global Z = 0
-  - All face normals point outward
-  - Its local Z-axis matches the global Z-axis
-  - Its local Y-axis is aligned with its faces, points away from the track mesh, and is perpendicular to the track edge
-  - Its local X-axis is aligned with its faces and points parallel to the track edge
-    - This should result in the local X-axes pointing clockwise around the outer track outline and counterclockwise around the inner track outlines
-- Barrier meshes may overlap one another.
-- The base of each barrier mesh lies on global Z = 0, and the mesh extends to global Z = `H`.
+#### Barrier footprint
 
-### Barrier corner filler meshes
+- Use a standard polygon buffer/offset operation to thicken each outer and inner track outline by `W`
+- The original outline is the track-facing boundary of its barrier, not the centerline of the barrier
+- The buffer is one-sided:
+  - The outer barrier extends outward from the outer track outline, into the ground and away from the track mesh
+  - Each inner barrier extends inward from its inner track outline, into its island and away from the track mesh
+- A barrier footprint must have no positive-area overlap with the track mesh footprint
+- A barrier may share its original outline boundary with the track mesh
+- Use round joins at outline vertices
+  - Circular arcs may be approximated by straight segments
+  - The approximation must use at least eight straight segments per 90 degrees of arc
+- Self-overlapping portions of a buffered footprint must be unioned into valid polygonal geometry
+- The outer barrier footprint must be clipped to the region inside the ground outline
+- If `W` is large enough to consume an entire island, that inner barrier footprint is the entire island
+- `W` must not be rejected merely because buffering, unioning, or clipping changes the topology of a barrier footprint
 
-- Do not explicitly assign a material to corner filler meshes. A default material assigned automatically by Blender is acceptable.
-- Triangular gaps may exist between adjacent barrier meshes. The script must create separate mesh objects that fill these gaps exactly.
-- Each corner filler mesh must be a triangular prism spanning global Z = 0 through global Z = `H`.
-- All face normals must point outward.
-- A corner filler mesh must be created only where adjacent barrier prisms leave an uncovered region.
-- Its origin must be at the center of its geometry in XY and at global Z = 0.
-- Its local axes must meet the following requirements:
-  - Its local Z-axis matches the global Z-axis
-  - Its local Y-axis points from the filler's XY centroid toward the shared original outline vertex that produced the corner
+#### Barrier objects and geometry
+
+- Create exactly one outer barrier mesh object
+- Create exactly one inner barrier mesh object for each inner track outline
+- A single barrier object may contain multiple disconnected mesh components if buffering and clipping require them
+- Do not create separate per-edge barrier objects
+- Do not create separate barrier corner filler objects; all corner geometry is part of its corresponding barrier mesh
+- Each barrier footprint must be extruded from global Z = 0 through global Z = `H`
+- Each barrier mesh must be watertight and manifold
+- A barrier mesh must not contain overlapping faces or internal faces left by unioned regions
+- All barrier face normals must point outward
+- Do not explicitly assign an input-outline material to a barrier mesh; barrier materials come exclusively from `material_names`
+- The object's local axes must match the global axes
+- The object's origin must be at the area-weighted XY centroid of its complete footprint and at global Z = 0
+
+#### Colored barrier segmentation
+
+The colored segmentation represents distance traveled along an outline. It must be based on outline arc length, not on the number or resolution of evaluated input edges.
+
+- Traverse the outer track outline clockwise
+- Traverse every inner track outline counterclockwise
+- Retain the evaluated loop's first vertex as the starting point when normalizing its traversal direction
+- Restart the material sequence at `material_names[0]` for each outline
+- For an outline with perimeter `P` and `M = len(material_names)`:
+  1. Compute `minimum_segment_count = ceil(P / segment_length)`
+  2. Use the smallest positive segment count greater than or equal to `minimum_segment_count` that is also a multiple of `M`
+  3. Divide the complete closed outline into that many equal-length segments
+- The resulting actual segment length is therefore less than or equal to `segment_length`
+- Long evaluated edges must be split wherever an equal-length segment boundary crosses them
+- Consecutive short evaluated edges may belong to the same colored segment
+- A colored segment may cross an original evaluated outline vertex
+- Assign materials in repeating list order: segment `i` uses `material_names[i % M]`
+- Rounding the segment count to a multiple of `M` must make the material sequence wrap cleanly at the closed-loop seam
+- Treat each colored segment as a logical region of its barrier mesh, not as a separate Blender object
+- Faces crossing a colored-segment boundary must be subdivided so that every face has exactly one barrier material
+- Determine the segment for buffered footprint geometry from the closest point on the original outline and that point's arc-length segment
+- If a point is equally close to more than one outline segment, assign it to the segment with the lowest segment index
+- The top, bottom, track-facing side, and away-facing side of a logical barrier segment must all use that segment's material
+- Add the referenced materials to each barrier object's material slots and set face material indices accordingly
