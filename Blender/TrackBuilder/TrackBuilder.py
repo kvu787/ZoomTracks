@@ -135,8 +135,10 @@ def _positive_finite_number(name: str, value: object) -> float:
 
 
 def _validated_materials(material_names: object) -> list[bpy.types.Material]:
-    if not isinstance(material_names, list) or not material_names:
-        raise TrackBuilderValidationError("material_names must be a non-empty list")
+    if not isinstance(material_names, list) or len(material_names) < 2:
+        raise TrackBuilderValidationError(
+            "material_names must be a list containing at least two entries"
+        )
     materials: list[bpy.types.Material] = []
     for index, name in enumerate(material_names):
         if not isinstance(name, str) or not name:
@@ -551,7 +553,12 @@ def _offset_miter_points(
     return miters
 
 
-def _segment_count(perimeter: float, target: float, object_name: str) -> int:
+def _segment_count(
+    perimeter: float,
+    target: float,
+    material_count: int,
+    object_name: str,
+) -> int:
     """Choose an adjusted segment count, rejecting unusable extremes."""
 
     ratio = perimeter / target
@@ -564,6 +571,15 @@ def _segment_count(perimeter: float, target: float, object_name: str) -> int:
         raise TrackBuilderGeometryError(
             f"Outline {object_name!r} would produce only one barrier segment; "
             "decrease segment_length"
+        )
+    count -= count % material_count
+    if count > 0 and perimeter / count < target:
+        count -= material_count
+    if count == 0:
+        raise TrackBuilderGeometryError(
+            f"Outline {object_name!r} cannot produce a complete sequence of "
+            f"{material_count} barrier materials without making segments shorter than "
+            "segment_length; decrease segment_length"
         )
     if count > MAX_SEGMENTS_PER_OUTLINE:
         raise TrackBuilderGeometryError(
@@ -641,7 +657,7 @@ def _barrier_plans(
     for length in edge_lengths:
         cumulative.append(cumulative[-1] + length)
     perimeter = cumulative[-1]
-    count = _segment_count(perimeter, target_length, outline.object_name)
+    count = _segment_count(perimeter, target_length, len(materials), outline.object_name)
     adjusted_length = perimeter / count
 
     def points_at(distance: float) -> tuple[Vector, Vector]:
@@ -844,7 +860,7 @@ def build_track(
     """Validate the current file and transactionally rebuild its Output collection.
 
     ``W``, ``H``, and ``segment_length`` must be finite and positive.
-    ``material_names`` must be a non-empty list of existing Blender materials.
+    ``material_names`` must be a list of at least two existing Blender materials.
     The current file must satisfy the input contract documented in ``README.md``.
 
     Returns the newly committed ``Output`` collection. Validation or geometry

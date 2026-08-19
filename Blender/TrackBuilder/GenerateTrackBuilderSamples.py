@@ -32,6 +32,11 @@ SAMPLE_FILENAMES = {
     10: "TrackBuilderSampleInput10_SingleSegment.blend",
 }
 
+EXPECTED_RESULTS = {
+    9: "minimum_turn_angle_error",
+    10: "single_segment_error",
+}
+
 ORIGINAL_SAMPLE_PARAMETERS: BuildParameters = (0.3, 0.8, 2.5, ["red", "blue"])
 
 
@@ -237,14 +242,22 @@ def load_sample_input(number: int, original_sample_path: str) -> BuildParameters
     return parameters
 
 
-def _record_parameters(parameters: BuildParameters, expected_result: str) -> None:
+def expected_result(number: int) -> str:
+    """Return the recorded result expected from sample ``number``."""
+
+    return EXPECTED_RESULTS.get(number, "success")
+
+
+def record_parameters(parameters: BuildParameters, result: str) -> None:
+    """Record reproducible build parameters and the expected result in the scene."""
+
     width, height, target, material_names = parameters
     scene = bpy.context.scene
     scene["track_builder_W"] = width
     scene["track_builder_H"] = height
     scene["track_builder_segment_length"] = target
     scene["track_builder_material_names"] = json.dumps(material_names)
-    scene["track_builder_expected_result"] = expected_result
+    scene["track_builder_expected_result"] = result
 
 
 def generate_sample_inputs(output_directory: str, original_sample_path: str) -> list[str]:
@@ -256,11 +269,7 @@ def generate_sample_inputs(output_directory: str, original_sample_path: str) -> 
 
     for number, filename in SAMPLE_FILENAMES.items():
         parameters = load_sample_input(number, original_sample_path)
-        expected_result = {
-            9: "minimum_turn_angle_error",
-            10: "single_segment_error",
-        }.get(number, "success")
-        _record_parameters(parameters, expected_result)
+        record_parameters(parameters, expected_result(number))
         path = os.path.join(output_directory, filename)
         bpy.ops.wm.save_as_mainfile(filepath=path, check_existing=False)
         written.append(path)

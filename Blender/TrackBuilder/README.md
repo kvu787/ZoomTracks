@@ -77,8 +77,8 @@ Parameters:
 - `material_names`: Ordered Blender material names used repeatedly on barrier
   segments.
 
-All numeric parameters must be finite and greater than zero. At least one
-non-empty barrier-material name is required, every name must resolve to an
+All numeric parameters must be finite and greater than zero. At least two
+non-empty barrier-material names are required, every name must resolve to an
 existing Blender material, and repeated names are allowed.
 
 Example from Blender's Python console:
@@ -137,13 +137,16 @@ does not perform boolean cleanup.
 
 For each outline, TrackBuilder divides its perimeter by `segment_length`, snaps
 ratios within a relative tolerance of `1e-10` to an integer, and otherwise uses
-the floored count. It then adjusts segment length so every segment in that loop
-has equal length. Segments remain gapless across outline corners. A build is
-rejected if a loop would produce only one segment, more than 10,000 segments, or
-a segment with fewer than three distinct vertices.
+the floored count. It then reduces that count by whole material sequences until
+the count is a multiple of the number of barrier materials and the adjusted
+segment length is at least `segment_length`. Every segment in a loop has equal
+length, and segments remain gapless across outline corners. A build is rejected
+if a loop cannot produce one complete material sequence, would produce more than
+10,000 segments, or has a segment with fewer than three distinct vertices.
 
 Barrier materials repeat in the supplied order, restarting from the first
-material independently for every outer or inner barrier loop.
+material independently for every outer or inner barrier loop. Every loop
+contains only complete material sequences.
 
 ## Failure and rollback behavior
 
@@ -184,6 +187,28 @@ Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
 0.005-degree turn and must be rejected. Sample 10 uses a segment length that
 produces one barrier segment and must also be rejected.
 
+## Regenerate tracked examples
+
+The files in `Blender\TrackBuilder\Examples` are generated artifacts used for
+visual inspection and regression testing. After any change that can affect
+TrackBuilder output or validation, regenerate the complete tracked set from the
+repository root:
+
+```powershell
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderExamples.py"
+```
+
+The generator synchronizes filenames, removes obsolete examples and Blender
+backup files, and records the parameters and expected result in every scene.
+Successful examples contain the current generated `Output`; expected-failure
+examples contain only their `Input`.
+
+Always include resulting `.blend` changes with an output-affecting TrackBuilder
+change. The test suite compares the saved output of every successful tracked
+example with a fresh in-memory build and fails with the regeneration command if
+an artifact is stale. It also verifies that expected-failure examples still fail
+and contain no saved `Output`.
+
 ## Run tests
 
 From the repository root:
@@ -192,6 +217,7 @@ From the repository root:
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\TestTrackBuilder.py"
 ```
 
-The suite tests the original input, successful synthetic inputs, minimum-turn-
-angle and one-segment rejection, and preservation of an existing output after a
-rejected build.
+The suite tests the original input, successful synthetic inputs, complete
+material sequences, segment-length adjustment, material-list validation,
+minimum-turn-angle and one-segment rejection, preservation of an existing
+output after a rejected build, and synchronization of every tracked example.

@@ -24,6 +24,19 @@ If you are recommending any edits, put them in the reply to the prompt.
 * Game logs are in `C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyLogOutput`.
 * Assume that the standalone build of the unity game is up-to-date and in `C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput`.
 
+# TrackBuilder generated examples
+
+After any change that can affect TrackBuilder output or validation, regenerate
+the tracked `.blend` examples and include their changes:
+
+```powershell
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderExamples.py"
+```
+
+Then run `Blender\TrackBuilder\TestTrackBuilder.py`. The test suite deliberately
+fails when the tracked example set or any successful example's saved `Output`
+does not match a fresh build from the current TrackBuilder.
+
 # While reviewing
 
 Ignore this stuff:
