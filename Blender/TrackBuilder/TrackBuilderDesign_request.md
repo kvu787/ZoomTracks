@@ -85,24 +85,26 @@ All vertices in the resulting world-space meshes must have a Z-coordinate of zer
 - All objects found recursively within the `Input` collection must satisfy the outline-object definition
 - Each object must contain exactly one closed loop of edges
 - Objects must not contain loose vertices, zero-length edges, branches, or duplicate consecutive points
+- At every vertex, the absolute turn angle between the incoming and outgoing
+  traversal directions must be at least 0.01 degrees. Reject smaller turn
+  angles; do not merge or otherwise remove the vertex.
 - Each curve must contain exactly one cyclic spline
 - Outlines must not touch
 - An inner outline must not be nested inside another inner outline
 - Let `D` be the diagonal length of the XY bounding box containing all evaluated
   input vertices. Use `epsilon = 1e-7 * max(1, D)` for world-space distance
   comparisons involving Z-coordinates, zero-length edges, duplicate points,
-  touching, intersections, containment boundaries, and collinearity. Distances
-  less than or equal to `epsilon` count as touching or equal.
+  touching, intersections, containment boundaries, and adjacent-edge
+  backtracking. Distances less than or equal to `epsilon` count as touching or
+  equal.
 - `W`, `H`, `segment_length`, and `material_names` must satisfy all requirements in the Script inputs section
 - Every name in `material_names` must resolve to an existing Blender material
 
 ## What the script does
 
 After evaluating and validating the unmodified input geometry, copy each loop to
-world-space working data. In the working copy only, repeatedly remove a middle
-vertex when it is collinear within `epsilon` with its neighbors and both adjacent
-edges travel in the same direction. Never merge a backtracking vertex. The
-`Input` collection, its objects, and their datablocks must never be modified.
+world-space working data without removing or merging vertices. The `Input`
+collection, its objects, and their datablocks must never be modified.
 
 Accept either input winding. Normalize every working loop to CCW, then rotate its
 vertex order so the lexicographically smallest world-space `(X, Y)` vertex is
@@ -208,11 +210,12 @@ build parameters in the active scene's `track_builder_W`,
 6. `TrackBuilderSampleInput06_Transformed.blend`: non-identity world transforms
 7. `TrackBuilderSampleInput07_Curves.blend`: cyclic curve inputs
 8. `TrackBuilderSampleInput08_ReversedWinding.blend`: mixed input winding
-9. `TrackBuilderSampleInput09_Collinear.blend`: redundant collinear vertices
+9. `TrackBuilderSampleInput09_SmallTurnAngle.blend`: a 0.005-degree turn that must be rejected
 10. `TrackBuilderSampleInput10_SingleSegment.blend`: a target segment length that must be rejected because each barrier would produce only one segment
 
 ## Automated testing
 
 `TestTrackBuilder.py` runs independently in background Blender. It must cover the
-original sample, all successful synthetic samples, the single-segment rejection,
-and preservation of an existing `Output` collection after a rejected build.
+original sample, all successful synthetic samples, the deliberate
+minimum-turn-angle and single-segment rejections, and preservation of an
+existing `Output` collection after a rejected build.

@@ -28,7 +28,7 @@ SAMPLE_FILENAMES = {
     6: "TrackBuilderSampleInput06_Transformed.blend",
     7: "TrackBuilderSampleInput07_Curves.blend",
     8: "TrackBuilderSampleInput08_ReversedWinding.blend",
-    9: "TrackBuilderSampleInput09_Collinear.blend",
+    9: "TrackBuilderSampleInput09_SmallTurnAngle.blend",
     10: "TrackBuilderSampleInput10_SingleSegment.blend",
 }
 
@@ -108,6 +108,8 @@ def _new_synthetic_input() -> tuple[bpy.types.Collection, dict[str, bpy.types.Ma
         "barrier_red": _ensure_material("BarrierRed", (0.8, 0.03, 0.03, 1.0)),
         "barrier_white": _ensure_material("BarrierWhite", (0.9, 0.9, 0.9, 1.0)),
     }
+    materials["barrier_red"].use_fake_user = True
+    materials["barrier_white"].use_fake_user = True
     return input_collection, materials
 
 
@@ -186,27 +188,19 @@ def create_synthetic_sample(number: int) -> BuildParameters:
         ]
         parameters = (0.36, 0.85, 2.6)
     elif number == 9:
-        ground = [(-12, -8), (0, -8), (12, -8), (12, 0), (12, 8), (0, 8), (-12, 8), (-12, 0)]
-        outer = [(-9, -5), (0, -5), (9, -5), (9, 0), (9, 5), (0, 5), (-9, 5), (-9, 0)]
-        inner = [(-2, -1.5), (0, -1.5), (2, -1.5), (2, 1.5), (0, 1.5), (-2, 1.5)]
+        small_turn_rise = 9.0 * math.tan(math.radians(0.005))
+        outer = [(-9, -5), (0, -5), (9, -5 + small_turn_rise), (9, 5), (-9, 5)]
         loops = [
-            ("GroundCollinear", ground, "ground", False, False, identity),
-            ("OuterTrackCollinear", outer, "track", False, False, identity),
-            ("InnerTrackCollinear", inner, "island_a", False, False, identity),
+            ("GroundOutline", _rectangle(-12, -8, 12, 8), "ground", False, False, identity),
+            ("OuterTrackSmallTurn", outer, "track", False, False, identity),
+            ("InnerTrackOutline", _rectangle(-2, -1.5, 2, 1.5), "island_a", False, False, identity),
         ]
         parameters = (0.45, 1.1, 2.8)
     elif number == 10:
-        dense_outer = [
-            (
-                (10.0 + 0.7 * math.sin(5.0 * angle)) * math.cos(angle),
-                (6.0 + 0.35 * math.sin(5.0 * angle)) * math.sin(angle),
-            )
-            for angle in (math.tau * index / 96 for index in range(96))
-        ]
         loops = [
-            ("GroundDense", _ellipse(0, 0, 14, 10, 64), "ground", False, False, identity),
-            ("OuterTrackDense", dense_outer, "track", False, False, identity),
-            ("InnerTrackDense", _ellipse(0, 0, 2.1, 1.5, 32), "island_a", False, False, identity),
+            ("GroundOutline", _rectangle(-14, -10, 14, 10), "ground", False, False, identity),
+            ("OuterTrackOutline", _rectangle(-10, -6, 10, 6), "track", False, False, identity),
+            ("InnerTrackOutline", _rectangle(-2, -1.5, 2, 1.5), "island_a", False, False, identity),
         ]
         parameters = (0.25, 0.65, 1000.0)
     else:
@@ -262,7 +256,10 @@ def generate_sample_inputs(output_directory: str, original_sample_path: str) -> 
 
     for number, filename in SAMPLE_FILENAMES.items():
         parameters = load_sample_input(number, original_sample_path)
-        expected_result = "single_segment_error" if number == 10 else "success"
+        expected_result = {
+            9: "minimum_turn_angle_error",
+            10: "single_segment_error",
+        }.get(number, "success")
         _record_parameters(parameters, expected_result)
         path = os.path.join(output_directory, filename)
         bpy.ops.wm.save_as_mainfile(filepath=path, check_existing=False)

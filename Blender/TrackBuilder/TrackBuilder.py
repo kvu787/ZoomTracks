@@ -21,6 +21,7 @@ from mathutils.geometry import delaunay_2d_cdt
 
 ABSOLUTE_TOLERANCE_FACTOR = 1.0e-7
 INTEGER_RATIO_TOLERANCE = 1.0e-10
+MINIMUM_TURN_ANGLE_DEGREES = 0.01
 MAX_SEGMENTS_PER_OUTLINE = 10_000
 
 
@@ -299,10 +300,19 @@ def _ordered_validated_loop(raw: _RawOutline, epsilon: float) -> list[Vector]:
     for index in range(point_count):
         incoming = points[index] - points[index - 1]
         outgoing = points[(index + 1) % point_count] - points[index]
+        cross = _cross_2d(incoming, outgoing)
+        dot = incoming.dot(outgoing)
         scale = max(1.0, incoming.length, outgoing.length)
-        if abs(_cross_2d(incoming, outgoing)) <= epsilon * scale and incoming.dot(outgoing) < 0.0:
+        if abs(cross) <= epsilon * scale and dot < 0.0:
             raise TrackBuilderValidationError(
                 f"Outline {raw.object_name!r} backtracks at an adjacent collinear edge"
+            )
+        turn_angle = abs(math.atan2(cross, dot))
+        if turn_angle < math.radians(MINIMUM_TURN_ANGLE_DEGREES):
+            raise TrackBuilderValidationError(
+                f"Outline {raw.object_name!r} has a turn angle of "
+                f"{math.degrees(turn_angle):g} degrees at vertex {ordered_indices[index]}; "
+                f"the minimum is {MINIMUM_TURN_ANGLE_DEGREES:g} degrees"
             )
 
     for first_index in range(point_count):
@@ -338,28 +348,6 @@ def _validate_outline_separation(outlines: list[_Outline], epsilon: float) -> No
                         )
 
 
-def _merge_collinear_points(points: list[Vector], epsilon: float) -> list[Vector]:
-    result = [point.copy() for point in points]
-    changed = True
-    while changed and len(result) > 3:
-        changed = False
-        for index in range(len(result)):
-            previous = result[index - 1]
-            current = result[index]
-            following = result[(index + 1) % len(result)]
-            incoming = current - previous
-            outgoing = following - current
-            chord = following - previous
-            if chord.length == 0.0 or incoming.dot(outgoing) <= 0.0:
-                continue
-            distance = abs(_cross_2d(chord, current - previous)) / chord.length
-            if distance <= epsilon:
-                del result[index]
-                changed = True
-                break
-    return result
-
-
 def _canonical_ccw(points: list[Vector], object_name: str, epsilon: float) -> list[Vector]:
     area = _signed_area(points)
     if abs(area) <= epsilon * epsilon:
@@ -377,8 +365,7 @@ def _validated_outlines(raw_outlines: list[_RawOutline], epsilon: float) -> list
     outlines: list[_Outline] = []
     for raw in raw_outlines:
         validated = _ordered_validated_loop(raw, epsilon)
-        merged = _merge_collinear_points(validated, epsilon)
-        canonical = _canonical_ccw(merged, raw.object_name, epsilon)
+        canonical = _canonical_ccw(validated, raw.object_name, epsilon)
         outlines.append(_Outline(raw.object_name, raw.material, canonical))
     _validate_outline_separation(outlines, epsilon)
     return outlines

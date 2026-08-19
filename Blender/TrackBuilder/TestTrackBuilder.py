@@ -50,11 +50,20 @@ class TrackBuilderTests(unittest.TestCase):
         self.assert_valid_output(output, has_inner=True)
 
     def test_synthetic_success_samples_build(self) -> None:
-        for number in range(2, 10):
+        for number in range(2, 9):
             with self.subTest(sample=number):
                 parameters = samples.create_synthetic_sample(number)
                 output = TrackBuilder.build_track(*parameters)
                 self.assert_valid_output(output, has_inner=number != 2)
+
+    def test_small_turn_angle_sample_throws(self) -> None:
+        parameters = samples.create_synthetic_sample(9)
+        with self.assertRaisesRegex(
+            TrackBuilder.TrackBuilderValidationError,
+            "has a turn angle of .* degrees.*minimum is 0.01 degrees",
+        ):
+            TrackBuilder.build_track(*parameters)
+        self.assertIsNone(bpy.data.collections.get("Output"))
 
     def test_single_segment_sample_throws(self) -> None:
         parameters = samples.create_synthetic_sample(10)

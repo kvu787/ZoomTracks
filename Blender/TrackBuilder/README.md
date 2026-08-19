@@ -31,6 +31,8 @@ Each outline must:
 - Be a mesh or curve object containing one closed loop.
 - Have no faces, loose vertices, branches, self-intersections, or zero-length
   edges.
+- Have a turn angle of at least 0.01 degrees at every vertex. TrackBuilder rejects
+  smaller turns instead of merging nearly collinear vertices.
 - Be flat on the global XY plane after applying its world transform and
   evaluated modifiers.
 - Have exactly one material assigned.
@@ -73,10 +75,11 @@ The function returns the newly committed Blender `Output` collection.
 
 ## Command-line build
 
-From the repository root in PowerShell:
+After generating the sample inputs, run a successful build from the repository
+root in PowerShell:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "Blender\TrackBuilder\SampleInput.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilder.py" -- --build --w 0.3 --height 0.8 --segment-length 2.5 --materials red blue --save "Blender\TrackBuilder\BuiltTrack.blend"
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "Blender\TrackBuilder\SampleInputs\TrackBuilderSampleInput02_NoInner.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilder.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "Blender\TrackBuilder\BuiltTrack.blend"
 ```
 
 `--save` is optional. Without it, TrackBuilder builds the current file in memory
@@ -134,8 +137,9 @@ those paths:
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py" -- --output-dir "C:\Temp\TrackBuilderSamples" --original-sample "Blender\TrackBuilder\SampleInput.blend"
 ```
 
-Samples 1 through 9 are successful build cases. Sample 10 deliberately uses a
-segment length that produces one barrier segment and must be rejected.
+Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
+0.005-degree turn and must be rejected. Sample 10 uses a segment length that
+produces one barrier segment and must also be rejected.
 
 ## Run tests
 
@@ -145,5 +149,6 @@ From the repository root:
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\TestTrackBuilder.py"
 ```
 
-The suite tests the original input, successful synthetic inputs, one-segment
-rejection, and preservation of an existing output after a rejected build.
+The suite tests the original input, successful synthetic inputs, minimum-turn-
+angle and one-segment rejection, and preservation of an existing output after a
+rejected build.
