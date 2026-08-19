@@ -72,6 +72,8 @@ All vertices in the resulting world-space meshes must have a Z-coordinate of zer
 
 ## What the script does
 
+Before doing anything, merge collinear edges to avoid issues down the line.
+
 Given this input, the script must generate:
 
 1. Flat meshes (called fill meshes) that represent the ground, track, and enclosed islands
@@ -84,7 +86,6 @@ Requirements:
 - All triangles in the ground, track, and island meshes must face global +Z.
 - The `Input` collection and its objects must not be modified
 - The script must throw descriptive exceptions when input preconditions are not satisfied
-- After successful validation, the script must delete the entire `Output` collection if it exists, then rebuild it from the input
 
 ## Outputs
 
@@ -112,6 +113,10 @@ The fundamental barrier mesh geometry is generated from a simple algorithm:
   - The edge that connects those two intersection points forms one edge of the barrier
   - The other edge of the barrier is formed by the existing outline's edges
 - At this point, you should have a flat 2d mesh that resembles a one-sided thickened outline of the outline edge loops
+
+The algorithm doesn't do anything "fancy":
+
+- If the outline shape or `W` causes barriers to self-overlap or bleed into the track mesh area, that's fine
 
 #### Slice into segments
 
