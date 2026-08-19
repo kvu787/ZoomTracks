@@ -37,7 +37,41 @@ EXPECTED_RESULTS = {
     10: "single_segment_error",
 }
 
-ORIGINAL_SAMPLE_PARAMETERS: BuildParameters = (0.3, 0.8, 2.5, ["red", "blue"])
+SAMPLE_MATERIAL_NAMES = {
+    1: ("red", "blue"),
+    2: ("BarrierRed", "BarrierWhite"),
+    3: ("BarrierRed", "BarrierWhite", "BarrierBlue"),
+    4: ("BarrierRed", "BarrierWhite", "BarrierBlue", "BarrierYellow"),
+    5: ("BarrierRed", "BarrierWhite", "BarrierBlue", "BarrierYellow", "BarrierGreen"),
+    6: (
+        "BarrierRed",
+        "BarrierWhite",
+        "BarrierBlue",
+        "BarrierYellow",
+        "BarrierGreen",
+        "BarrierBlack",
+    ),
+    7: ("BarrierRed", "BarrierWhite"),
+    8: ("BarrierRed", "BarrierWhite"),
+    9: ("BarrierRed", "BarrierWhite"),
+    10: ("BarrierRed", "BarrierWhite"),
+}
+
+BARRIER_MATERIAL_COLORS = {
+    "BarrierRed": (0.8, 0.03, 0.03, 1.0),
+    "BarrierWhite": (0.9, 0.9, 0.9, 1.0),
+    "BarrierBlue": (0.03, 0.18, 0.8, 1.0),
+    "BarrierYellow": (0.95, 0.7, 0.03, 1.0),
+    "BarrierGreen": (0.03, 0.65, 0.15, 1.0),
+    "BarrierBlack": (0.03, 0.03, 0.03, 1.0),
+}
+
+ORIGINAL_SAMPLE_PARAMETERS: BuildParameters = (
+    0.3,
+    0.8,
+    2.5,
+    list(SAMPLE_MATERIAL_NAMES[1]),
+)
 
 
 def _ensure_material(name: str, color: tuple[float, float, float, float]) -> bpy.types.Material:
@@ -101,7 +135,9 @@ def _create_outline_object(
     return obj
 
 
-def _new_synthetic_input() -> tuple[bpy.types.Collection, dict[str, bpy.types.Material]]:
+def _new_synthetic_input(
+    number: int,
+) -> tuple[bpy.types.Collection, dict[str, bpy.types.Material]]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     input_collection = bpy.data.collections.new("Input")
     bpy.context.scene.collection.children.link(input_collection)
@@ -110,18 +146,17 @@ def _new_synthetic_input() -> tuple[bpy.types.Collection, dict[str, bpy.types.Ma
         "track": _ensure_material("TrackMaterial", (0.12, 0.14, 0.18, 1.0)),
         "island_a": _ensure_material("IslandMaterialA", (0.22, 0.55, 0.18, 1.0)),
         "island_b": _ensure_material("IslandMaterialB", (0.18, 0.48, 0.28, 1.0)),
-        "barrier_red": _ensure_material("BarrierRed", (0.8, 0.03, 0.03, 1.0)),
-        "barrier_white": _ensure_material("BarrierWhite", (0.9, 0.9, 0.9, 1.0)),
     }
-    materials["barrier_red"].use_fake_user = True
-    materials["barrier_white"].use_fake_user = True
+    for material_name in SAMPLE_MATERIAL_NAMES[number]:
+        material = _ensure_material(material_name, BARRIER_MATERIAL_COLORS[material_name])
+        material.use_fake_user = True
     return input_collection, materials
 
 
 def create_synthetic_sample(number: int) -> BuildParameters:
     """Replace the current scene with synthetic sample ``number`` (2 through 10)."""
 
-    collection, materials = _new_synthetic_input()
+    collection, materials = _new_synthetic_input(number)
     identity = Matrix.Identity(4)
 
     if number == 2:
@@ -165,7 +200,7 @@ def create_synthetic_sample(number: int) -> BuildParameters:
             ("OuterTrackConcave", concave, "track", False, False, identity),
             ("InnerTrackOutline", _ellipse(0, 0, 1.6, 1.4, 16), "island_a", False, False, identity),
         ]
-        parameters = (0.55, 1.2, 2.2)
+        parameters = (0.55, 1.2, 1.5)
     elif number == 6:
         transform = (
             Matrix.Translation((8.0, -4.0, 0.0))
@@ -177,7 +212,7 @@ def create_synthetic_sample(number: int) -> BuildParameters:
             ("OuterTrackOutline", _ellipse(0, 0, 9, 5.5, 32), "track", False, False, transform),
             ("InnerTrackOutline", _ellipse(0, 0, 2.2, 1.7, 18), "island_a", False, False, transform),
         ]
-        parameters = (0.32, 0.75, 2.5)
+        parameters = (0.32, 0.75, 1.5)
     elif number == 7:
         loops = [
             ("GroundCurve", _rectangle(-13, -9, 13, 9), "ground", True, False, identity),
@@ -222,7 +257,7 @@ def create_synthetic_sample(number: int) -> BuildParameters:
             matrix=matrix,
         )
     width, height, target = parameters
-    return width, height, target, ["BarrierRed", "BarrierWhite"]
+    return width, height, target, list(SAMPLE_MATERIAL_NAMES[number])
 
 
 def _remove_output_collection() -> None:

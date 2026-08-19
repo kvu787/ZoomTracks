@@ -128,7 +128,13 @@ class TrackBuilderTests(unittest.TestCase):
             bpy.context.scene["track_builder_expected_result"],
             samples.expected_result(number),
         )
-        return _recorded_parameters()
+        parameters = _recorded_parameters()
+        self.assertEqual(
+            parameters[3],
+            list(samples.SAMPLE_MATERIAL_NAMES[number]),
+            f"Committed test input has a stale material list: {filename}",
+        )
+        return parameters
 
     def assert_valid_output(
         self,
@@ -202,9 +208,7 @@ class TrackBuilderTests(unittest.TestCase):
 
     def test_barriers_use_complete_material_sequences_without_short_segments(self) -> None:
         width, height, _, material_names = self.load_test_input(3)
-        blue = bpy.data.materials.new("BarrierBlue")
-        blue.use_fake_user = True
-        material_names.append(blue.name)
+        self.assertEqual(len(material_names), 3)
         target = 4.0
 
         output = TrackBuilder.build_track(width, height, target, material_names)
