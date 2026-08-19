@@ -14,13 +14,11 @@ The script has the following parameters:
 
 - `W`: Barrier thickness; must be a finite value greater than zero
 - `H`: Barrier height; must be a finite value greater than zero
-- `segment_length`: Maximum target length of a colored barrier segment, measured along an input outline; must be a finite value greater than zero
+- `segment_length`: Target length of a colored barrier segment, measured along an input outline; must be a finite value greater than zero
 - `material_names`: Ordered list of Blender material names used for the repeating barrier-color sequence
   - The list must contain at least one item
   - Every item must be a non-empty string naming an existing material in `bpy.data.materials`
   - Repeated material names are allowed
-
-`W` may be oversized; this is allowed and must not be rejected during validation. Oversized values are handled by unioning self-overlapping buffered regions, clipping the outer barrier to the available ground, and allowing an inner barrier to consume its entire island.
 
 ## Inputs
 
@@ -39,12 +37,14 @@ The script has the following parameters:
   - Outer track outline: Required; exactly one
   - Inner track outline: Optional; zero or more
 - The script must use the geometry of the outline objects to classify each one as ground, outer track, or inner track
-- The input outline objects must contain exactly one or two levels of nesting:
+- The outline objects must have one or two levels of nesting:
   - Level 1: The ground outline must enclose the outer track outline
   - Level 2: Any inner track outlines must be enclosed by the outer track outline
 - Each outline object must have exactly one material assigned to it
 
-### Evaluation
+The Input collection and its contents must not be modified.
+
+### Curve evaluation
 
 The input outlines must be converted to dependency-graph-evaluated geometry, including modifiers.
 
@@ -58,10 +58,10 @@ All vertices in the resulting world-space meshes must have a Z-coordinate of zer
 All inputs and parameters must be validated before an existing `Output` collection is deleted. This preserves the last valid output when new input is invalid.
 
 - All objects found recursively within the `Input` collection must satisfy the outline-object definition
-- Each object must contain exactly one connected loop
+- Each object must contain exactly closed loop of edges
 - Objects must not contain loose vertices, zero-length edges, branches, or duplicate consecutive points
 - Each curve must contain exactly one cyclic spline
-- Boundaries must not touch
+- Outlines must not touch
 - An inner outline must not be nested inside another inner outline
 - A small floating-point tolerance must be used when validating Z-coordinates, intersections, and containment
 - `W`, `H`, `segment_length`, and `material_names` must satisfy all requirements in the Script inputs section
@@ -71,14 +71,11 @@ All inputs and parameters must be validated before an existing `Output` collecti
 
 Given this input, the script must generate flat meshes (called fill meshes) that represent the ground, track, and enclosed islands. It must also generate continuous, one-sided, thickened barrier meshes from the outer and inner track outlines.
 
-The fill meshes must be properly triangulated. Each fill mesh must fill its intended region without overlapping faces or faces that cross an outline boundary. Each fill mesh must be assigned the material from its corresponding input outline object.
+Requirements:
 
-Every output object must be placed in a collection named `Output`.
-
-All triangles in the ground, track, and island meshes must face global +Z.
-
-Other requirements:
-
+- The fill meshes must be properly triangulated. Each fill mesh must fill its intended region without overlapping faces or faces that cross an outline boundary. Each fill mesh must be assigned the material from its corresponding input outline object.
+- Every output object must be placed in a collection named `Output`.
+- All triangles in the ground, track, and island meshes must face global +Z.
 - The `Input` collection and its objects must not be modified
 - The script must throw descriptive exceptions when input preconditions are not satisfied
 - After successful validation, the script must delete the entire `Output` collection if it exists, then rebuild it from the input
