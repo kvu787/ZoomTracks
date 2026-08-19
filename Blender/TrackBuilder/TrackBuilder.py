@@ -565,6 +565,11 @@ def _segment_count(perimeter: float, target: float, object_name: str) -> int:
         count = nearest
     else:
         count = max(1, math.floor(ratio))
+    if count == 1:
+        raise TrackBuilderGeometryError(
+            f"Outline {object_name!r} would produce only one barrier segment; "
+            "decrease segment_length"
+        )
     if count > MAX_SEGMENTS_PER_OUTLINE:
         raise TrackBuilderGeometryError(
             f"Outline {object_name!r} requires {count} barrier segments; "
