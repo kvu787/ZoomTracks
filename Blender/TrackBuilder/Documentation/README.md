@@ -9,9 +9,8 @@ It runs inside Blender 4.5 and uses only Blender's bundled Python libraries.
 
 | File | Purpose |
 | --- | --- |
-| [`TrackBuilder.py`](TrackBuilder.py) | Production track-building API and command-line tool |
-| [`GenerateTrackBuilderSamples.py`](GenerateTrackBuilderSamples.py) | Generates committed, input-only test fixtures |
-| [`TestTrackBuilder.py`](TestTrackBuilder.py) | Runs Blender integration tests and writes temporary inspection artifacts |
+| [`TrackBuilder.py`](../TrackBuilder.py) | Production track-building API and command-line tool |
+| [`TEST.md`](TEST.md) | Test architecture, fixtures, commands, and artifacts |
 
 ## Input scene
 
@@ -96,11 +95,10 @@ The function returns the newly committed Blender `Output` collection.
 
 ## Command-line build
 
-Using one of the committed test inputs, run a successful build from the
-repository root in PowerShell:
+Run a build from the repository root in PowerShell:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "Blender\TrackBuilder\TestInputs\TrackBuilderSampleInput02_NoInner.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilder.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "Blender\TrackBuilder\BuiltTrack.blend"
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "C:\path\to\Input.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilder.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "C:\path\to\BuiltTrack.blend"
 ```
 
 `--save` is optional. Without it, TrackBuilder builds the current file in memory
@@ -164,47 +162,7 @@ The public exception hierarchy is:
 - `TrackBuilderGeometryError`: Valid input that cannot produce the requested
   output geometry.
 
-## Generate committed test inputs
+## Testing
 
-Run the sample generator in background Blender:
-
-```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py"
-```
-
-By default, it writes ten files to `Blender\TrackBuilder\TestInputs`. Use
-`--output-dir` and `--original-sample` after Blender's `--` separator to override
-those paths:
-
-```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py" -- --output-dir "C:\Temp\TrackBuilderSamples" --original-sample "Blender\TrackBuilder\TestInputs\TrackBuilderSampleInput01_Original.blend"
-```
-
-Each generated scene contains `Input` but no generated `Output`, and records its
-build parameters and expected result in `track_builder_*` scene custom
-properties. These inputs are test fixtures and are committed to the repository.
-
-Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
-0.005-degree turn and must be rejected. Sample 10 uses a segment length that
-produces one barrier segment and must also be rejected.
-
-## Run tests
-
-From the repository root:
-
-```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\TestTrackBuilder.py"
-```
-
-The suite reads only the committed fixtures in `TestInputs`; it never uses a
-previous TrackBuilder output as an expected result. It tests successful inputs,
-output roles and mesh validity, complete material sequences, segment-length
-adjustment, material-list validation, minimum-turn-angle and one-segment
-rejection, and preservation of an existing output after a rejected build.
-
-Every run replaces `Blender\TrackBuilder\TestArtifacts\Outputs` with one
-inspectable `.blend` file per committed input and writes the overall console
-report to `Blender\TrackBuilder\TestArtifacts\TestReport.txt`. Expected-failure
-artifacts contain their unchanged input and record the actual exception class;
-successful artifacts contain the generated `Output`. The entire
-`TestArtifacts` directory is gitignored and must not be committed.
+See [`TEST.md`](TEST.md) for the fixture architecture, test commands, coverage,
+and generated inspection artifacts.

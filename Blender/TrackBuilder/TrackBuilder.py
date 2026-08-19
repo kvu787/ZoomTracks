@@ -861,7 +861,8 @@ def build_track(
 
     ``W``, ``H``, and ``segment_length`` must be finite and positive.
     ``material_names`` must be a list of at least two existing Blender materials.
-    The current file must satisfy the input contract documented in ``README.md``.
+    The current file must satisfy the input contract documented in
+    ``Documentation/README.md``.
 
     Returns the newly committed ``Output`` collection. Validation or geometry
     failures preserve the existing output and raise a ``TrackBuilderError``.

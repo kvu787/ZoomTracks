@@ -26,6 +26,9 @@ If you are recommending any edits, put them in the reply to the prompt.
 
 # TrackBuilder tests
 
+Testing architecture and commands are documented in
+`Blender\TrackBuilder\Documentation\TEST.md`.
+
 TrackBuilder test inputs in `Blender\TrackBuilder\TestInputs` are committed and
 must contain only an `Input` collection. Regenerate and commit them only after a
 deliberate test-fixture change:
