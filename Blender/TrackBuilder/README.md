@@ -10,8 +10,8 @@ It runs inside Blender 4.5 and uses only Blender's bundled Python libraries.
 | File | Purpose |
 | --- | --- |
 | [`TrackBuilder.py`](TrackBuilder.py) | Production track-building API and command-line tool |
-| [`GenerateTrackBuilderSamples.py`](GenerateTrackBuilderSamples.py) | Generates sample-input `.blend` files |
-| [`TestTrackBuilder.py`](TestTrackBuilder.py) | Blender integration tests |
+| [`GenerateTrackBuilderSamples.py`](GenerateTrackBuilderSamples.py) | Generates committed, input-only test fixtures |
+| [`TestTrackBuilder.py`](TestTrackBuilder.py) | Runs Blender integration tests and writes temporary inspection artifacts |
 
 ## Input scene
 
@@ -96,11 +96,11 @@ The function returns the newly committed Blender `Output` collection.
 
 ## Command-line build
 
-After generating the sample inputs, run a successful build from the repository
-root in PowerShell:
+Using one of the committed test inputs, run a successful build from the
+repository root in PowerShell:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "Blender\TrackBuilder\SampleInputs\TrackBuilderSampleInput02_NoInner.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilder.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "Blender\TrackBuilder\BuiltTrack.blend"
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "Blender\TrackBuilder\TestInputs\TrackBuilderSampleInput02_NoInner.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilder.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "Blender\TrackBuilder\BuiltTrack.blend"
 ```
 
 `--save` is optional. Without it, TrackBuilder builds the current file in memory
@@ -164,7 +164,7 @@ The public exception hierarchy is:
 - `TrackBuilderGeometryError`: Valid input that cannot produce the requested
   output geometry.
 
-## Generate sample inputs
+## Generate committed test inputs
 
 Run the sample generator in background Blender:
 
@@ -172,42 +172,21 @@ Run the sample generator in background Blender:
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py"
 ```
 
-By default, it writes ten files to `Blender\TrackBuilder\SampleInputs`. Use
+By default, it writes ten files to `Blender\TrackBuilder\TestInputs`. Use
 `--output-dir` and `--original-sample` after Blender's `--` separator to override
 those paths:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py" -- --output-dir "C:\Temp\TrackBuilderSamples" --original-sample "Blender\TrackBuilder\SampleInput.blend"
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py" -- --output-dir "C:\Temp\TrackBuilderSamples" --original-sample "Blender\TrackBuilder\TestInputs\TrackBuilderSampleInput01_Original.blend"
 ```
 
-Each generated scene records its build parameters and expected result in
-`track_builder_*` scene custom properties.
+Each generated scene contains `Input` but no generated `Output`, and records its
+build parameters and expected result in `track_builder_*` scene custom
+properties. These inputs are test fixtures and are committed to the repository.
 
 Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
 0.005-degree turn and must be rejected. Sample 10 uses a segment length that
 produces one barrier segment and must also be rejected.
-
-## Regenerate tracked examples
-
-The files in `Blender\TrackBuilder\Examples` are generated artifacts used for
-visual inspection and regression testing. After any change that can affect
-TrackBuilder output or validation, regenerate the complete tracked set from the
-repository root:
-
-```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderExamples.py"
-```
-
-The generator synchronizes filenames, removes obsolete examples and Blender
-backup files, and records the parameters and expected result in every scene.
-Successful examples contain the current generated `Output`; expected-failure
-examples contain only their `Input`.
-
-Always include resulting `.blend` changes with an output-affecting TrackBuilder
-change. The test suite compares the saved output of every successful tracked
-example with a fresh in-memory build and fails with the regeneration command if
-an artifact is stale. It also verifies that expected-failure examples still fail
-and contain no saved `Output`.
 
 ## Run tests
 
@@ -217,7 +196,15 @@ From the repository root:
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\TestTrackBuilder.py"
 ```
 
-The suite tests the original input, successful synthetic inputs, complete
-material sequences, segment-length adjustment, material-list validation,
-minimum-turn-angle and one-segment rejection, preservation of an existing
-output after a rejected build, and synchronization of every tracked example.
+The suite reads only the committed fixtures in `TestInputs`; it never uses a
+previous TrackBuilder output as an expected result. It tests successful inputs,
+output roles and mesh validity, complete material sequences, segment-length
+adjustment, material-list validation, minimum-turn-angle and one-segment
+rejection, and preservation of an existing output after a rejected build.
+
+Every run replaces `Blender\TrackBuilder\TestArtifacts\Outputs` with one
+inspectable `.blend` file per committed input and writes the overall console
+report to `Blender\TrackBuilder\TestArtifacts\TestReport.txt`. Expected-failure
+artifacts contain their unchanged input and record the actual exception class;
+successful artifacts contain the generated `Output`. The entire
+`TestArtifacts` directory is gitignored and must not be committed.

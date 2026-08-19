@@ -1,8 +1,8 @@
-"""Generate standalone TrackBuilder sample-input .blend files.
+"""Generate committed, input-only TrackBuilder test fixtures.
 
 This module owns test-fixture geometry only. It deliberately does not import or
-run TrackBuilder. The original sample is copied as-is; synthetic samples contain
-only their Input collection.
+run TrackBuilder. Existing generated Output is stripped from the original sample,
+and synthetic samples contain only their Input collection.
 """
 
 from __future__ import annotations
@@ -225,6 +225,53 @@ def create_synthetic_sample(number: int) -> BuildParameters:
     return width, height, target, ["BarrierRed", "BarrierWhite"]
 
 
+def _remove_output_collection() -> None:
+    output = bpy.data.collections.get("Output")
+    if output is None:
+        return
+
+    input_collection = bpy.data.collections.get("Input")
+    input_objects = set(input_collection.all_objects) if input_collection else set()
+    output_objects = set(output.all_objects)
+    shared_objects = input_objects & output_objects
+    if shared_objects:
+        names = ", ".join(sorted(obj.name for obj in shared_objects))
+        raise ValueError(f"Input and Output share objects: {names}")
+
+    output_collections: list[bpy.types.Collection] = []
+
+    def collect(collection: bpy.types.Collection) -> None:
+        output_collections.append(collection)
+        for child in collection.children:
+            collect(child)
+
+    collect(output)
+    output_data = {obj.data for obj in output_objects if obj.data is not None}
+    for obj in output_objects:
+        bpy.data.objects.remove(obj, do_unlink=True)
+    for data in output_data:
+        if data.users == 0 and isinstance(data, bpy.types.Mesh):
+            bpy.data.meshes.remove(data)
+    for collection in reversed(output_collections):
+        bpy.data.collections.remove(collection, do_unlink=True)
+
+
+def _prune_obsolete_sample_inputs(output_directory: str) -> list[str]:
+    expected_names = set(SAMPLE_FILENAMES.values())
+    removed: list[str] = []
+    for filename in os.listdir(output_directory):
+        if not (
+            filename.startswith("TrackBuilderSampleInput")
+            and ".blend" in filename
+            and filename not in expected_names
+        ):
+            continue
+        path = os.path.join(output_directory, filename)
+        os.remove(path)
+        removed.append(path)
+    return removed
+
+
 def load_sample_input(number: int, original_sample_path: str) -> BuildParameters:
     """Load or create sample ``number`` in the current Blender process."""
 
@@ -234,10 +281,18 @@ def load_sample_input(number: int, original_sample_path: str) -> BuildParameters
             raise FileNotFoundError(f"Original sample input does not exist: {sample_path}")
         bpy.ops.wm.open_mainfile(filepath=sample_path)
         parameters = ORIGINAL_SAMPLE_PARAMETERS
+        for material_name in parameters[3]:
+            material = bpy.data.materials.get(material_name)
+            if material is None:
+                raise ValueError(
+                    f"Original sample is missing barrier material {material_name!r}"
+                )
+            material.use_fake_user = True
+        _remove_output_collection()
     else:
         parameters = create_synthetic_sample(number)
 
-    if number != 1 and bpy.data.collections.get("Output") is not None:
+    if bpy.data.collections.get("Output") is not None:
         raise ValueError(f"Sample input {number} unexpectedly contains an Output collection")
     return parameters
 
@@ -265,12 +320,15 @@ def generate_sample_inputs(output_directory: str, original_sample_path: str) -> 
 
     output_directory = os.path.abspath(output_directory)
     os.makedirs(output_directory, exist_ok=True)
+    for path in _prune_obsolete_sample_inputs(output_directory):
+        print(f"TRACK_BUILDER_REMOVED_SAMPLE_INPUT={path}")
     written: list[str] = []
 
     for number, filename in SAMPLE_FILENAMES.items():
         parameters = load_sample_input(number, original_sample_path)
         record_parameters(parameters, expected_result(number))
         path = os.path.join(output_directory, filename)
+        bpy.context.preferences.filepaths.save_version = 0
         bpy.ops.wm.save_as_mainfile(filepath=path, check_existing=False)
         written.append(path)
     return written
@@ -287,11 +345,15 @@ def _main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--output-dir",
-        default=os.path.join(script_directory, "SampleInputs"),
+        default=os.path.join(script_directory, "TestInputs"),
     )
     parser.add_argument(
         "--original-sample",
-        default=os.path.join(script_directory, "SampleInput.blend"),
+        default=os.path.join(
+            script_directory,
+            "TestInputs",
+            SAMPLE_FILENAMES[1],
+        ),
     )
     arguments = parser.parse_args(_script_arguments())
     for path in generate_sample_inputs(arguments.output_dir, arguments.original_sample):
