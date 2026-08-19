@@ -7,11 +7,8 @@ removing vertices, and committed transactionally to the ``Output`` collection.
 
 from __future__ import annotations
 
-import argparse
 import bisect
 import math
-import os
-import sys
 import uuid
 from dataclasses import dataclass
 
@@ -895,45 +892,3 @@ def build_track(
     )
     pending, created = _instantiate_plans(plans)
     return _commit_output(pending, created, previous_output)
-
-
-def _script_arguments() -> list[str]:
-    if "--" not in sys.argv:
-        return []
-    return sys.argv[sys.argv.index("--") + 1 :]
-
-
-def _main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--build", action="store_true", help="Build the current file")
-    parser.add_argument("--w", type=float)
-    parser.add_argument("--height", type=float)
-    parser.add_argument("--segment-length", type=float)
-    parser.add_argument("--materials", nargs="+")
-    parser.add_argument("--save", help="Save the built current file to this path")
-    arguments = parser.parse_args(_script_arguments())
-
-    if not arguments.build:
-        parser.error("--build is required")
-
-    missing = [
-        name
-        for name, value in (
-            ("--w", arguments.w),
-            ("--height", arguments.height),
-            ("--segment-length", arguments.segment_length),
-            ("--materials", arguments.materials),
-        )
-        if value is None
-    ]
-    if missing:
-        parser.error(f"--build requires {', '.join(missing)}")
-    build_track(arguments.w, arguments.height, arguments.segment_length, arguments.materials)
-    if arguments.save:
-        save_path = os.path.abspath(arguments.save)
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        bpy.ops.wm.save_as_mainfile(filepath=save_path, check_existing=False)
-
-
-if __name__ == "__main__":
-    _main()

@@ -9,7 +9,8 @@ It runs inside Blender 4.5 and uses only Blender's bundled Python libraries.
 
 | File | Purpose |
 | --- | --- |
-| [`TrackBuilder.py`](../TrackBuilder.py) | Production track-building API and command-line tool |
+| [`TrackBuilder.py`](../TrackBuilder.py) | Production track-building library and Python API |
+| [`TrackBuilderCLI.py`](../TrackBuilderCLI.py) | Blender command-line wrapper |
 | [`TEST.md`](TEST.md) | Test architecture, fixtures, commands, and artifacts |
 
 ## Input scene
@@ -98,7 +99,7 @@ The function returns the newly committed Blender `Output` collection.
 Run a build from the repository root in PowerShell:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "C:\path\to\Input.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilder.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "C:\path\to\BuiltTrack.blend"
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "C:\path\to\Input.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilderCLI.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "C:\path\to\BuiltTrack.blend"
 ```
 
 `--save` is optional. Without it, TrackBuilder builds the current file in memory
