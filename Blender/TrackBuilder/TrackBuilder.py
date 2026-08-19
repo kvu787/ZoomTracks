@@ -1,7 +1,8 @@
 """Build triangulated track fills and segmented barriers in Blender 4.5.
 
 The public API is ``build_track(W, H, segment_length, material_names)``.
-See ``TrackBuilderDesign_request.md`` for the complete input contract.
+Inputs are dependency-graph evaluated in world space, canonicalized without
+removing vertices, and committed transactionally to the ``Output`` collection.
 """
 
 from __future__ import annotations
@@ -211,6 +212,8 @@ def _read_raw_outlines(input_collection: bpy.types.Collection) -> list[_RawOutli
 
 
 def _world_epsilon(raw_outlines: list[_RawOutline]) -> float:
+    """Return the scale-aware distance tolerance used by geometry validation."""
+
     all_vertices = [vertex for outline in raw_outlines for vertex in outline.vertices]
     if not all_vertices:
         raise TrackBuilderValidationError("Input outlines contain no evaluated vertices")
@@ -226,6 +229,8 @@ def _world_epsilon(raw_outlines: list[_RawOutline]) -> float:
 
 
 def _ordered_validated_loop(raw: _RawOutline, epsilon: float) -> list[Vector]:
+    """Validate one evaluated outline and return its vertices in edge order."""
+
     if raw.face_count:
         raise TrackBuilderValidationError(
             f"Outline {raw.object_name!r} evaluates to {raw.face_count} face(s); faces are forbidden"
@@ -513,6 +518,8 @@ def _offset_miter_points(
     width: float,
     offset_left: bool,
 ) -> list[Vector]:
+    """Intersect adjacent infinite offset lines without boolean cleanup."""
+
     directions: list[Vector] = []
     normals: list[Vector] = []
     for index, point in enumerate(points):
@@ -545,6 +552,8 @@ def _offset_miter_points(
 
 
 def _segment_count(perimeter: float, target: float, object_name: str) -> int:
+    """Choose an adjusted segment count, rejecting unusable extremes."""
+
     ratio = perimeter / target
     nearest = round(ratio)
     if nearest >= 1 and abs(ratio - nearest) <= INTEGER_RATIO_TOLERANCE * max(1.0, ratio):
@@ -619,6 +628,8 @@ def _barrier_plans(
     materials: list[bpy.types.Material],
     epsilon: float,
 ) -> list[_MeshPlan]:
+    """Slice one offset outline into gapless, independently colored barriers."""
+
     points = outline.points
     offset_left = role == "inner_barrier"
     miters = _offset_miter_points(points, width, offset_left)
@@ -830,7 +841,15 @@ def build_track(
     segment_length: float,
     material_names: list[str],
 ) -> bpy.types.Collection:
-    """Validate the current file and transactionally rebuild its Output collection."""
+    """Validate the current file and transactionally rebuild its Output collection.
+
+    ``W``, ``H``, and ``segment_length`` must be finite and positive.
+    ``material_names`` must be a non-empty list of existing Blender materials.
+    The current file must satisfy the input contract documented in ``README.md``.
+
+    Returns the newly committed ``Output`` collection. Validation or geometry
+    failures preserve the existing output and raise a ``TrackBuilderError``.
+    """
 
     width = _positive_finite_number("W", W)
     height = _positive_finite_number("H", H)

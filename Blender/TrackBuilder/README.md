@@ -12,7 +12,6 @@ It runs inside Blender 4.5 and uses only Blender's bundled Python libraries.
 | [`TrackBuilder.py`](TrackBuilder.py) | Production track-building API and command-line tool |
 | [`GenerateTrackBuilderSamples.py`](GenerateTrackBuilderSamples.py) | Generates sample-input `.blend` files |
 | [`TestTrackBuilder.py`](TestTrackBuilder.py) | Blender integration tests |
-| [`TrackBuilderDesign_request.md`](TrackBuilderDesign_request.md) | Complete input and geometry specification |
 
 ## Input scene
 
@@ -28,9 +27,10 @@ objects do not need special names.
 
 Each outline must:
 
-- Be a mesh or curve object containing one closed loop.
-- Have no faces, loose vertices, branches, self-intersections, or zero-length
-  edges.
+- Be a mesh or curve object containing exactly one closed loop. Curves must have
+  exactly one cyclic spline.
+- Have no faces, loose vertices, branches, self-intersections, adjacent-edge
+  backtracking, or zero-length edges.
 - Have a turn angle of at least 0.01 degrees at every vertex. TrackBuilder rejects
   smaller turns instead of merging nearly collinear vertices.
 - Be flat on the global XY plane after applying its world transform and
@@ -38,8 +38,28 @@ Each outline must:
 - Have exactly one material assigned.
 - Not touch or intersect another outline.
 
+Every object found recursively in `Input` must be a valid outline. Inner outlines
+cannot contain one another. `Input` and `Output` cannot be nested inside each
+other or share objects.
+
+TrackBuilder reads dependency-graph-evaluated geometry, including modifiers,
+and converts it to world space before validation. The `Input` collection, its
+objects, and their datablocks are never modified.
+
 The materials requested for barrier segments must already exist in the current
 Blender file.
+
+### Geometric tolerance
+
+For distance-based validation, let `D` be the diagonal of the world-space XY
+bounding box containing all evaluated input vertices. TrackBuilder uses:
+
+```text
+epsilon = 1e-7 * max(1, D)
+```
+
+Distances at or below `epsilon` count as touching or equal. The turn-angle rule
+is independent of this distance tolerance.
 
 ## Python API
 
@@ -58,7 +78,8 @@ Parameters:
   segments.
 
 All numeric parameters must be finite and greater than zero. At least one
-barrier material is required.
+non-empty barrier-material name is required, every name must resolve to an
+existing Blender material, and repeated names are allowed.
 
 Example from Blender's Python console:
 
@@ -89,8 +110,14 @@ Arguments after `--` belong to TrackBuilder rather than Blender.
 
 ## Generated output
 
-All generated objects are meshes placed in the `Output` collection. Every
-object has a `track_builder_role` custom property describing its purpose:
+TrackBuilder accepts either input winding. Working loops are normalized to CCW
+as viewed from global +Z, rotated to a deterministic starting vertex, and never
+simplified by removing vertices.
+
+All generated objects are meshes placed in the `Output` collection. Fill meshes
+are triangulated, face global +Z, and retain the material from their source
+outline. Every object has a `track_builder_role` custom property describing its
+purpose:
 
 | Role | Purpose |
 | --- | --- |
@@ -103,15 +130,28 @@ object has a `track_builder_role` custom property describing its purpose:
 Barrier objects also record their source outline, segment index, and adjusted
 segment length as custom properties.
 
-The requested segment length is adjusted so all segments around an outline have
-equal length. A build is rejected if an outline would produce only one segment
-or more than 10,000 segments.
+Barriers extend one-sided away from the track by `W` and upward by `H`. Adjacent
+infinite offset lines define their miter points. Self-overlap, self-intersecting
+barrier polygons, and barriers bleeding into the track are accepted; TrackBuilder
+does not perform boolean cleanup.
+
+For each outline, TrackBuilder divides its perimeter by `segment_length`, snaps
+ratios within a relative tolerance of `1e-10` to an integer, and otherwise uses
+the floored count. It then adjusts segment length so every segment in that loop
+has equal length. Segments remain gapless across outline corners. A build is
+rejected if a loop would produce only one segment, more than 10,000 segments, or
+a segment with fewer than three distinct vertices.
+
+Barrier materials repeat in the supplied order, restarting from the first
+material independently for every outer or inner barrier loop.
 
 ## Failure and rollback behavior
 
 TrackBuilder validates and plans the complete result before replacing an
-existing `Output` collection. If validation or construction fails, the previous
-output remains unchanged.
+existing `Output` collection. New datablocks are created in a temporary
+collection. If validation or construction fails, temporary data is removed and
+the previous output remains unchanged. A successful build commits the new
+collection as `Output` and removes the replaced generated data.
 
 The public exception hierarchy is:
 
@@ -136,6 +176,9 @@ those paths:
 ```powershell
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py" -- --output-dir "C:\Temp\TrackBuilderSamples" --original-sample "Blender\TrackBuilder\SampleInput.blend"
 ```
+
+Each generated scene records its build parameters and expected result in
+`track_builder_*` scene custom properties.
 
 Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
 0.005-degree turn and must be rejected. Sample 10 uses a segment length that
