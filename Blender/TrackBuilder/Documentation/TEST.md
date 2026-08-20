@@ -62,6 +62,7 @@ The suite covers:
 - Complete barrier-material sequences and adjusted segment lengths.
 - Material-list validation.
 - Minimum-turn-angle and one-segment rejection.
+- Existing-output editability and child-collection validation.
 - Preservation of an existing output after a rejected build.
 
 ## Inspect test artifacts

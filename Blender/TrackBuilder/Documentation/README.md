@@ -40,7 +40,8 @@ Each outline must:
 
 Every object found recursively in `Input` must be a valid outline. Inner outlines
 cannot contain one another. `Input` and `Output` cannot be nested inside each
-other or share objects.
+other or share objects. An existing `Output` collection must be local, editable,
+and contain no child collections.
 
 TrackBuilder reads dependency-graph-evaluated geometry, including modifiers,
 and converts it to world space before validation. The `Input` collection, its

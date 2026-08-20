@@ -279,6 +279,66 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertIs(output, bpy.data.collections.get("Output"))
         self.assertEqual(signature, _output_signature(output))
 
+    def test_existing_output_with_child_collection_is_rejected(self) -> None:
+        width, height, target, material_names = self.load_test_input(3)
+        output = TrackBuilder.build_track(width, height, target, material_names)
+        signature = _output_signature(output)
+        shared_child = bpy.data.collections.new("SharedOutputChild")
+        output.children.link(shared_child)
+        bpy.data.collections["Input"].children.link(shared_child)
+
+        with self.assertRaisesRegex(
+            TrackBuilder.TrackBuilderValidationError,
+            "existing Output collection must not contain child collections",
+        ):
+            TrackBuilder.build_track(width, height, target, material_names)
+
+        self.assertIs(output, bpy.data.collections.get("Output"))
+        self.assertEqual(signature, _output_signature(output))
+        self.assertIs(shared_child, bpy.data.collections.get("SharedOutputChild"))
+        self.assertIn(shared_child, output.children[:])
+        self.assertIn(shared_child, bpy.data.collections["Input"].children[:])
+        self.assertFalse(
+            any(
+                collection.name.startswith("__TrackBuilderPending_")
+                for collection in bpy.data.collections
+            )
+        )
+
+    def test_library_linked_output_is_rejected(self) -> None:
+        width, height, target, material_names = self.load_test_input(3)
+        library_path = os.path.join(TEST_ARTIFACT_DIRECTORY, "LinkedOutput.blend")
+        source_output = bpy.data.collections.new("Output")
+        bpy.data.libraries.write(library_path, {source_output})
+        bpy.data.collections.remove(source_output)
+
+        try:
+            with bpy.data.libraries.load(library_path, link=True) as (_, library_data):
+                library_data.collections = ["Output"]
+            linked_output = library_data.collections[0]
+            bpy.context.scene.collection.children.link(linked_output)
+            self.assertFalse(linked_output.is_editable)
+
+            with self.assertRaisesRegex(
+                TrackBuilder.TrackBuilderValidationError,
+                "existing Output collection must be local and editable",
+            ):
+                TrackBuilder.build_track(width, height, target, material_names)
+
+            self.assertIs(linked_output, bpy.data.collections.get("Output"))
+            self.assertFalse(
+                any(
+                    collection.name.startswith("__TrackBuilderPending_")
+                    for collection in bpy.data.collections
+                )
+            )
+        finally:
+            linked_output = bpy.data.collections.get("Output")
+            if linked_output is not None:
+                bpy.data.collections.remove(linked_output, do_unlink=True)
+            if os.path.isfile(library_path):
+                os.remove(library_path)
+
 
 def _main() -> None:
     _prepare_artifact_directory()

@@ -438,6 +438,14 @@ def _validate_collection_separation(
 ) -> None:
     if output_collection is None:
         return
+    if not output_collection.is_editable:
+        raise TrackBuilderValidationError(
+            "The existing Output collection must be local and editable"
+        )
+    if output_collection.children:
+        raise TrackBuilderValidationError(
+            "The existing Output collection must not contain child collections"
+        )
     if _collection_contains(input_collection, output_collection) or _collection_contains(
         output_collection, input_collection
     ):
