@@ -25,8 +25,8 @@ collection recursively contains:
 - Exactly one outer-track outline inside the ground outline.
 - Zero or more inner-track outlines inside the outer-track outline.
 
-TrackBuilder identifies these roles from geometric containment, so the input
-objects do not need special names.
+TrackBuilder identifies these roles by determining how the outlines enclose one another,
+so the input objects do not need special names.
 
 Each outline must:
 
