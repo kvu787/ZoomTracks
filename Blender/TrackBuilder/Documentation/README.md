@@ -161,6 +161,20 @@ TrackBuilder does not perform boolean cleanup.
 
 ### Adaptive smooth-curve barriers
 
+Smooth curve barriers use offset-aware adaptive sampling so their away-facing
+silhouette can be smoother than Blender's normally evaluated outline. Blender's
+evaluated points remain the exact track-facing contact boundary, but simply
+offsetting those same points can make the exposed side of a wide barrier look
+faceted, especially around tighter bends.
+
+To avoid that faceting, TrackBuilder evaluates a temporary, higher-resolution
+version of the spline and keeps additional points only where the generated
+away-facing offset needs them to follow the curve smoothly. This does not add
+points to the contact boundary, change the track or island fill, or modify the
+input Curve object. In effect, the barrier is a ribbon whose track-facing edge
+preserves Blender's normal evaluation while its away-facing edge is allowed to
+use as much detail as its offset shape requires.
+
 For smooth Bézier and NURBS barrier outlines, TrackBuilder treats the source
 curve and its away-from-track offset as two independently sampled sides of a
 ribbon:
