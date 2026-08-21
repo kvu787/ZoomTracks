@@ -3,10 +3,11 @@
 This folder is a self-contained experimental TrackBuilder implementation. It does
 not import or modify the production implementation in `Blender/TrackBuilder`.
 
-The approach treats the source curve and the away-from-track offset as a ribbon,
-then retains samples only where either side needs them. It is intended to preserve
-the current infinite-offset-line/miter meaning while putting geometry in the
-regions where the generated silhouette would otherwise become faceted.
+The approach treats the source curve and the away-from-track offset as a ribbon.
+The track-facing contact edge keeps exactly the vertex/edge topology of Blender's
+normally evaluated input outline, while the away-from-track edge is sampled
+adaptively wherever its generated silhouette would otherwise become faceted. It
+preserves the current infinite-offset-line/miter meaning.
 
 ## How it works
 
@@ -18,35 +19,67 @@ For each smooth Bézier or NURBS outline:
    with a minimum reference resolution of 256 and maximum of 1024.
 3. For a barrier outline, it constructs a dense miter offset on the correct side:
    right of the CCW outer outline and left of each CCW inner outline.
-4. Dense parameter stations are paired with points that lie on the authored
-   contact segments. Every authored contact vertex is forced into the result.
-5. A closed, paired simplifier checks the constrained source path and dense offset.
-   It subdivides until the maximum chord deviation is no greater than
+4. Dense parameter stations are paired with points on the authored contact
+   segments for error measurement. Every authored contact vertex forces a
+   corresponding offset station, but dense stations are not emitted on the
+   contact edge.
+5. A closed, paired simplifier selects the offset stations needed until the
+   maximum chord deviation is no greater than
    `max(0.0001, W * 0.005)` and the accumulated turn per retained interval is no
    greater than 5 degrees.
-6. The retained source path is used by both the fill triangulation and the
-   track-facing side of every barrier. The retained offset path is used only for
-   the away-from-track side.
+6. The original normally evaluated source path is used by both fill triangulation
+   and the track-facing side of every barrier. The independently retained offset
+   path is used only for the away-from-track side.
 7. Material segments are sliced after sampling, using distance along the retained
    source outline exactly as production TrackBuilder does.
 
-The supplied issue scene produces 364 samples on the outer curve and 338 on the
-inner curve, from 4,608-point dense references. The measured largest turn on the
-retained offset paths is approximately 6.8 degrees because two accepted intervals
-meet at a retained station.
+The supplied issue scene keeps 144 contact vertices on each input outline and
+produces 364 adaptive offset samples on the outer curve and 338 on the inner
+curve, from 4,608-point dense references. The measured largest turn on the retained
+offset paths is approximately 6.8 degrees because two accepted intervals meet at
+a retained station.
 
 ## Why the barrier remains fitted to the outline
 
-The source path contains every authored evaluated vertex, plus optional points
-interpolated on individual authored segments. No result edge can skip an authored
-corner, and no source point comes from the higher-resolution mathematical curve.
-The track/island triangulation and barrier source edge then consume this same list.
+The source path is exactly the normally evaluated input list: it contains every
+authored evaluated vertex in order and contains no adaptive points interpolated
+from the higher-resolution reference. The track/island triangulation and barrier
+contact edge consume this same list. Offset samples are stored separately and may
+be much denser.
 
 The saved-example audit measures a maximum source-edge deviation of
 `0.00000853` Blender units, below the scene's `0.0000264` float/scale tolerance;
-every authored vertex is present with zero measured error. Tests also check every
-sampled source point is present in both fill and barrier plans and that input curve
-datablocks, resolutions, and control points remain unchanged.
+every authored vertex is present with zero measured error. Tests also check that
+the contact list equals the evaluated input list, the offset remains adaptive,
+material cuts remain permitted, every contact vertex is present in the fill and
+barrier plans, and input curve datablocks, resolutions, and control points remain
+unchanged.
+
+## Adaptive vertices versus material-cut vertices
+
+Adaptive refinement and colored barrier slicing deliberately follow different
+rules:
+
+- Adaptive refinement may add vertices only to the away-from-track offset edge.
+  It must not add collinear vertices to the track-facing contact edge.
+- Material slicing may add a contact vertex where a red/white boundary falls
+  inside an evaluated input edge. That vertex is necessary to preserve the
+  requested segment lengths and transition positions; it is permitted and is not
+  snapped to an input vertex.
+
+For example, if one evaluated input edge is `A----------------B`, adaptive
+sampling leaves that contact edge as `A----------------B`. If a material boundary
+falls at `X`, the generated barrier objects may instead meet at
+`A--------X--------B`. There may be one such additional point per internal
+material boundary, but there must not be a run of adaptive collinear points along
+`A-B`.
+
+Material-cut points exist only in the sliced barrier plans. They are not added to
+the outline used by track/island fill triangulation. Consequently
+`track_builder_curve_sample_count` reports the evaluated contact count, while
+`track_builder_curve_offset_sample_count` reports the independently adaptive
+offset count. Individual barrier objects can still contain extra start/end
+vertices introduced by their material cuts.
 
 ## Vanilla curve contract
 
@@ -68,9 +101,10 @@ on global XY and has no faces. Ordinary object transforms and NURBS weights are
 supported. `POLY` splines remain exactly linear and are not resampled.
 
 The 0.01-degree authored-vertex rule remains unchanged for mesh objects. It is not
-applied to smooth curve samples because legitimate refinement necessarily creates
-near-collinear points. Curve miters use a numerically stable normal-bisector form;
-mesh miters retain the production code path.
+applied to evaluated curves or their smooth offset samples because legitimate
+curve evaluation and refinement can create near-collinear points. Curve miters use
+a numerically stable normal-bisector form; mesh miters retain the production code
+path.
 
 ## Files
 
@@ -138,7 +172,8 @@ report and inspectable fixture outputs under `TestArtifacts/`.
   explicit cost of exact visible contact without modifying the input curve.
 - The dense reference is still a finite Blender evaluation. The hard resolution
   and 20,000-point limits turn pathological inputs into explicit errors.
-- Subdivision preserves the authored source perimeter, so material segment counts
-  retain production's source-outline meaning.
+- Offset subdivision does not change the authored source perimeter, so material
+  segment counts retain production's source-outline meaning. Material slicing can
+  still subdivide contact edges at color transitions as described above.
 - Offset self-overlap remains allowed, matching production semantics. This is not
   a polygon-buffer/boolean cleanup implementation.

@@ -808,7 +808,10 @@ def _adaptive_curve_outline(
     )
     cumulative = _closed_cumulative_lengths(contact_reference)
     perimeter = cumulative[-1]
-    points = [contact_reference[index].copy() for index in selected]
+    # Adaptive stations belong only to the away-from-track edge.  The contact
+    # edge keeps the topology of Blender's normally evaluated input outline;
+    # _barrier_plans may still add endpoints where material segments are cut.
+    points = [point.copy() for point in outline.points]
     offset_points = [offset_reference[index].copy() for index in selected]
     offset_fractions = [cumulative[index] / perimeter for index in selected]
     return _Outline(
@@ -818,7 +821,7 @@ def _adaptive_curve_outline(
         True,
         outline.source_object,
         sampling_method=(
-            f"adaptive_contact=authored,offset_error={maximum_error:g},max_turn="
+            f"contact=authored_evaluated,offset=adaptive,offset_error={maximum_error:g},max_turn="
             f"{ADAPTIVE_MAXIMUM_TURN_DEGREES:g}deg,reference_resolution={resolution}"
         ),
         offset_points=offset_points,

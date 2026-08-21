@@ -25,6 +25,7 @@ if SCRIPT_DIRECTORY not in sys.path:
     sys.path.insert(0, SCRIPT_DIRECTORY)
 
 import bpy
+from mathutils import Vector
 
 import GenerateTrackBuilderSamples as samples
 import TrackBuilder
@@ -266,7 +267,7 @@ class TrackBuilderTests(unittest.TestCase):
         )
         return epsilon, base, outer, inner
 
-    def test_resolution_issue_example_is_adaptive_and_contacts_source_exactly(self) -> None:
+    def test_resolution_issue_example_adapts_only_offset_and_preserves_contact_topology(self) -> None:
         width, height, target, material_names = self.load_example_input()
         original_state = {
             obj.name: (
@@ -281,8 +282,8 @@ class TrackBuilderTests(unittest.TestCase):
         epsilon, base, outer, inner = self.prepared_example_outlines(width)
         base_counts = {outline.object_name: len(outline.points) for outline in base}
         base_by_name = {outline.object_name: outline for outline in base}
-        self.assertGreater(len(outer.points), base_counts[outer.object_name])
-        self.assertGreater(len(inner[0].points), base_counts[inner[0].object_name])
+        self.assertEqual(len(outer.points), base_counts[outer.object_name])
+        self.assertEqual(len(inner[0].points), base_counts[inner[0].object_name])
         self.assertLess(len(outer.points), 600)
         self.assertLess(len(inner[0].points), 600)
         for outline in [outer, *inner]:
@@ -296,7 +297,12 @@ class TrackBuilderTests(unittest.TestCase):
                 (round(float(point.x), 7), round(float(point.y), 7))
                 for point in outline.points
             }
-            self.assertTrue(authored_keys <= refined_keys)
+            self.assertEqual(refined_keys, authored_keys)
+            self.assertEqual(
+                [tuple(float(value) for value in point) for point in outline.points],
+                [tuple(float(value) for value in point) for point in authored.points],
+            )
+            self.assertGreater(len(outline.offset_points), len(outline.points))
             for point in outline.points:
                 self.assertLessEqual(
                     min(
@@ -366,13 +372,29 @@ class TrackBuilderTests(unittest.TestCase):
                 for point in outline.points
             }
             barrier_keys: set[tuple[float, float]] = set()
+            contact_keys: set[tuple[float, float]] = set()
             fill_keys: set[tuple[float, float]] = set()
+            barrier_plan_count = 0
             for plan in plans:
                 if plan.properties.get("track_builder_role") == barrier_role:
+                    barrier_plan_count += 1
                     bottom_count = len(plan.vertices) // 2
                     barrier_keys.update(
                         (round(float(x), 7), round(float(y), 7))
                         for x, y, _ in plan.vertices[:bottom_count]
+                    )
+                    contact_keys.update(
+                        (round(float(x), 7), round(float(y), 7))
+                        for x, y, _ in plan.vertices[:bottom_count]
+                        if min(
+                            TrackBuilder._distance_point_to_segment(
+                                Vector((x, y)),
+                                outline.points[index],
+                                outline.points[(index + 1) % len(outline.points)],
+                            )
+                            for index in range(len(outline.points))
+                        )
+                        <= epsilon
                     )
                 if plan.name in fill_names:
                     fill_keys.update(
@@ -380,6 +402,8 @@ class TrackBuilderTests(unittest.TestCase):
                         for x, y, _ in plan.vertices
                     )
             self.assertTrue(outline_keys <= barrier_keys)
+            self.assertTrue(outline_keys <= contact_keys)
+            self.assertEqual(len(contact_keys - outline_keys), barrier_plan_count - 1)
             self.assertTrue(outline_keys <= fill_keys)
 
         output = TrackBuilder.build_track(width, height, target, material_names)
@@ -393,7 +417,7 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertTrue(
             all(
                 str(obj["track_builder_curve_sampling"]).startswith(
-                    "adaptive_contact=authored,"
+                    "contact=authored_evaluated,offset=adaptive,"
                 )
                 for obj in curve_objects
             )
@@ -520,12 +544,20 @@ class TrackBuilderTests(unittest.TestCase):
             ["BarrierRed", "BarrierWhite"],
         )
         track = next(obj for obj in output.all_objects if obj.get("track_builder_role") == "track")
+        barrier = next(
+            obj for obj in output.all_objects if obj.get("track_builder_role") == "outer_barrier"
+        )
         self.assertTrue(
             str(track["track_builder_curve_sampling"]).startswith(
-                "adaptive_contact=authored,"
+                "contact=authored_evaluated,offset=adaptive,"
             )
         )
-        self.assertGreater(track["track_builder_curve_sample_count"], 16)
+        self.assertEqual(track["track_builder_curve_sample_count"], 16)
+        self.assertEqual(barrier["track_builder_curve_sample_count"], 16)
+        self.assertGreater(
+            barrier["track_builder_curve_offset_sample_count"],
+            barrier["track_builder_curve_sample_count"],
+        )
         self.assertEqual(curve.data.splines[0].resolution_u, original_resolution)
 
     def test_committed_inputs_build_and_write_artifacts(self) -> None:
