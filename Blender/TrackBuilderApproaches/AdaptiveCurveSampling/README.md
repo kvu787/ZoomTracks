@@ -24,9 +24,7 @@ For each smooth Bézier or NURBS outline:
    corresponding offset station, but dense stations are not emitted on the
    contact edge.
 5. A closed, paired simplifier selects the offset stations needed until the
-   maximum chord deviation is no greater than
-   `max(0.0001, W * 0.005)` and the accumulated turn per retained interval is no
-   greater than 5 degrees.
+   maximum chord deviation is no greater than `max(0.0001, W * 0.005)`.
 6. The original normally evaluated source path is used by both fill triangulation
    and the track-facing side of every barrier. The independently retained offset
    path is used only for the away-from-track side.
@@ -34,10 +32,8 @@ For each smooth Bézier or NURBS outline:
    source outline exactly as production TrackBuilder does.
 
 The supplied issue scene keeps 144 contact vertices on each input outline and
-produces 364 adaptive offset samples on the outer curve and 338 on the inner
-curve, from 4,608-point dense references. The measured largest turn on the retained
-offset paths is approximately 6.8 degrees because two accepted intervals meet at
-a retained station.
+produces 351 adaptive offset samples on the outer curve and 327 on the inner
+curve, from 4,608-point dense references.
 
 ## Why the barrier remains fitted to the outline
 

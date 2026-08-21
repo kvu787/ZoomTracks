@@ -30,7 +30,6 @@ CURVE_MAXIMUM_RESOLUTION = 1024
 CURVE_MAXIMUM_EVALUATED_POINTS = 20_000
 ADAPTIVE_OFFSET_ERROR_FACTOR = 0.005
 ADAPTIVE_MINIMUM_WORLD_ERROR = 1.0e-4
-ADAPTIVE_MAXIMUM_TURN_DEGREES = 5.0
 
 
 class TrackBuilderError(RuntimeError):
@@ -641,15 +640,6 @@ def _closed_cumulative_lengths(points: list[Vector]) -> list[float]:
     return cumulative
 
 
-def _local_turns(points: list[Vector]) -> list[float]:
-    turns: list[float] = []
-    for index, point in enumerate(points):
-        incoming = point - points[index - 1]
-        outgoing = points[(index + 1) % len(points)] - point
-        turns.append(abs(math.atan2(_cross_2d(incoming, outgoing), incoming.dot(outgoing))))
-    return turns
-
-
 def _cyclic_interpolate(points: list[Vector], station: Fraction) -> Vector:
     """Interpolate a cyclic polyline at a normalized rational station."""
 
@@ -712,7 +702,6 @@ def _adaptive_pair_indices(
     source: list[Vector],
     offset: list[Vector],
     maximum_error: float,
-    maximum_turn: float,
 ) -> list[int]:
     """Select common stations that approximate both sides of a closed ribbon."""
 
@@ -726,16 +715,8 @@ def _adaptive_pair_indices(
             + (offset[index] - offset[0]).length_squared
         ),
     )
-    turn_weights = [
-        max(first, second)
-        for first, second in zip(_local_turns(source), _local_turns(offset))
-    ]
     extended_source = source + [source[0]]
     extended_offset = offset + [offset[0]]
-    extended_turns = turn_weights + [turn_weights[0]]
-    prefix_turns = [0.0]
-    for turn in extended_turns:
-        prefix_turns.append(prefix_turns[-1] + turn)
 
     selected = {0, opposite}
     stack = [(0, opposite), (opposite, count)]
@@ -758,17 +739,9 @@ def _adaptive_pair_indices(
                 largest_error = error
                 error_index = index
 
-        total_turn = prefix_turns[end] - prefix_turns[start + 1]
-        if largest_error <= maximum_error and total_turn <= maximum_turn:
+        if largest_error <= maximum_error:
             continue
-        if largest_error > maximum_error:
-            split = error_index
-        else:
-            target_turn = (prefix_turns[start + 1] + prefix_turns[end]) * 0.5
-            split = min(
-                range(start + 1, end),
-                key=lambda index: abs(prefix_turns[index] - target_turn),
-            )
+        split = error_index
         selected.add(split % count)
         stack.append((start, split))
         stack.append((split, end))
@@ -801,7 +774,6 @@ def _adaptive_curve_outline(
                 contact_reference,
                 offset_reference,
                 maximum_error,
-                math.radians(ADAPTIVE_MAXIMUM_TURN_DEGREES),
             )
         )
         | forced_indices
@@ -821,8 +793,8 @@ def _adaptive_curve_outline(
         True,
         outline.source_object,
         sampling_method=(
-            f"contact=authored_evaluated,offset=adaptive,offset_error={maximum_error:g},max_turn="
-            f"{ADAPTIVE_MAXIMUM_TURN_DEGREES:g}deg,reference_resolution={resolution}"
+            f"contact=authored_evaluated,offset=adaptive,offset_error={maximum_error:g},"
+            f"reference_resolution={resolution}"
         ),
         offset_points=offset_points,
         offset_source_fractions=offset_fractions,

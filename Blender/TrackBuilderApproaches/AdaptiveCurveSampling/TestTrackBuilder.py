@@ -267,6 +267,23 @@ class TrackBuilderTests(unittest.TestCase):
         )
         return epsilon, base, outer, inner
 
+    def test_adaptive_pair_indices_uses_only_chord_error(self) -> None:
+        reference = [
+            Vector((0.0, 0.0)),
+            Vector((1.0, 0.01)),
+            Vector((2.0, -0.01)),
+            Vector((3.0, 0.01)),
+            Vector((4.0, 0.0)),
+            Vector((3.0, 1.0)),
+            Vector((2.0, 1.0)),
+            Vector((1.0, 1.0)),
+        ]
+
+        selected = TrackBuilder._adaptive_pair_indices(reference, reference, 0.011)
+
+        self.assertTrue({0, 4} <= set(selected))
+        self.assertTrue({1, 2, 3}.isdisjoint(selected))
+
     def test_resolution_issue_example_adapts_only_offset_and_preserves_contact_topology(self) -> None:
         width, height, target, material_names = self.load_example_input()
         original_state = {
@@ -347,11 +364,6 @@ class TrackBuilderTests(unittest.TestCase):
                     ),
                     maximum_error * 1.001,
                 )
-            maximum_turn = max(
-                math.degrees(turn) for turn in TrackBuilder._local_turns(outline.offset_points)
-            )
-            self.assertLessEqual(maximum_turn, 7.0)
-
         ground = next(item for item in base if not item.is_curve)
         plans = TrackBuilder._build_plans(
             ground,
