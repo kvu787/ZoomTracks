@@ -1,2 +1,7 @@
 # TrackBuilder test runs produce inspectable Blender scenes and a text report.
 /Blender/TrackBuilder/TestArtifacts/
+/Blender/TrackBuilderApproaches/AdaptiveCurveSampling/TestArtifacts/
+/Blender/TrackBuilderApproaches/UniformArcLengthSampling/TestArtifacts/
+/Blender/TrackBuilderApproaches/IncreasedCurveResolution/TestArtifacts/
+__pycache__/
+*.py[cod]
