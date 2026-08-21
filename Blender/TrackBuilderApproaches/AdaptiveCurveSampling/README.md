@@ -9,6 +9,19 @@ normally evaluated input outline, while the away-from-track edge is sampled
 adaptively wherever its generated silhouette would otherwise become faceted. It
 preserves the current infinite-offset-line/miter meaning.
 
+## Shape-authority clarification
+
+The underlying mathematical spline is authoritative for the away-from-track
+offset shape. The normally evaluated authored outline is authoritative only for
+the track-facing contact boundary.
+
+Consequently, the authored evaluation determines the contact edge's coordinates
+and topology, but it does not constrain the away edge to the same discrete shape,
+curvature, or resolution. The away edge is reconstructed from a higher-resolution
+evaluation of the mathematical spline and may therefore appear substantially
+smoother than the authored outline. This difference is intentional in this
+experiment rather than an incidental subdivision of the authored offset.
+
 ## How it works
 
 For each smooth Bézier or NURBS outline:
