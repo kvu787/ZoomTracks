@@ -30,7 +30,7 @@ so the input objects do not need special names.
 
 Each outline must:
 
-- Be a mesh or legacy Curve object containing exactly one closed loop. Curves
+- Be a mesh or Curve object containing exactly one closed loop. Curves
   must have exactly one cyclic spline.
 - Have no faces, loose vertices, branches, self-intersections, adjacent-edge
   backtracking, or zero-length edges in its normally evaluated geometry.
