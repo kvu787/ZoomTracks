@@ -42,7 +42,8 @@ For each smooth Bézier or NURBS outline:
    and the track-facing side of every barrier. The independently retained offset
    path is used only for the away-from-track side.
 7. Material segments are sliced after sampling, using distance along the retained
-   source outline exactly as production TrackBuilder does.
+   source outline exactly as production TrackBuilder does. (TODO: maybe do the material
+   slicing based on the offset outline since that could be higher resolution?)
 
 The supplied issue scene keeps 144 contact vertices on each input outline and
 produces 351 adaptive offset samples on the outer curve and 327 on the inner
