@@ -1,7 +1,7 @@
 # TrackBuilder
 
 TrackBuilder converts closed 2D Blender outlines into a triangulated track,
-surrounding ground, filled islands, and segmented 3D barriers. Smooth curve
+surrounding ground, filled islands, and color segmented 3D barriers. Smooth curve
 barriers use offset-aware adaptive sampling so their away-facing silhouette can
 be smoother than Blender's normal evaluated outline without changing the input
 curve or the track-facing contact boundary.
