@@ -348,10 +348,7 @@ class TrackBuilderTests(unittest.TestCase):
                 dense_source,
                 dense_offset,
             )
-            maximum_error = max(
-                TrackBuilder.ADAPTIVE_MINIMUM_WORLD_ERROR,
-                width * TrackBuilder.ADAPTIVE_OFFSET_ERROR_FACTOR,
-            )
+            maximum_error = width * TrackBuilder.ADAPTIVE_OFFSET_ERROR_FACTOR
             for point in offset_reference:
                 self.assertLessEqual(
                     min(
@@ -657,6 +654,27 @@ class TrackBuilderTests(unittest.TestCase):
         ):
             TrackBuilder.build_track(width, height, target, material_names[:1])
         self.assertIsNone(bpy.data.collections.get("Output"))
+
+    def test_numeric_parameters_accept_point_one_and_reject_smaller_values(self) -> None:
+        _, _, _, material_names = self.load_test_input(2)
+        output = TrackBuilder.build_track(0.1, 0.1, 0.1, material_names)
+        self.assert_valid_output(output, expected_inner_count=0)
+
+        signature = _output_signature(output)
+        invalid_parameters = {
+            "W": (math.nextafter(0.1, 0.0), 0.1, 0.1, material_names),
+            "H": (0.1, math.nextafter(0.1, 0.0), 0.1, material_names),
+            "segment_length": (0.1, 0.1, math.nextafter(0.1, 0.0), material_names),
+        }
+        for name, parameters in invalid_parameters.items():
+            with self.subTest(parameter=name):
+                with self.assertRaisesRegex(
+                    TrackBuilder.TrackBuilderValidationError,
+                    rf"^{name} must be a finite number greater than or equal to 0\.1$",
+                ):
+                    TrackBuilder.build_track(*parameters)
+                self.assertIs(output, bpy.data.collections.get("Output"))
+                self.assertEqual(signature, _output_signature(output))
 
     def test_small_turn_angle_sample_throws(self) -> None:
         parameters = self.load_test_input(9)

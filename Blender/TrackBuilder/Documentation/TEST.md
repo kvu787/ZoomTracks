@@ -87,7 +87,8 @@ The suite covers:
 - Material-cut behavior with independently sampled ribbon sides.
 - Preservation of input curve datablocks, control points, and resolutions.
 - Rejection of unsupported curve features.
-- Material-list, minimum-turn-angle, and one-segment validation.
+- Numeric-parameter minimums, material-list, minimum-turn-angle, and one-segment
+  validation.
 - Existing-output editability and child-collection validation.
 - Transactional preservation of an existing output after rejected builds.
 

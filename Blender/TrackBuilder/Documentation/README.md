@@ -102,9 +102,9 @@ Parameters:
 - `material_names`: Ordered Blender material names used repeatedly on barrier
   segments.
 
-All numeric parameters must be finite and greater than zero. At least two
-non-empty barrier-material names are required, every name must resolve to an
-existing Blender material, and repeated names are allowed.
+`W`, `H`, and `segment_length` must each be finite and greater than or equal to
+`0.1`. At least two non-empty barrier-material names are required, every name
+must resolve to an existing Blender material, and repeated names are allowed.
 
 Example from Blender's Python console:
 
@@ -187,8 +187,8 @@ ribbon:
    miter offset is constructed to the right of the CCW outer outline or left of
    a CCW inner outline.
 4. The offset is simplified adaptively until its maximum chord deviation is no
-   greater than `max(0.0001, W * 0.005)`. Every normally evaluated contact vertex
-   forces a corresponding offset station.
+   greater than `W * 0.005`. Every normally evaluated contact vertex forces a
+   corresponding offset station.
 5. Adaptive stations add geometry only to the away edge. Material boundaries may
    independently add endpoints to either side when a segment cut falls inside an
    existing edge.

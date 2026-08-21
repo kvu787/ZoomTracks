@@ -23,13 +23,13 @@ from mathutils.geometry import delaunay_2d_cdt
 ABSOLUTE_TOLERANCE_FACTOR = 1.0e-7
 INTEGER_RATIO_TOLERANCE = 1.0e-10
 MINIMUM_TURN_ANGLE_DEGREES = 0.01
+MINIMUM_BARRIER_SEGMENT_DIMENSION = 0.1
 MAX_SEGMENTS_PER_OUTLINE = 10_000
 CURVE_REFERENCE_RESOLUTION_MULTIPLIER = 32
 CURVE_REFERENCE_MINIMUM_RESOLUTION = 256
 CURVE_MAXIMUM_RESOLUTION = 1024
 CURVE_MAXIMUM_EVALUATED_POINTS = 20_000
 ADAPTIVE_OFFSET_ERROR_FACTOR = 0.005
-ADAPTIVE_MINIMUM_WORLD_ERROR = 1.0e-4
 
 
 class TrackBuilderError(RuntimeError):
@@ -138,12 +138,18 @@ def _point_in_polygon(point: Vector, polygon: list[Vector]) -> bool:
     return inside
 
 
-def _positive_finite_number(name: str, value: object) -> float:
+def _validated_barrier_segment_dimension(name: str, value: object) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise TrackBuilderValidationError(f"{name} must be a finite number greater than zero")
+        raise TrackBuilderValidationError(
+            f"{name} must be a finite number greater than or equal to "
+            f"{MINIMUM_BARRIER_SEGMENT_DIMENSION:g}"
+        )
     result = float(value)
-    if not math.isfinite(result) or result <= 0.0:
-        raise TrackBuilderValidationError(f"{name} must be a finite number greater than zero")
+    if not math.isfinite(result) or result < MINIMUM_BARRIER_SEGMENT_DIMENSION:
+        raise TrackBuilderValidationError(
+            f"{name} must be a finite number greater than or equal to "
+            f"{MINIMUM_BARRIER_SEGMENT_DIMENSION:g}"
+        )
     return result
 
 
@@ -767,7 +773,7 @@ def _adaptive_curve_outline(
         dense_source,
         dense_offset,
     )
-    maximum_error = max(ADAPTIVE_MINIMUM_WORLD_ERROR, width * ADAPTIVE_OFFSET_ERROR_FACTOR)
+    maximum_error = width * ADAPTIVE_OFFSET_ERROR_FACTOR
     selected = sorted(
         set(
             _adaptive_pair_indices(
@@ -1342,7 +1348,7 @@ def build_track(
 ) -> bpy.types.Collection:
     """Validate the current file and transactionally rebuild its Output collection.
 
-    ``W``, ``H``, and ``segment_length`` must be finite and positive.
+    ``W``, ``H``, and ``segment_length`` must be finite and at least 0.1.
     ``material_names`` must be a list of at least two existing Blender materials.
     The current file must satisfy the input contract documented in
     ``Documentation/README.md``.
@@ -1351,9 +1357,9 @@ def build_track(
     failures preserve the existing output and raise a ``TrackBuilderError``.
     """
 
-    width = _positive_finite_number("W", W)
-    height = _positive_finite_number("H", H)
-    target_length = _positive_finite_number("segment_length", segment_length)
+    width = _validated_barrier_segment_dimension("W", W)
+    height = _validated_barrier_segment_dimension("H", H)
+    target_length = _validated_barrier_segment_dimension("segment_length", segment_length)
     barrier_materials = _validated_materials(material_names)
 
     input_collection = bpy.data.collections.get("Input")
