@@ -36,7 +36,7 @@ tests, run `Blender\TrackBuilder\TestTrackBuilder.py`. Each run writes inspectab
 `.blend` results and an overall report to the gitignored
 `Blender\TrackBuilder\TestArtifacts` directory. Never commit those artifacts.
 
-# While reviewing
+# While reviewing the Unity C# code
 
 Ignore this stuff:
 * Commented out code
