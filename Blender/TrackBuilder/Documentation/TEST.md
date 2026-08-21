@@ -24,7 +24,7 @@ and the report remain temporary.
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Generates and synchronizes committed input fixtures without importing or running TrackBuilder |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Runs integration, regression, adaptive-quality, and rollback tests |
 | [`TestInputs`](../TestInputs) | Ten committed `.blend` scenes containing `Input` but no generated `Output` |
-| [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed adaptive-sampling example pair |
+| [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed adaptive-sampling output from its bundled input |
 | [`Examples`](../Examples) | Input-only curvature issue scene and its inspectable canonical output |
 
 ## Generate committed test inputs
@@ -52,11 +52,12 @@ Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
 0.005-degree mesh turn and must be rejected. Sample 10 uses a segment length that
 would produce one barrier segment and must also be rejected.
 
-## Regenerate the committed example
+## Regenerate the committed example output
 
-The example generator reads `Blender\ResolutionCurvatureIssue.blend`, removes its
-existing output in memory, writes the input-only example, runs canonical
-TrackBuilder, and writes the inspectable output:
+The example generator reads the bundled input-only
+`Blender\TrackBuilder\Examples\ResolutionCurvatureIssue_Input.blend`, runs
+canonical TrackBuilder, and writes the inspectable output beside it. It does not
+read or write files outside `Blender\TrackBuilder`:
 
 ```powershell
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateExamples.py"

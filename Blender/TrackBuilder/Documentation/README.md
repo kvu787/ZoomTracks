@@ -12,7 +12,7 @@ Blender 4.5 and uses only Blender's bundled Python libraries.
 | [`TrackBuilderCLI.py`](../TrackBuilderCLI.py) | Blender command-line wrapper |
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Committed test-fixture generator |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Integration and geometry regression suite |
-| [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed curve-sampling example |
+| [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed curve-sampling output from its bundled input |
 | [`Examples`](../Examples) | Inspectable adaptive-sampling input and output |
 | [`TEST.md`](TEST.md) | Test commands, fixtures, coverage, and artifacts |
 
@@ -187,7 +187,7 @@ ribbon:
    miter offset is constructed to the right of the CCW outer outline or left of
    a CCW inner outline.
 4. The offset is simplified adaptively until its maximum chord deviation is no
-   greater than `W * 0.005`. Every normally evaluated contact vertex forces a
+   greater than `W * 0.001`. Every normally evaluated contact vertex forces a
    corresponding offset station.
 5. Adaptive stations add geometry only to the away edge. Material boundaries may
    independently add endpoints to either side when a segment cut falls inside an
