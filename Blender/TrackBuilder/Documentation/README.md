@@ -114,7 +114,7 @@ import sys
 sys.path.insert(0, r"C:\path\to\ZoomTracks\Blender\TrackBuilder")
 from TrackBuilder import build_track
 
-output = build_track(0.3, 0.8, 2.5, ["red", "blue"])
+output = build_track(width=0.3, height=0.8, length=2.5, colors=["red", "blue"])
 ```
 
 The function returns the newly committed Blender `Output` collection.
