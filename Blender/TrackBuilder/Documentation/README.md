@@ -1,13 +1,8 @@
 # TrackBuilder
 
 TrackBuilder converts closed 2D Blender outlines into a triangulated track,
-surrounding ground, filled islands, and color segmented 3D barriers. Smooth curve
-barriers use offset-aware adaptive sampling so their away-facing silhouette can
-be smoother than Blender's normal evaluated outline without changing the input
-curve or the track-facing contact boundary.
-
-TrackBuilder runs inside Blender 4.5 and uses only Blender's bundled Python
-libraries.
+surrounding ground, filled islands, and color segmented 3D barriers. It runs inside
+Blender 4.5 and uses only Blender's bundled Python libraries.
 
 ## Files
 
