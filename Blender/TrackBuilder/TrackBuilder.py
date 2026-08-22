@@ -99,32 +99,6 @@ def _distance_point_to_segment(point: Vector, start: Vector, end: Vector) -> flo
     return (point - (start + edge * parameter)).length
 
 
-def _segments_are_close(
-    a: Vector,
-    b: Vector,
-    c: Vector,
-    d: Vector,
-    epsilon: float,
-) -> bool:
-    ab = b - a
-    cd = d - c
-    side_c = _cross_2d(ab, c - a)
-    side_d = _cross_2d(ab, d - a)
-    side_a = _cross_2d(cd, a - c)
-    side_b = _cross_2d(cd, b - c)
-    if (
-        ((side_c > 0.0 and side_d < 0.0) or (side_c < 0.0 and side_d > 0.0))
-        and ((side_a > 0.0 and side_b < 0.0) or (side_a < 0.0 and side_b > 0.0))
-    ):
-        return True
-    return min(
-        _distance_point_to_segment(a, c, d),
-        _distance_point_to_segment(b, c, d),
-        _distance_point_to_segment(c, a, b),
-        _distance_point_to_segment(d, a, b),
-    ) <= epsilon
-
-
 def _point_in_polygon(point: Vector, polygon: list[Vector]) -> bool:
     inside = False
     previous = polygon[-1]
@@ -308,7 +282,11 @@ def _world_epsilon(raw_outlines: list[_RawOutline]) -> float:
 
 
 def _ordered_validated_loop(raw: _RawOutline, epsilon: float) -> list[Vector]:
-    """Validate one evaluated outline and return its vertices in edge order."""
+    """Validate one outline's checked structure and return vertices in edge order.
+
+    Non-adjacent self-intersections and self-touching are intentionally unchecked
+    trusted-input preconditions documented in ``Documentation/README.md``.
+    """
 
     if raw.face_count:
         raise TrackBuilderValidationError(
@@ -399,37 +377,7 @@ def _ordered_validated_loop(raw: _RawOutline, epsilon: float) -> list[Vector]:
                 f"the minimum is {MINIMUM_TURN_ANGLE_DEGREES:g} degrees"
             )
 
-    for first_index in range(point_count):
-        a = points[first_index]
-        b = points[(first_index + 1) % point_count]
-        for second_index in range(first_index + 1, point_count):
-            if second_index == first_index + 1:
-                continue
-            if first_index == 0 and second_index == point_count - 1:
-                continue
-            c = points[second_index]
-            d = points[(second_index + 1) % point_count]
-            if _segments_are_close(a, b, c, d, epsilon):
-                raise TrackBuilderValidationError(
-                    f"Outline {raw.object_name!r} intersects or touches itself"
-                )
     return points
-
-
-def _validate_outline_separation(outlines: list[_Outline], epsilon: float) -> None:
-    for first_index, first in enumerate(outlines):
-        for second in outlines[first_index + 1 :]:
-            for edge_a in range(len(first.points)):
-                a = first.points[edge_a]
-                b = first.points[(edge_a + 1) % len(first.points)]
-                for edge_b in range(len(second.points)):
-                    c = second.points[edge_b]
-                    d = second.points[(edge_b + 1) % len(second.points)]
-                    if _segments_are_close(a, b, c, d, epsilon):
-                        raise TrackBuilderValidationError(
-                            f"Outlines {first.object_name!r} and {second.object_name!r} "
-                            "intersect or touch"
-                        )
 
 
 def _canonical_ccw(points: list[Vector], object_name: str, epsilon: float) -> list[Vector]:
@@ -446,6 +394,8 @@ def _canonical_ccw(points: list[Vector], object_name: str, epsilon: float) -> li
 
 
 def _validated_outlines(raw_outlines: list[_RawOutline], epsilon: float) -> list[_Outline]:
+    """Validate checked outline properties without pairwise edge comparisons."""
+
     outlines: list[_Outline] = []
     for raw in raw_outlines:
         validated = _ordered_validated_loop(raw, epsilon)
@@ -459,7 +409,6 @@ def _validated_outlines(raw_outlines: list[_RawOutline], epsilon: float) -> list
                 raw.source_object,
             )
         )
-    _validate_outline_separation(outlines, epsilon)
     return outlines
 
 
@@ -760,13 +709,11 @@ def _adaptive_pair_indices(
 def _adaptive_curve_outline(
     outline: _Outline,
     width: float,
-    offset_left: bool | None,
+    offset_left: bool,
     epsilon: float,
 ) -> _Outline:
     spline = outline.source_object.data.splines[0]
     if spline.type == "POLY":
-        return outline
-    if offset_left is None:
         return outline
     resolution = _curve_reference_resolution(outline.source_object)
     dense_source = _evaluated_curve_loop(outline.source_object, resolution, epsilon)
@@ -810,20 +757,6 @@ def _adaptive_curve_outline(
     )
 
 
-def _validate_refined_outline(outline: _Outline, epsilon: float) -> None:
-    points_3d = [Vector((point.x, point.y, 0.0)) for point in outline.points]
-    raw = _RawOutline(
-        outline.object_name,
-        outline.material,
-        points_3d,
-        [(index, (index + 1) % len(points_3d)) for index in range(len(points_3d))],
-        0,
-        outline.is_curve,
-        outline.source_object,
-    )
-    _ordered_validated_loop(raw, epsilon)
-
-
 def _refine_classified_outlines(
     ground: _Outline,
     outer: _Outline,
@@ -831,9 +764,8 @@ def _refine_classified_outlines(
     width: float,
     epsilon: float,
 ) -> tuple[_Outline, _Outline, list[_Outline]]:
-    refined_ground = (
-        _adaptive_curve_outline(ground, width, None, epsilon) if ground.is_curve else ground
-    )
+    """Adapt barrier offsets while preserving contact points and classification."""
+
     refined_outer = (
         _adaptive_curve_outline(outer, width, False, epsilon) if outer.is_curve else outer
     )
@@ -841,19 +773,7 @@ def _refine_classified_outlines(
         _adaptive_curve_outline(outline, width, True, epsilon) if outline.is_curve else outline
         for outline in inner
     ]
-    all_refined = [refined_ground, refined_outer, *refined_inner]
-    for outline in all_refined:
-        if outline.is_curve and outline.sampling_method != "evaluated_input":
-            _validate_refined_outline(outline, epsilon)
-    _validate_outline_separation(all_refined, epsilon)
-    classified_ground, classified_outer, classified_inner = _classify_outlines(all_refined)
-    if (
-        classified_ground.object_name != ground.object_name
-        or classified_outer.object_name != outer.object_name
-        or {item.object_name for item in classified_inner} != {item.object_name for item in inner}
-    ):
-        raise TrackBuilderGeometryError("Curve refinement changed outline containment roles")
-    return classified_ground, classified_outer, classified_inner
+    return ground, refined_outer, refined_inner
 
 
 def _collection_contains(
@@ -1353,8 +1273,8 @@ def build_track(
 
     ``W``, ``H``, and ``segment_length`` must be finite and at least 0.1.
     ``material_names`` must be a list of at least two existing Blender materials.
-    The current file must satisfy the input contract documented in
-    ``Documentation/README.md``.
+    The current file must satisfy the checked and trusted input preconditions
+    documented in ``Documentation/README.md``.
 
     Returns the newly committed ``Output`` collection. Validation or geometry
     failures preserve the existing output and raise a ``TrackBuilderError``.

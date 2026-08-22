@@ -88,6 +88,10 @@ The suite covers:
 - Material-cut behavior with independently sampled ribbon sides.
 - Preservation of input curve datablocks, control points, and resolutions.
 - Rejection of unsupported curve features.
+- Trusted-input treatment of non-adjacent self-intersections, self-touching, and
+  cross-outline edge relationships without pairwise edge-distance validation.
+- Curve refinement without revalidating or reclassifying unchanged contact
+  points.
 - Numeric-parameter minimums, material-list, minimum-turn-angle, and one-segment
   validation.
 - Existing-output editability and child-collection validation.

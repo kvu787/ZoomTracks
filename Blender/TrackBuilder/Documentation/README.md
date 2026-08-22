@@ -32,11 +32,10 @@ Each outline must:
 
 - Be a mesh or Curve object containing exactly one closed loop. Curves
   must have exactly one cyclic spline.
-- Have no faces, loose vertices, branches, self-intersections, adjacent-edge
-  backtracking, or zero-length edges in its normally evaluated geometry.
+- Have no faces, loose vertices, branches, adjacent-edge backtracking, or
+  zero-length edges in its normally evaluated geometry.
 - Be flat on the global XY plane after its world transform is applied.
 - Have exactly one material assigned.
-- Not touch or intersect another outline.
 
 Mesh outlines must have a turn angle of at least 0.01 degrees at every vertex.
 TrackBuilder rejects smaller turns instead of merging nearly collinear vertices.
@@ -51,6 +50,20 @@ and contain no child collections.
 Mesh objects are read from dependency-graph-evaluated geometry, including
 modifiers, and converted to world space before validation. The `Input`
 collection, its objects, and their datablocks are never modified.
+
+### Trusted edge-relationship preconditions
+
+TrackBuilder deliberately does not compare non-adjacent edge pairs. The caller
+must ensure that each outline does not self-intersect or self-touch and that
+distinct outlines do not touch or intersect. These are trusted input
+preconditions rather than checked validation rules.
+
+Violating either precondition can produce unexpected geometry without raising an
+exception. In that case the generated result may be committed normally, so
+transactional rollback is not a substitute for these preconditions. This choice
+keeps interactive builds fast for the tool's current single-user, trusted-input
+workflow. Possible future validation strategies and revisit conditions are
+recorded in [`TODO.md`](../TODO.md).
 
 ### Curve contract
 
@@ -74,16 +87,18 @@ Blender file.
 
 ### Geometric tolerance
 
-For distance-based validation, let `D` be the diagonal of the world-space XY
-bounding box containing all normally evaluated input vertices. TrackBuilder
-uses:
+For checked distance-based properties, let `D` be the diagonal of the
+world-space XY bounding box containing all normally evaluated input vertices.
+TrackBuilder uses:
 
 ```text
 epsilon = 1e-7 * max(1, D)
 ```
 
-Distances at or below `epsilon` count as touching or equal. The mesh turn-angle
-rule is independent of this distance tolerance.
+Distances at or below `epsilon` count as equal for checks such as edge length,
+planarity, and generated barrier-point distinctness. Pairwise edge relationships
+are not checked. The mesh turn-angle rule is independent of this distance
+tolerance.
 
 ## Python API
 
@@ -225,11 +240,13 @@ resolution.
 
 ## Failure and rollback behavior
 
-TrackBuilder validates and plans the complete result before replacing an
-existing `Output` collection. New datablocks are created in a temporary
-collection. If validation or construction fails, temporary data is removed and
-the previous output remains unchanged. A successful build commits the new
-collection as `Output` and removes the replaced generated data.
+TrackBuilder validates the checked input contract and plans the complete result
+before replacing an existing `Output` collection. New datablocks are created in
+a temporary collection. If validation or construction fails, temporary data is
+removed and the previous output remains unchanged. A successful build commits
+the new collection as `Output` and removes the replaced generated data. An
+unchecked self-intersection, self-touch, or cross-outline intersection may not
+fail and can therefore produce a committed unexpected result.
 
 The public exception hierarchy is:
 

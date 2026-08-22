@@ -1,23 +1,35 @@
 # TrackBuilder TODO
 
-These possible optimizations and simplifications were investigated separately
-from the minimum build-parameter contract. They are intentionally deferred.
+These possible validations, optimizations, and simplifications are intentionally
+deferred.
 
-## Geometry-validation broad phase
+## Revisit trusted pairwise edge relationships
 
-Add an epsilon-expanded axis-aligned bounding-box rejection before the exact
-calculations in `_segments_are_close`. A read-only prototype preserved output,
-passed the complete test suite, and substantially reduced validation time on the
-representative mesh and curve scenes.
+TrackBuilder intentionally does not compare non-adjacent edges within an outline
+or edges belonging to different outlines. Self-intersection, self-touching, and
+cross-outline touching/intersection are trusted input preconditions. Violations
+may produce a committed unexpected result without raising an exception.
 
-## Remove obsolete post-refinement validation
+The exhaustive checks were removed for the current single-user, trusted-input
+workflow. On `TrackBuilderSandbox/TrackBuilder -- test -- perf issue.blend`, the
+original implementation built in about 12.15 seconds, while removing pairwise
+edge checks and redundant post-refinement validation reduced the median to about
+1.19 seconds without changing the output geometry hash.
 
-`_refine_classified_outlines` revalidates outline contact points, rechecks outline
-separation, and reclassifies containment after adaptive curve refinement. The
-adaptive implementation now changes only `offset_points`, leaving the already
-validated contact points unchanged. Consider deleting `_validate_refined_outline`
-and returning the original ground/outer/inner classification after refining the
-outer and inner offsets.
+Revisit this decision when TrackBuilder gains another user, accepts imported or
+otherwise untrusted input, runs unattended in batch workflows, or encounters a
+real failure caused by intersecting outlines. Prefer a spatial index, sweep-line
+algorithm, or similarly subquadratic broad phase. A simpler epsilon-expanded
+axis-aligned bounding-box rejection preserved output and greatly reduced runtime
+in a read-only prototype, but retaining all quadratic pair iteration was still
+measurably slower than the trusted-input implementation.
+
+## Revisit post-refinement validation if contact points can change
+
+`_refine_classified_outlines` no longer revalidates or reclassifies outlines.
+Adaptive refinement changes only `offset_points`; contact `points` and their
+ground/outer/inner roles remain unchanged. Reintroduce appropriate validation if
+future refinement starts modifying contact points or containment roles.
 
 ## Simplify adaptive selection by authored edge
 

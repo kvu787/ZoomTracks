@@ -17,6 +17,7 @@ import shutil
 import sys
 import time
 import unittest
+from unittest import mock
 
 
 sys.dont_write_bytecode = True
@@ -283,6 +284,89 @@ class TrackBuilderTests(unittest.TestCase):
 
         self.assertTrue({0, 4} <= set(selected))
         self.assertTrue({1, 2, 3}.isdisjoint(selected))
+
+    def test_pairwise_edge_relationships_are_trusted_input_preconditions(self) -> None:
+        def raw_outline(
+            name: str,
+            coordinates: list[tuple[float, float]],
+        ) -> TrackBuilder._RawOutline:
+            vertices = [Vector((x, y, 0.0)) for x, y in coordinates]
+            return TrackBuilder._RawOutline(
+                name,
+                None,
+                vertices,
+                [
+                    (index, (index + 1) % len(vertices))
+                    for index in range(len(vertices))
+                ],
+                0,
+                False,
+                None,
+            )
+
+        star = raw_outline(
+            "SelfIntersectingStar",
+            [
+                (
+                    math.cos(math.tau * ((index * 2) % 5) / 5),
+                    math.sin(math.tau * ((index * 2) % 5) / 5),
+                )
+                for index in range(5)
+            ],
+        )
+        overlapping = [
+            raw_outline(
+                "OverlappingA",
+                [(-2.0, -2.0), (2.0, -2.0), (2.0, 2.0), (-2.0, 2.0)],
+            ),
+            raw_outline(
+                "OverlappingB",
+                [(0.0, -3.0), (3.0, -3.0), (3.0, 0.0), (0.0, 0.0)],
+            ),
+        ]
+
+        with mock.patch.object(
+            TrackBuilder,
+            "_distance_point_to_segment",
+            side_effect=AssertionError("pairwise edge-distance validation unexpectedly ran"),
+        ):
+            self.assertEqual(len(TrackBuilder._ordered_validated_loop(star, 1.0e-7)), 5)
+            self.assertEqual(len(TrackBuilder._validated_outlines(overlapping, 1.0e-7)), 2)
+
+    def test_curve_refinement_does_not_revalidate_unchanged_contact_points(self) -> None:
+        width, _, _, _ = self.load_example_input()
+        raw = TrackBuilder._read_raw_outlines(bpy.data.collections["Input"])
+        epsilon = TrackBuilder._world_epsilon(raw)
+        base = TrackBuilder._validated_outlines(raw, epsilon)
+        ground, outer, inner = TrackBuilder._classify_outlines(base)
+        contact_points = {
+            outline.object_name: [tuple(float(value) for value in point) for point in outline.points]
+            for outline in [ground, outer, *inner]
+        }
+
+        with mock.patch.object(
+            TrackBuilder,
+            "_ordered_validated_loop",
+            side_effect=AssertionError("curve refinement unexpectedly revalidated contact points"),
+        ), mock.patch.object(
+            TrackBuilder,
+            "_classify_outlines",
+            side_effect=AssertionError("curve refinement unexpectedly reclassified outlines"),
+        ):
+            refined_ground, refined_outer, refined_inner = TrackBuilder._refine_classified_outlines(
+                ground,
+                outer,
+                inner,
+                width,
+                epsilon,
+            )
+
+        self.assertIs(refined_ground, ground)
+        for outline in [refined_ground, refined_outer, *refined_inner]:
+            self.assertEqual(
+                [tuple(float(value) for value in point) for point in outline.points],
+                contact_points[outline.object_name],
+            )
 
     def test_resolution_issue_example_adapts_only_offset_and_preserves_contact_topology(self) -> None:
         width, height, target, material_names = self.load_example_input()
