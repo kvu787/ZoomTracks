@@ -322,7 +322,7 @@ class TrackBuilderTests(unittest.TestCase):
         )
         return epsilon, base, outer, inner
 
-    def test_adaptive_pair_indices_uses_only_chord_error(self) -> None:
+    def test_adaptive_offset_indices_respect_authored_intervals(self) -> None:
         reference = [
             Vector((0.0, 0.0)),
             Vector((1.0, 0.01)),
@@ -334,7 +334,7 @@ class TrackBuilderTests(unittest.TestCase):
             Vector((1.0, 1.0)),
         ]
 
-        selected = TrackBuilder._adaptive_pair_indices(reference, reference, 0.011)
+        selected = TrackBuilder._adaptive_offset_indices(reference, {0, 4}, 0.011)
 
         self.assertTrue({0, 4} <= set(selected))
         self.assertTrue({1, 2, 3}.isdisjoint(selected))

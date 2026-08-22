@@ -677,53 +677,45 @@ def _contact_and_offset_reference(
     return contact, offset, forced_indices
 
 
-def _adaptive_pair_indices(
-    source: list[Vector],
+def _adaptive_offset_indices(
     offset: list[Vector],
+    forced_indices: set[int],
     maximum_error: float,
 ) -> list[int]:
-    """Select common stations that approximate both sides of a closed ribbon."""
+    """Simplify the offset independently inside every authored contact interval."""
 
-    count = len(source)
-    if count != len(offset):
-        raise ValueError("Adaptive source and offset references must have equal point counts")
-    opposite = max(
-        range(1, count),
-        key=lambda index: (
-            (source[index] - source[0]).length_squared
-            + (offset[index] - offset[0]).length_squared
-        ),
-    )
-    extended_source = source + [source[0]]
+    count = len(offset)
+    forced = sorted(forced_indices)
+    if not forced or forced[0] != 0 or forced[-1] >= count:
+        raise ValueError("Adaptive offset intervals require cyclically ordered forced stations")
     extended_offset = offset + [offset[0]]
 
-    selected = {0, opposite}
-    stack = [(0, opposite), (opposite, count)]
-    while stack:
-        start, end = stack.pop()
-        if end - start <= 1:
-            continue
-        source_start = extended_source[start]
-        source_end = extended_source[end]
-        offset_start = extended_offset[start]
-        offset_end = extended_offset[end]
-        largest_error = -1.0
-        error_index = start + 1
-        for index in range(start + 1, end):
-            error = max(
-                _distance_point_to_segment(extended_source[index], source_start, source_end),
-                _distance_point_to_segment(extended_offset[index], offset_start, offset_end),
-            )
-            if error > largest_error:
-                largest_error = error
-                error_index = index
+    selected = set(forced)
+    for interval_start, interval_end in zip(forced, forced[1:] + [count]):
+        stack = [(interval_start, interval_end)]
+        while stack:
+            start, end = stack.pop()
+            if end - start <= 1:
+                continue
+            offset_start = extended_offset[start]
+            offset_end = extended_offset[end]
+            largest_error = -1.0
+            error_index = start + 1
+            for index in range(start + 1, end):
+                error = _distance_point_to_segment(
+                    extended_offset[index],
+                    offset_start,
+                    offset_end,
+                )
+                if error > largest_error:
+                    largest_error = error
+                    error_index = index
 
-        if largest_error <= maximum_error:
-            continue
-        split = error_index
-        selected.add(split % count)
-        stack.append((start, split))
-        stack.append((split, end))
+            if largest_error <= maximum_error:
+                continue
+            selected.add(error_index % count)
+            stack.append((start, error_index))
+            stack.append((error_index, end))
     return sorted(selected)
 
 
@@ -745,15 +737,10 @@ def _adaptive_curve_outline(
         dense_offset,
     )
     maximum_error = width * ADAPTIVE_OFFSET_ERROR_FACTOR
-    selected = sorted(
-        set(
-            _adaptive_pair_indices(
-                contact_reference,
-                offset_reference,
-                maximum_error,
-            )
-        )
-        | forced_indices
+    selected = _adaptive_offset_indices(
+        offset_reference,
+        forced_indices,
+        maximum_error,
     )
     cumulative = _closed_cumulative_lengths(contact_reference)
     perimeter = cumulative[-1]
