@@ -10,7 +10,6 @@ outline. Results are committed transactionally.
 from __future__ import annotations
 
 import bisect
-from fractions import Fraction
 import math
 import uuid
 from dataclasses import dataclass
@@ -598,15 +597,18 @@ def _closed_cumulative_lengths(points: list[Vector]) -> list[float]:
     return cumulative
 
 
-def _cyclic_interpolate(points: list[Vector], station: Fraction) -> Vector:
-    """Interpolate a cyclic polyline at a normalized rational station."""
+def _cyclic_interpolate_ratio(
+    points: list[Vector],
+    station_numerator: int,
+    station_denominator: int,
+) -> Vector:
+    """Interpolate a cyclic polyline at an exact normalized rational station."""
 
-    scaled = station * len(points)
-    index = scaled.numerator // scaled.denominator
-    remainder = scaled - index
+    scaled_numerator = station_numerator * len(points)
+    index, remainder = divmod(scaled_numerator, station_denominator)
     if remainder == 0:
         return points[index % len(points)].copy()
-    parameter = float(remainder)
+    parameter = remainder / station_denominator
     return points[index % len(points)].lerp(
         points[(index + 1) % len(points)],
         parameter,
@@ -628,31 +630,50 @@ def _contact_and_offset_reference(
     )
     aligned_source = dense_source[start:] + dense_source[:start]
     aligned_offset = dense_offset[start:] + dense_offset[:start]
-    authored_stations = {
-        Fraction(index, len(authored_source)): index
-        for index in range(len(authored_source))
-    }
-    dense_stations = {
-        Fraction(index, len(aligned_source)): index
-        for index in range(len(aligned_source))
-    }
-    stations = sorted(set(authored_stations) | set(dense_stations))
+    authored_count = len(authored_source)
+    dense_count = len(aligned_source)
     forced_indices: set[int] = set()
     contact: list[Vector] = []
     offset: list[Vector] = []
-    for candidate_index, station in enumerate(stations):
-        authored_index = authored_stations.get(station)
-        if authored_index is None:
-            contact.append(_cyclic_interpolate(authored_source, station))
-        else:
+    authored_index = 0
+    dense_index = 0
+    while authored_index < authored_count or dense_index < dense_count:
+        authored_position = (
+            authored_index * dense_count
+            if authored_index < authored_count
+            else dense_count * authored_count
+        )
+        dense_position = (
+            dense_index * authored_count
+            if dense_index < dense_count
+            else dense_count * authored_count
+        )
+        candidate_index = len(contact)
+        if authored_position <= dense_position:
             contact.append(authored_source[authored_index].copy())
             forced_indices.add(candidate_index)
-        dense_index = dense_stations.get(station)
-        offset.append(
-            aligned_offset[dense_index].copy()
-            if dense_index is not None
-            else _cyclic_interpolate(aligned_offset, station)
-        )
+            if authored_position == dense_position:
+                offset.append(aligned_offset[dense_index].copy())
+                dense_index += 1
+            else:
+                offset.append(
+                    _cyclic_interpolate_ratio(
+                        aligned_offset,
+                        authored_index,
+                        authored_count,
+                    )
+                )
+            authored_index += 1
+        else:
+            contact.append(
+                _cyclic_interpolate_ratio(
+                    authored_source,
+                    dense_index,
+                    dense_count,
+                )
+            )
+            offset.append(aligned_offset[dense_index].copy())
+            dense_index += 1
     return contact, offset, forced_indices
 
 
@@ -820,9 +841,11 @@ def _triangulate_region(
     loops = [outer.points] + [hole.points for hole in holes]
     coordinates: list[Vector] = []
     constraint_edges: list[tuple[int, int]] = []
+    input_faces: list[list[int]] = []
     for loop in loops:
         start = len(coordinates)
         coordinates.extend(point.copy() for point in loop)
+        input_faces.append(list(range(start, start + len(loop))))
         constraint_edges.extend(
             (start + index, start + (index + 1) % len(loop))
             for index in range(len(loop))
@@ -831,22 +854,26 @@ def _triangulate_region(
     triangulated = delaunay_2d_cdt(
         coordinates,
         constraint_edges,
-        [],
+        input_faces,
         0,
         epsilon,
-        False,
+        True,
     )
     output_coordinates, _, output_faces = triangulated[:3]
+    output_face_origins = triangulated[5]
+    if len(output_faces) != len(output_face_origins):
+        raise TrackBuilderGeometryError(
+            f"Blender CDT returned inconsistent face provenance while constructing {name!r}"
+        )
     kept_faces: list[tuple[int, int, int]] = []
-    for face in output_faces:
+    for face, origins in zip(output_faces, output_face_origins):
         if len(face) != 3:
             raise TrackBuilderGeometryError(
                 f"Blender CDT returned a non-triangle while constructing {name!r}"
             )
-        centroid = sum((output_coordinates[index] for index in face), Vector((0.0, 0.0))) / 3.0
-        if not _point_in_polygon(centroid, outer.points):
-            continue
-        if any(_point_in_polygon(centroid, hole.points) for hole in holes):
+        # Input face zero is the outer loop.  Hole faces overlap it, so exactly
+        # [0] identifies triangles inside the outer loop and outside every hole.
+        if origins != [0]:
             continue
         face_tuple = tuple(face)
         triangle = [output_coordinates[index] for index in face_tuple]

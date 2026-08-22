@@ -8,6 +8,7 @@ TestArtifacts directory.
 from __future__ import annotations
 
 from datetime import datetime
+from fractions import Fraction
 import hashlib
 import io
 import json
@@ -96,6 +97,59 @@ def _output_geometry_hash(output: bpy.types.Collection) -> str:
 
 def _ensure_material(name: str) -> bpy.types.Material:
     return bpy.data.materials.get(name) or bpy.data.materials.new(name)
+
+
+def _legacy_cyclic_interpolate(points: list[Vector], station: Fraction) -> Vector:
+    scaled = station * len(points)
+    index = scaled.numerator // scaled.denominator
+    remainder = scaled - index
+    if remainder == 0:
+        return points[index % len(points)].copy()
+    return points[index % len(points)].lerp(
+        points[(index + 1) % len(points)],
+        float(remainder),
+    )
+
+
+def _legacy_contact_and_offset_reference(
+    authored_source: list[Vector],
+    dense_source: list[Vector],
+    dense_offset: list[Vector],
+) -> tuple[list[Vector], list[Vector], set[int]]:
+    """Reference implementation retained only for exact merge regression tests."""
+
+    start = min(
+        range(len(dense_source)),
+        key=lambda index: (dense_source[index] - authored_source[0]).length_squared,
+    )
+    aligned_source = dense_source[start:] + dense_source[:start]
+    aligned_offset = dense_offset[start:] + dense_offset[:start]
+    authored_stations = {
+        Fraction(index, len(authored_source)): index
+        for index in range(len(authored_source))
+    }
+    dense_stations = {
+        Fraction(index, len(aligned_source)): index
+        for index in range(len(aligned_source))
+    }
+    stations = sorted(set(authored_stations) | set(dense_stations))
+    forced_indices: set[int] = set()
+    contact: list[Vector] = []
+    offset: list[Vector] = []
+    for candidate_index, station in enumerate(stations):
+        authored_index = authored_stations.get(station)
+        if authored_index is None:
+            contact.append(_legacy_cyclic_interpolate(authored_source, station))
+        else:
+            contact.append(authored_source[authored_index].copy())
+            forced_indices.add(candidate_index)
+        dense_index = dense_stations.get(station)
+        offset.append(
+            aligned_offset[dense_index].copy()
+            if dense_index is not None
+            else _legacy_cyclic_interpolate(aligned_offset, station)
+        )
+    return contact, offset, forced_indices
 
 
 def _create_mesh_loop(
@@ -284,6 +338,111 @@ class TrackBuilderTests(unittest.TestCase):
 
         self.assertTrue({0, 4} <= set(selected))
         self.assertTrue({1, 2, 3}.isdisjoint(selected))
+
+    def test_contact_and_offset_reference_matches_exact_rational_union(self) -> None:
+        for authored_count, dense_count in [(4, 8), (3, 5), (5, 3), (7, 11)]:
+            with self.subTest(authored_count=authored_count, dense_count=dense_count):
+                authored = [
+                    Vector(
+                        (
+                            math.cos(math.tau * index / authored_count),
+                            math.sin(math.tau * index / authored_count),
+                        )
+                    )
+                    for index in range(authored_count)
+                ]
+                dense_source = [
+                    Vector(
+                        (
+                            math.cos(math.tau * index / dense_count),
+                            math.sin(math.tau * index / dense_count),
+                        )
+                    )
+                    for index in range(dense_count)
+                ]
+                dense_offset = [
+                    Vector((100.0 + index * index, -50.0 + index * 0.25))
+                    for index in range(dense_count)
+                ]
+                shift = min(2, dense_count - 1)
+                dense_source = dense_source[shift:] + dense_source[:shift]
+                dense_offset = dense_offset[shift:] + dense_offset[:shift]
+
+                expected = _legacy_contact_and_offset_reference(
+                    authored,
+                    dense_source,
+                    dense_offset,
+                )
+                actual = TrackBuilder._contact_and_offset_reference(
+                    authored,
+                    dense_source,
+                    dense_offset,
+                )
+
+                self.assertEqual(actual[2], expected[2])
+                self.assertEqual(
+                    [tuple(float(value) for value in point) for point in actual[0]],
+                    [tuple(float(value) for value in point) for point in expected[0]],
+                )
+                self.assertEqual(
+                    [tuple(float(value) for value in point) for point in actual[1]],
+                    [tuple(float(value) for value in point) for point in expected[1]],
+                )
+
+    def test_triangulation_uses_cdt_face_provenance(self) -> None:
+        material = _ensure_material("TriangulationTestMaterial")
+
+        def outline(name: str, coordinates: list[tuple[float, float]]) -> TrackBuilder._Outline:
+            return TrackBuilder._Outline(
+                name,
+                material,
+                [Vector(coordinate) for coordinate in coordinates],
+                False,
+                None,
+            )
+
+        cases = [
+            (
+                outline(
+                    "ConcaveOuter",
+                    [(0.0, 0.0), (8.0, 0.0), (8.0, 8.0), (4.0, 4.0), (0.0, 8.0)],
+                ),
+                [],
+            ),
+            (
+                outline("OuterWithHoles", [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0)]),
+                [
+                    outline("HoleA", [(2.0, 2.0), (4.0, 2.0), (4.0, 4.0), (2.0, 4.0)]),
+                    outline("HoleB", [(6.0, 6.0), (8.0, 6.0), (8.0, 8.0), (6.0, 8.0)]),
+                ],
+            ),
+        ]
+        for outer, holes in cases:
+            with self.subTest(case=outer.object_name), mock.patch.object(
+                TrackBuilder,
+                "_point_in_polygon",
+                side_effect=AssertionError("triangulation unexpectedly used Python containment"),
+            ):
+                plan = TrackBuilder._triangulate_region(
+                    outer,
+                    holes,
+                    1.0e-7,
+                    "TriangulationTest",
+                    material,
+                    "test",
+                )
+
+            triangles = [
+                [Vector(plan.vertices[index][:2]) for index in face]
+                for face in plan.faces
+            ]
+            self.assertTrue(all(len(face) == 3 for face in plan.faces))
+            self.assertTrue(all(TrackBuilder._signed_area(triangle) > 0.0 for triangle in triangles))
+            triangulated_area = sum(TrackBuilder._signed_area(triangle) for triangle in triangles)
+            expected_area = TrackBuilder._signed_area(outer.points) - sum(
+                TrackBuilder._signed_area(hole.points) for hole in holes
+            )
+            self.assertAlmostEqual(triangulated_area, expected_area, places=6)
 
     def test_pairwise_edge_relationships_are_trusted_input_preconditions(self) -> None:
         def raw_outline(
