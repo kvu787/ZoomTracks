@@ -10,11 +10,13 @@ Blender 4.5 and uses only Blender's bundled Python libraries.
 | --- | --- |
 | [`TrackBuilder.py`](../TrackBuilder.py) | Track-building library and Python API |
 | [`TrackBuilderCLI.py`](../TrackBuilderCLI.py) | Blender command-line wrapper |
+| [`BenchmarkTrackBuilder.py`](../BenchmarkTrackBuilder.py) | Repeatable benchmark and geometry-hash reporter |
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Committed test-fixture generator |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Integration and geometry regression suite |
 | [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed curve-sampling output from its bundled input |
 | [`Examples`](../Examples) | Inspectable adaptive-sampling input and output |
 | [`TEST.md`](TEST.md) | Test commands, fixtures, coverage, and artifacts |
+| [`PERFORMANCE_OPTIMIZATION.md`](PERFORMANCE_OPTIMIZATION.md) | Implemented algorithms, measurements, compatibility notes, and remaining limits |
 
 ## Input
 
@@ -149,7 +151,7 @@ Violating a trusted precondition may be caught incidentally by triangulation or
 barrier construction, but rejection is not guaranteed. The build can instead
 succeed and commit unexpected geometry, so a successful build and transactional
 rollback are not substitutes for these user checks. Possible future validation
-strategies and revisit conditions are recorded in [`TODO.md`](../TODO.md).
+strategies and revisit conditions are recorded in [`TODO.md`](TODO/TODO.md).
 
 TrackBuilder also does not require generated barrier polygons to be simple,
 non-overlapping, or contained within the fill regions. Beyond finite miters and
@@ -275,10 +277,14 @@ ribbon:
 3. The mathematical spline is authoritative for the away-facing shape. A dense
    miter offset is constructed to the right of the CCW outer outline or left of
    a CCW inner outline.
-4. The offset is simplified adaptively until its maximum chord deviation is no
-   greater than `W * 0.001`. Every normally evaluated contact vertex forces a
-   corresponding offset station.
-5. Adaptive stations add geometry only to the away edge. Material boundaries may
+4. Normally evaluated contact stations and dense reference stations are paired
+   by an exact integer two-pointer merge. Every normally evaluated contact
+   vertex forces a corresponding offset station.
+5. The dense offset is simplified independently between each pair of adjacent
+   forced contact stations. Only away-edge chord error needs to be measured
+   because the contact path inside an authored interval is linear. The maximum
+   offset deviation remains no greater than `W * 0.001`.
+6. Adaptive stations add geometry only to the away edge. Material boundaries may
    independently add endpoints to either side when a segment cut falls inside an
    existing edge.
 

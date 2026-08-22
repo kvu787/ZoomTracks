@@ -1,10 +1,11 @@
 # TrackBuilder TODO
 
-These possible validations, optimizations, and simplifications are intentionally
-deferred.
+These possible validations and architectural changes are intentionally deferred.
 
-The measured performance backlog, tradeoffs, and acceptance criteria are in
-[Documentation/PERFORMANCE_TODO.md](Documentation/PERFORMANCE_TODO.md).
+The completed 2026 performance work, measurements, and remaining performance
+limits are documented in
+[`../PERFORMANCE_OPTIMIZATION.md`](../PERFORMANCE_OPTIMIZATION.md). Historical
+prototypes and rejected options remain in [`PERFORMANCE_TODO.md`](PERFORMANCE_TODO.md).
 
 ## Revisit trusted pairwise edge relationships
 
@@ -34,21 +35,8 @@ Adaptive refinement changes only `offset_points`; contact `points` and their
 ground/outer/inner roles remain unchanged. Reintroduce appropriate validation if
 future refinement starts modifying contact points or containment roles.
 
-## Simplify adaptive selection by authored edge
-
-Every authored contact vertex is forced into the final result, and the contact
-path between adjacent authored vertices is linear. Consider simplifying each
-authored interval independently and measuring only offset chord error. A
-read-only prototype passed the complete suite while selecting fewer offset
-samples on the curvature issue scene. This deliberately changes generated
-geometry and would require regenerating the canonical example output.
-
 ## Lower-priority opportunities
 
-- Slice barrier contact and offset paths with monotonic cursors or bisected
-  ranges instead of scanning every retained point for every material segment.
 - Use squared distances for comparisons that do not require an actual distance.
-- Replace `_distinct_point_count` with an early-exit check that stops after three
-  distinct points.
 - Consider merging the one-segment and incomplete-material-cycle failures in
   `_segment_count`; the current separate branch provides a more specific error.

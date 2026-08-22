@@ -21,6 +21,7 @@ and the report remain temporary.
 
 | File | Purpose |
 | --- | --- |
+| [`BenchmarkTrackBuilder.py`](../BenchmarkTrackBuilder.py) | Times repeated builds and reports geometry hashes and output counts |
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Generates and synchronizes committed input fixtures without importing or running TrackBuilder |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Runs integration, regression, adaptive-quality, and rollback tests |
 | [`TestInputs`](../TestInputs) | Ten committed `.blend` scenes containing `Input` but no generated `Output` |
@@ -79,6 +80,13 @@ The suite covers:
 - Every committed success and expected-failure fixture.
 - Required output roles and non-empty mesh geometry.
 - Golden geometry for every successful mesh-only fixture.
+- The representative smooth-curve performance scene's bounded-error topology
+  hash, object count, vertex count, and face count.
+- Exact two-pointer station merging against the former rational-union reference,
+  including coincident, non-coincident, coprime, authored-denser, and
+  reference-denser station counts.
+- Blender CDT input-face provenance for concave regions and multiple holes,
+  without Python centroid-containment filtering.
 - Complete barrier-material sequences and adjusted segment lengths.
 - `POLY` curve behavior.
 - A generated cyclic Bézier outline.
@@ -96,6 +104,34 @@ The suite covers:
   validation.
 - Existing-output editability and child-collection validation.
 - Transactional preservation of an existing output after rejected builds.
+- Bounds-assisted classification of many disjoint inner loops.
+- Early-exit distinct-point validation.
+- Batched removal of exclusive generated objects, collections, and meshes while
+  preserving objects linked outside the removed collection and meshes with
+  external users.
+
+## Run the representative performance benchmark
+
+The benchmark opens the requested `.blend`, times only `build_track`, and prints
+one machine-readable `TRACK_BUILDER_BENCHMARK=` JSON record. It does not save the
+opened file.
+
+From the repository root:
+
+```powershell
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\BenchmarkTrackBuilder.py" -- --blend "Blender\TrackBuilderSandbox\TrackBuilder -- test -- perf issue.blend" --runs 9 --expected-hash eebbde3b05254530cf9a1d6a3902e485667896d025f2fdc2625ca42e61c0c8ed
+```
+
+The defaults match that representative scene: `W=1`, `H=0.1`,
+`segment_length=5`, and materials `BarrierRed BarrierWhite`. Override them with
+`--w`, `--height`, `--segment-length`, and `--materials`. Use `--warmup` only
+when intentionally measuring warmed repeated builds.
+
+Performance assertions are deliberately not part of the integration suite;
+wall-clock thresholds are machine- and Blender-build-dependent. The suite
+asserts the representative geometry oracle, while the benchmark reports timing.
+For comparisons intended for publication, use a fresh Blender process per
+sample and report the median and dispersion.
 
 ## Inspect test artifacts
 

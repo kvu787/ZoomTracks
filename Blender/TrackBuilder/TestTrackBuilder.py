@@ -42,6 +42,15 @@ EXAMPLE_INPUT_PATH = os.path.join(
     "Examples",
     "ResolutionCurvatureIssue_Input.blend",
 )
+PERFORMANCE_INPUT_PATH = os.path.abspath(
+    os.path.join(
+        SCRIPT_DIRECTORY,
+        "..",
+        "TrackBuilderSandbox",
+        "TrackBuilder -- test -- perf issue.blend",
+    )
+)
+PERFORMANCE_GEOMETRY_HASH = "eebbde3b05254530cf9a1d6a3902e485667896d025f2fdc2625ca42e61c0c8ed"
 TEST_ARTIFACT_RESULTS: list[tuple[str, str, str, str]] = []
 MESH_FIXTURE_GOLDEN_HASHES = {
     2: "40513fa0f4866aeec1bf53741a8dbfc708cab7622f875d541bf1b197aba9517e",
@@ -756,6 +765,25 @@ class TrackBuilderTests(unittest.TestCase):
                 )
                 output = TrackBuilder.build_track(*parameters)
                 self.assertEqual(_output_geometry_hash(output), expected_hash)
+
+    def test_representative_curve_output_matches_bounded_error_golden_geometry(self) -> None:
+        self.assertTrue(
+            os.path.isfile(PERFORMANCE_INPUT_PATH),
+            f"Missing representative performance input: {PERFORMANCE_INPUT_PATH}",
+        )
+        bpy.ops.wm.open_mainfile(filepath=PERFORMANCE_INPUT_PATH)
+
+        output = TrackBuilder.build_track(
+            1.0,
+            0.1,
+            5.0,
+            ["BarrierRed", "BarrierWhite"],
+        )
+
+        self.assertEqual(_output_geometry_hash(output), PERFORMANCE_GEOMETRY_HASH)
+        self.assertEqual(len(output.all_objects), 180)
+        self.assertEqual(sum(len(obj.data.vertices) for obj in output.all_objects), 14_236)
+        self.assertEqual(sum(len(obj.data.polygons) for obj in output.all_objects), 9_454)
 
     def test_poly_curve_remains_linear_and_unresampled(self) -> None:
         parameters = self.load_test_input(7)

@@ -2,9 +2,10 @@
 
 The public API is ``build_track(W, H, segment_length, material_names)``.
 Mesh outlines use their dependency-graph-evaluated geometry. Smooth curve
-outlines use a high-resolution Blender evaluation for the away-facing barrier
-edge while the track-facing edge remains exactly on the normally evaluated
-outline. Results are committed transactionally.
+outlines use a high-resolution Blender evaluation simplified independently
+inside each normally evaluated contact interval. The away-facing barrier stays
+within a bounded chord error while the track-facing edge remains exact. Results
+are committed transactionally.
 """
 
 from __future__ import annotations
