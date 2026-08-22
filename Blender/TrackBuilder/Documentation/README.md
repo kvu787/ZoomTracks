@@ -16,74 +16,146 @@ Blender 4.5 and uses only Blender's bundled Python libraries.
 | [`Examples`](../Examples) | Inspectable adaptive-sampling input and output |
 | [`TEST.md`](TEST.md) | Test commands, fixtures, coverage, and artifacts |
 
-## Input scene
+## Input
 
-The current `.blend` file must contain a collection named `Input`. That
-collection recursively contains:
+### Description
 
-- Exactly one ground outline.
-- Exactly one outer-track outline inside the ground outline.
-- Zero or more inner-track outlines inside the outer-track outline.
+- Input is a collection of outline objects with materials assigned to them.
+- `build_track` treats every unique object found recursively in the Blender collection named
+  `Input` as an outline
+- TrackBuilder classifies outlines from their containment depths
 
-TrackBuilder identifies these roles by determining how the outlines enclose one another,
-so the input objects do not need special names.
+### Input preconditions validated by the script
 
-Each outline must:
+TrackBuilder rejects the build before replacing `Output` when any of these
+checked preconditions fails:
 
-- Be a mesh or Curve object containing exactly one closed loop. Curves
-  must have exactly one cyclic spline.
-- Have no faces, loose vertices, branches, adjacent-edge backtracking, or
-  zero-length edges in its normally evaluated geometry.
-- Be flat on the global XY plane after its world transform is applied.
-- Have exactly one material assigned.
+- **Build arguments:**
+  - `W`, `H`, and `segment_length` are Python `int` or
+    `float` values (not booleans), are finite, and are at least `0.1`.
+    `material_names` is a list with at least two entries; every entry is a
+    non-empty string naming an existing Blender material. Repeated names are
+    allowed.
+- **Collections:**
+  - a collection named `Input` exists and recursively contains
+    at least two unique objects. If a collection named `Output` already exists,
+    it is local, editable, has no child collections, is not nested with `Input`,
+    and shares no objects with `Input`.
+- **Object types and materials:**
+  - every object found recursively in `Input` is
+    a Mesh or Curve, can be converted to normally evaluated mesh geometry, and
+    has exactly one non-empty material slot.
+- **Normally evaluated coordinates and topology:**
+  - every world-space coordinate
+    is finite; every outline has at least three evaluated vertices, has no faces,
+    lies on the global XY plane within `epsilon`, and has no projected edge of
+    length at or below `epsilon`. Edges have valid endpoints, no edge joins a
+    vertex to itself, no undirected edge is duplicated, there is exactly one edge
+    per vertex, every vertex has degree two, and traversing the edges visits every
+    vertex in exactly one closed loop. These checks reject faces, loose vertices,
+    branches, multiple loops, and adjacent zero-length edges.
+- **Per-outline local shape:**
+  - adjacent collinear edges do not reverse direction,
+    and the absolute signed area is greater than `epsilon` squared. Every turn in
+    an evaluated Mesh outline is at least `0.01` degrees. The turn-angle rule is
+    not applied to Curve objects because legitimate curve evaluation can produce
+    near-collinear samples.
+- **Curve data:**
+  - A Curve contains exactly one cyclic spline and uses only the
+    supported feature set. TrackBuilder rejects linked-library Curve objects or
+    datablocks; modifiers; constraints; parenting; object or data animation and
+    drivers; shape keys; a separate render resolution; curve offset, extrusion,
+    bevel geometry, bevel objects, or taper objects; non-zero control-point tilt;
+    and non-default control-point radius. Cyclic `POLY`, Bézier, and NURBS splines,
+    2D or 3D Curve dimensions, object transforms, and NURBS weights are otherwise
+    supported. `POLY` splines remain linear and are not adaptively resampled.
+- **Representative-point role classification:**
+  - Testing one representative
+    vertex from each outline against the other outlines produces exactly one
+    depth-zero ground outline, exactly one depth-one outer-track outline, and only
+    depth-two inner-track outlines after that. A depth greater than two or another
+    candidate count is rejected. This check detects nested inner outlines when
+    the trusted whole-boundary conditions in the next section hold.
+- **Smooth-curve reference geometry:**
+  - A Bézier or NURBS outer or inner outline's
+    denser temporary evaluation still has no faces, forms one closed degree-two
+    loop, is planar, has no edge at or below `epsilon`, has non-negligible signed
+    area, and contains no more than 20,000 evaluated points. Barrier miters must
+    also be defined and finite.
+- **Requested output feasibility:**
+  - Triangulation must return only triangles and
+    retain at least one triangle for the ground, track, and every island. Every
+    outer and inner loop must support at least one complete sequence of barrier
+    materials without making adjusted segments shorter than `segment_length`,
+    must require no more than 10,000 segments, and must give every segment at
+    least three `epsilon`-distinct polygon vertices.
 
-Mesh outlines must have a turn angle of at least 0.01 degrees at every vertex.
-TrackBuilder rejects smaller turns instead of merging nearly collinear vertices.
-This authored-vertex rule is not applied to Curve objects because legitimate
-curve evaluation can produce near-collinear samples.
+The final two groups are construction checks and can raise
+`TrackBuilderGeometryError` rather than `TrackBuilderValidationError`; either
+failure occurs before a new `Output` is committed. Mesh objects are checked from
+dependency-graph-evaluated geometry, including modifiers, at the current scene
+state. All evaluated objects are transformed to world space before validation.
+The `Input` collection, its objects, and their datablocks are never modified.
 
-Every object found recursively in `Input` must be a valid outline. Inner outlines
-cannot contain one another. `Input` and `Output` cannot be nested inside each
-other or share objects. An existing `Output` collection must be local, editable,
-and contain no child collections.
+### Input preconditions not validated by the script; user must ensure these
 
-Mesh objects are read from dependency-graph-evaluated geometry, including
-modifiers, and converted to world space before validation. The `Input`
-collection, its objects, and their datablocks are never modified.
+TrackBuilder deliberately performs no comparisons between non-adjacent boundary
+edges. The user must ensure all of the following:
 
-### Trusted edge-relationship preconditions
+- **Every outline is geometrically simple.**
+  - Non-adjacent edges of the same outline must not:
+    - cross,
+    - touch,
+    - overlap,
+    - retrace one another,
+    - or share a repeated point.
+- **Different outline boundaries are disjoint.**
+  - Edges belonging to different outlines must not
+    - cross,
+    - touch tangentially,
+    - share a point or edge,
+    - or overlap.
+  - Treat a separation at or below `epsilon` as touching.
+    - I.e. non-adjacent edges of one outline and edges of distinct outlines must remain more than `epsilon` apart.
+- **The outlines nest properly.**
+  - The ground outline encloses all other outlines.
+  - The outer-track boundary must lie wholly inside the ground boundary
+  - Every inner-track boundary must lie wholly inside the outer-track boundary
+  - Inner-track boundaries must be mutually disjoint and non-nested.
+    - TrackBuilder's representative-point tests do not establish whole-boundary containment.
+- **Curve paths satisfy those rules between control points.**
+  - For Bézier and
+    NURBS inputs, inspect the evaluated spline rather than only its control
+    polygon. The normally evaluated path must remain simple and separated; for
+    outer and inner barrier outlines, the denser reference path must do so as
+    well.
+- **Every valid object in `Input` is intentional.**
+  - TrackBuilder cannot
+    distinguish an accidental but structurally valid outline from a desired one;
+    it will classify such an object by containment and may generate another island.
+- **`Input` participates in the current evaluation context.**
+  - TrackBuilder finds the collection in file-wide `bpy.data.collections`.
+  - It does not verify that the collection and its objects are linked and enabled in the current scene and view layer.
+  - A detached or view-layer-excluded Mesh can be read without dependency-graph effects such as its modifiers.
+  - Ensure the current scene, view layer, frame, and modifier state are the ones intended for the build.
+- **An existing `Output` is disposable.**
+  - TrackBuilder verifies its collection
+    structure and editability, but not that it was produced by TrackBuilder or is
+    safe to replace. After a successful build, the old collection is removed;
+    objects not linked outside it are deleted, as are their mesh datablocks when
+    left unused.
 
-TrackBuilder deliberately does not compare non-adjacent edge pairs. The caller
-must ensure that each outline does not self-intersect or self-touch and that
-distinct outlines do not touch or intersect. These are trusted input
-preconditions rather than checked validation rules.
+Violating a trusted precondition may be caught incidentally by triangulation or
+barrier construction, but rejection is not guaranteed. The build can instead
+succeed and commit unexpected geometry, so a successful build and transactional
+rollback are not substitutes for these user checks. Possible future validation
+strategies and revisit conditions are recorded in [`TODO.md`](../TODO.md).
 
-Violating either precondition can produce unexpected geometry without raising an
-exception. In that case the generated result may be committed normally, so
-transactional rollback is not a substitute for these preconditions. This choice
-keeps interactive builds fast for the tool's current single-user, trusted-input
-workflow. Possible future validation strategies and revisit conditions are
-recorded in [`TODO.md`](../TODO.md).
-
-### Curve contract
-
-Curve objects may use cyclic `POLY`, Bézier, or NURBS splines. Both 2D and
-default 3D curves are accepted when their evaluated loop is flat on global XY
-and has no faces. Ordinary object transforms and NURBS weights are supported.
-`POLY` splines remain linear and are not adaptively resampled.
-
-Adaptive sampling supports ordinary local Curve objects. A Curve object is
-rejected if it uses any of these features:
-
-- Modifiers, constraints, or parenting.
-- Object or data animation and drivers.
-- Shape keys or linked-library data.
-- A separate render resolution.
-- Curve offset, extrusion, bevel geometry, a bevel object, or a taper object.
-- Non-zero control-point tilt or non-default control-point radius.
-
-The materials requested for barrier segments must already exist in the current
-Blender file.
+TrackBuilder also does not require generated barrier polygons to be simple,
+non-overlapping, or contained within the fill regions. Beyond finite miters and
+three distinct points, it does not check their positive area or spatial
+clearance. If the application requires those properties, the user must choose
+the outlines and `W` accordingly.
 
 ### Geometric tolerance
 
@@ -95,10 +167,11 @@ TrackBuilder uses:
 epsilon = 1e-7 * max(1, D)
 ```
 
-Distances at or below `epsilon` count as equal for checks such as edge length,
-planarity, and generated barrier-point distinctness. Pairwise edge relationships
-are not checked. The mesh turn-angle rule is independent of this distance
-tolerance.
+Distances at or below `epsilon` count as equal for checked properties such as
+edge length, planarity, and generated barrier-point distinctness. TrackBuilder
+does not calculate pairwise edge clearance, so the user-enforced `epsilon`
+clearance in the trusted preconditions is not checked by the script. The mesh
+turn-angle rule is independent of this distance tolerance.
 
 ## Python API
 
@@ -143,8 +216,9 @@ Run a build from the repository root in PowerShell:
 ```
 
 `--save` is optional. Without it, TrackBuilder builds the current file in memory
-and Blender exits without saving. Arguments after `--` belong to TrackBuilder
-rather than Blender.
+and Blender exits without saving. The wrapper saves with Blender's overwrite
+confirmation disabled, so the user must ensure that the `--save` path is safe to
+replace. Arguments after `--` belong to TrackBuilder rather than Blender.
 
 ## Generated output
 
@@ -244,9 +318,9 @@ TrackBuilder validates the checked input contract and plans the complete result
 before replacing an existing `Output` collection. New datablocks are created in
 a temporary collection. If validation or construction fails, temporary data is
 removed and the previous output remains unchanged. A successful build commits
-the new collection as `Output` and removes the replaced generated data. An
-unchecked self-intersection, self-touch, or cross-outline intersection may not
-fail and can therefore produce a committed unexpected result.
+the new collection as `Output` and removes the previous `Output` data described
+above. An unchecked self-intersection, self-touch, or cross-outline intersection
+may not fail and can therefore produce a committed unexpected result.
 
 The public exception hierarchy is:
 
