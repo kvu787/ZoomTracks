@@ -114,6 +114,23 @@ def _point_in_polygon(point: Vector, polygon: list[Vector]) -> bool:
     return inside
 
 
+def _polygon_bounds(points: list[Vector]) -> tuple[float, float, float, float]:
+    return (
+        min(point.x for point in points),
+        max(point.x for point in points),
+        min(point.y for point in points),
+        max(point.y for point in points),
+    )
+
+
+def _point_in_bounds(
+    point: Vector,
+    bounds: tuple[float, float, float, float],
+) -> bool:
+    minimum_x, maximum_x, minimum_y, maximum_y = bounds
+    return minimum_x <= point.x <= maximum_x and minimum_y <= point.y <= maximum_y
+
+
 def _validated_barrier_segment_dimension(name: str, value: object) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise TrackBuilderValidationError(
@@ -414,13 +431,20 @@ def _validated_outlines(raw_outlines: list[_RawOutline], epsilon: float) -> list
 def _classify_outlines(
     outlines: list[_Outline],
 ) -> tuple[_Outline, _Outline, list[_Outline]]:
+    bounds = [_polygon_bounds(outline.points) for outline in outlines]
+    bounds_by_identity = {
+        id(outline): outline_bounds
+        for outline, outline_bounds in zip(outlines, bounds)
+    }
     depths: list[int] = []
     for index, outline in enumerate(outlines):
         representative = outline.points[0]
         depth = sum(
             1
             for other_index, other in enumerate(outlines)
-            if other_index != index and _point_in_polygon(representative, other.points)
+            if other_index != index
+            and _point_in_bounds(representative, bounds[other_index])
+            and _point_in_polygon(representative, other.points)
         )
         depths.append(depth)
 
@@ -442,10 +466,16 @@ def _classify_outlines(
 
     ground = ground_candidates[0]
     outer = outer_candidates[0]
-    if not _point_in_polygon(outer.points[0], ground.points):
+    ground_bounds = bounds_by_identity[id(ground)]
+    outer_bounds = bounds_by_identity[id(outer)]
+    if not _point_in_bounds(outer.points[0], ground_bounds) or not _point_in_polygon(
+        outer.points[0], ground.points
+    ):
         raise TrackBuilderValidationError("Ground outline does not enclose the outer track")
     for inner in inner_candidates:
-        if not _point_in_polygon(inner.points[0], outer.points):
+        if not _point_in_bounds(inner.points[0], outer_bounds) or not _point_in_polygon(
+            inner.points[0], outer.points
+        ):
             raise TrackBuilderValidationError(
                 f"Inner outline {inner.object_name!r} is not enclosed by the outer track"
             )
@@ -982,12 +1012,14 @@ def _remove_consecutive_duplicates(points: list[Vector], epsilon: float) -> list
     return result
 
 
-def _distinct_point_count(points: list[Vector], epsilon: float) -> int:
+def _has_at_least_three_distinct_points(points: list[Vector], epsilon: float) -> bool:
     unique: list[Vector] = []
     for point in points:
         if all((point - existing).length > epsilon for existing in unique):
             unique.append(point)
-    return len(unique)
+            if len(unique) == 3:
+                return True
+    return False
 
 
 def _extruded_barrier_plan(
@@ -1095,18 +1127,36 @@ def _barrier_plans(
         end_distance = perimeter if segment_index == count - 1 else (segment_index + 1) * adjusted_length
         source_path = [source_at(start_distance)]
         offset_path = [offset_at(start_distance)]
-        for vertex_index in range(1, len(points)):
-            vertex_distance = cumulative[vertex_index]
-            if start_distance < vertex_distance < end_distance:
-                source_path.append(points[vertex_index].copy())
-        for vertex_index in range(1, len(miters)):
-            vertex_distance = offset_distances[vertex_index]
-            if start_distance < vertex_distance < end_distance:
-                offset_path.append(miters[vertex_index].copy())
+        source_begin = bisect.bisect_right(
+            cumulative,
+            start_distance,
+            1,
+            len(points),
+        )
+        source_end = bisect.bisect_left(
+            cumulative,
+            end_distance,
+            source_begin,
+            len(points),
+        )
+        source_path.extend(points[index].copy() for index in range(source_begin, source_end))
+        offset_begin = bisect.bisect_right(
+            offset_distances,
+            start_distance,
+            1,
+            len(miters),
+        )
+        offset_end = bisect.bisect_left(
+            offset_distances,
+            end_distance,
+            offset_begin,
+            len(miters),
+        )
+        offset_path.extend(miters[index].copy() for index in range(offset_begin, offset_end))
         source_path.append(source_at(end_distance))
         offset_path.append(offset_at(end_distance))
         polygon = _remove_consecutive_duplicates(source_path + list(reversed(offset_path)), epsilon)
-        if len(polygon) < 3 or _distinct_point_count(polygon, epsilon) < 3:
+        if len(polygon) < 3 or not _has_at_least_three_distinct_points(polygon, epsilon):
             raise TrackBuilderGeometryError(
                 f"Barrier segment {segment_index} for outline {outline.object_name!r} "
                 "has fewer than three distinct vertices"
@@ -1206,7 +1256,8 @@ def _remove_collection_tree(root: bpy.types.Collection) -> None:
         for collection in collections
         for obj in collection.objects
     }
-    meshes_to_check: list[bpy.types.Mesh] = []
+    objects_to_remove: list[bpy.types.Object] = []
+    scheduled_mesh_users: dict[int, tuple[bpy.types.Mesh, int]] = {}
     for obj in objects.values():
         linked_outside = any(
             collection.as_pointer() not in collection_pointers
@@ -1215,14 +1266,22 @@ def _remove_collection_tree(root: bpy.types.Collection) -> None:
         if linked_outside:
             continue
         if isinstance(obj.data, bpy.types.Mesh):
-            meshes_to_check.append(obj.data)
-        bpy.data.objects.remove(obj, do_unlink=True)
-    for collection in reversed(collections):
-        if collection.name in bpy.data.collections:
-            bpy.data.collections.remove(collection, do_unlink=True)
-    for mesh in meshes_to_check:
-        if mesh.name in bpy.data.meshes and mesh.users == 0:
-            bpy.data.meshes.remove(mesh)
+            pointer = obj.data.as_pointer()
+            mesh, user_count = scheduled_mesh_users.get(pointer, (obj.data, 0))
+            scheduled_mesh_users[pointer] = (mesh, user_count + 1)
+        objects_to_remove.append(obj)
+    meshes_to_remove = [
+        mesh
+        for mesh, scheduled_users in scheduled_mesh_users.values()
+        if not mesh.use_fake_user and mesh.users == scheduled_users
+    ]
+    bpy.data.batch_remove(
+        [
+            *objects_to_remove,
+            *reversed(collections),
+            *meshes_to_remove,
+        ]
+    )
 
 
 def _instantiate_plans(

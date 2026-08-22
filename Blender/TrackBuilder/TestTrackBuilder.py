@@ -492,6 +492,67 @@ class TrackBuilderTests(unittest.TestCase):
             self.assertEqual(len(TrackBuilder._ordered_validated_loop(star, 1.0e-7)), 5)
             self.assertEqual(len(TrackBuilder._validated_outlines(overlapping, 1.0e-7)), 2)
 
+    def test_outline_classification_bounds_skip_disjoint_loops(self) -> None:
+        def square(name: str, minimum_x: float, minimum_y: float, size: float) -> TrackBuilder._Outline:
+            return TrackBuilder._Outline(
+                name,
+                None,
+                [
+                    Vector((minimum_x, minimum_y)),
+                    Vector((minimum_x + size, minimum_y)),
+                    Vector((minimum_x + size, minimum_y + size)),
+                    Vector((minimum_x, minimum_y + size)),
+                ],
+                False,
+                None,
+            )
+
+        ground = square("Ground", -100.0, -100.0, 200.0)
+        outer = square("Outer", -90.0, -90.0, 180.0)
+        expected_inner = [
+            square(
+                f"Inner{index:03d}",
+                -40.0 + (index % 10) * 8.0,
+                -40.0 + (index // 10) * 8.0,
+                2.0,
+            )
+            for index in range(100)
+        ]
+        containment = TrackBuilder._point_in_polygon
+        with mock.patch.object(
+            TrackBuilder,
+            "_point_in_polygon",
+            side_effect=containment,
+        ) as containment_mock:
+            actual_ground, actual_outer, actual_inner = TrackBuilder._classify_outlines(
+                [ground, outer, *expected_inner]
+            )
+
+        self.assertIs(actual_ground, ground)
+        self.assertIs(actual_outer, outer)
+        self.assertEqual(set(map(id, actual_inner)), set(map(id, expected_inner)))
+        self.assertLessEqual(containment_mock.call_count, 3 * len(expected_inner) + 2)
+
+    def test_distinct_point_check_stops_after_three_points(self) -> None:
+        epsilon = 1.0e-7
+        self.assertFalse(
+            TrackBuilder._has_at_least_three_distinct_points(
+                [Vector((0.0, 0.0)), Vector((0.0, 0.0)), Vector((1.0, 0.0))],
+                epsilon,
+            )
+        )
+        self.assertTrue(
+            TrackBuilder._has_at_least_three_distinct_points(
+                [
+                    Vector((0.0, 0.0)),
+                    Vector((1.0, 0.0)),
+                    Vector((2.0, 0.0)),
+                    *[Vector((float(index), 1.0)) for index in range(10_000)],
+                ],
+                epsilon,
+            )
+        )
+
     def test_curve_refinement_does_not_revalidate_unchanged_contact_points(self) -> None:
         width, _, _, _ = self.load_example_input()
         raw = TrackBuilder._read_raw_outlines(bpy.data.collections["Input"])
@@ -973,6 +1034,55 @@ class TrackBuilderTests(unittest.TestCase):
                 for collection in bpy.data.collections
             )
         )
+
+    def test_collection_removal_batches_exclusive_data_and_preserves_shared_objects(self) -> None:
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        root = bpy.data.collections.new("RemovalRoot")
+        child = bpy.data.collections.new("RemovalChild")
+        external = bpy.data.collections.new("RemovalExternal")
+        bpy.context.scene.collection.children.link(root)
+        bpy.context.scene.collection.children.link(external)
+        root.children.link(child)
+
+        def mesh_object(name: str, collection: bpy.types.Collection) -> bpy.types.Object:
+            mesh = bpy.data.meshes.new(f"{name}Mesh")
+            mesh.from_pydata(
+                [(0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0)],
+                [],
+                [(0, 1, 2)],
+            )
+            obj = bpy.data.objects.new(name, mesh)
+            collection.objects.link(obj)
+            return obj
+
+        exclusive_root = mesh_object("ExclusiveRoot", root)
+        exclusive_child = mesh_object("ExclusiveChild", child)
+        shared = mesh_object("SharedOutside", root)
+        external.objects.link(shared)
+        exclusive_with_shared_mesh = mesh_object("ExclusiveWithSharedMesh", root)
+        external_mesh_user = bpy.data.objects.new(
+            "ExternalMeshUser",
+            exclusive_with_shared_mesh.data,
+        )
+        external.objects.link(external_mesh_user)
+        exclusive_mesh_names = {exclusive_root.data.name, exclusive_child.data.name}
+        shared_mesh = shared.data
+        externally_used_mesh = exclusive_with_shared_mesh.data
+
+        TrackBuilder._remove_collection_tree(root)
+
+        self.assertIsNone(bpy.data.collections.get("RemovalRoot"))
+        self.assertIsNone(bpy.data.collections.get("RemovalChild"))
+        self.assertIs(external, bpy.data.collections.get("RemovalExternal"))
+        self.assertIs(shared, bpy.data.objects.get("SharedOutside"))
+        self.assertIn(shared, external.objects[:])
+        self.assertIs(shared_mesh, bpy.data.meshes.get(shared_mesh.name))
+        self.assertIs(external_mesh_user, bpy.data.objects.get("ExternalMeshUser"))
+        self.assertIs(externally_used_mesh, bpy.data.meshes.get(externally_used_mesh.name))
+        for name in ["ExclusiveRoot", "ExclusiveChild", "ExclusiveWithSharedMesh"]:
+            self.assertIsNone(bpy.data.objects.get(name))
+        for name in exclusive_mesh_names:
+            self.assertIsNone(bpy.data.meshes.get(name))
 
     def test_library_linked_output_is_rejected(self) -> None:
         width, height, target, material_names = self.load_test_input(3)
