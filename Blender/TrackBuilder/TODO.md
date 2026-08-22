@@ -3,6 +3,9 @@
 These possible validations, optimizations, and simplifications are intentionally
 deferred.
 
+The measured performance backlog, tradeoffs, and acceptance criteria are in
+[Documentation/PERFORMANCE_TODO.md](Documentation/PERFORMANCE_TODO.md).
+
 ## Revisit trusted pairwise edge relationships
 
 TrackBuilder intentionally does not compare non-adjacent edges within an outline
