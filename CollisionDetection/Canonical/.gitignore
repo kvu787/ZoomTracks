@@ -1,0 +1,4 @@
+.dotnet-cli/
+**/bin/
+**/obj/
+TestArtifacts/
