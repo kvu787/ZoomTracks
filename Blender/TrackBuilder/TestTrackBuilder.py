@@ -50,15 +50,15 @@ PERFORMANCE_INPUT_PATH = os.path.abspath(
         "TrackBuilder -- test -- perf issue.blend",
     )
 )
-PERFORMANCE_GEOMETRY_HASH = "eebbde3b05254530cf9a1d6a3902e485667896d025f2fdc2625ca42e61c0c8ed"
+PERFORMANCE_GEOMETRY_HASH = "ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649"
 TEST_ARTIFACT_RESULTS: list[tuple[str, str, str, str]] = []
 MESH_FIXTURE_GOLDEN_HASHES = {
-    2: "40513fa0f4866aeec1bf53741a8dbfc708cab7622f875d541bf1b197aba9517e",
-    3: "02c19b4c5fc5a0e955427b42278064beb2b1c3c0df056bb0f23e9b539a2728ff",
-    4: "52ba61001a8729afc63cd0b8466da15ed2e4b78867d95a2c6e32edb69fb4881f",
-    5: "c755438e54571cc4a1eb9de32a9674377c196a079487d8c61490bd698080f112",
-    6: "14c86821945e524ae4b01fb7585d7b84e8d60410ec38d864c7f24fda74b3a459",
-    8: "75e282043def010bafc3f82f5fa80bfb4030134b6bf43d2eb1f7d1ef98d9a3e4",
+    2: "1235733c39354afbf0468f7fa2b867bd7a4a5ca22815f8346bdad2912011c5d4",
+    3: "faf67b0d0b522cc0ea9cccd0781725b705a324649e0af487adec9e7a6b998f97",
+    4: "104d63c3301408995b9a8f2dda9f115ced22855e1f239699d3b3a2b9fab2c19a",
+    5: "920f0a58ad4dae25fc0862d110e69de0f293b22cf95289019839ea5ea9167f26",
+    6: "b183cec48af1d967316aae76558fb5d4eaa430e11870bdc51a6581006b512fe1",
+    8: "051f06963361d59b372082f8131ca8029ffb0b8bc4a301228d3935c7808a9cad",
 }
 
 EXPECTED_EXCEPTIONS = {
@@ -314,21 +314,29 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertEqual(len(output.objects), 0)
         planes = TrackBuilder._direct_child(output, "Planes")
         barrier_segments = TrackBuilder._direct_child(output, "BarrierSegments")
+        outline_meshes = TrackBuilder._direct_child(output, "OutlineMeshes")
         self.assertIsNotNone(planes)
         self.assertIsNotNone(barrier_segments)
+        self.assertIsNotNone(outline_meshes)
         self.assertEqual(
             {child.name for child in output.children},
-            {"Planes", "BarrierSegments"},
+            {"Planes", "BarrierSegments", "OutlineMeshes"},
         )
         role_counts: dict[str, int] = {}
         for obj in output.all_objects:
             role = obj.get("track_builder_role")
             role_counts[role] = role_counts.get(role, 0) + 1
             self.assertEqual(obj.type, "MESH")
-            self.assertGreater(len(obj.data.polygons), 0)
+            if role in {"outer_outline", "inner_outline"}:
+                self.assertEqual(len(obj.data.polygons), 0)
+                self.assertEqual(len(obj.data.edges), len(obj.data.vertices))
+            else:
+                self.assertGreater(len(obj.data.polygons), 0)
             expected_collection = (
                 barrier_segments
                 if role in {"outer_barrier", "inner_barrier"}
+                else outline_meshes
+                if role in {"outer_outline", "inner_outline"}
                 else planes
             )
             self.assertEqual(obj.users_collection[:], (expected_collection,))
@@ -345,20 +353,36 @@ class TrackBuilderTests(unittest.TestCase):
             if expected_inner_count
             else {"outer_barrier"},
         )
+        self.assertEqual(
+            {obj.get("track_builder_role") for obj in outline_meshes.objects},
+            {"outer_outline", "inner_outline"}
+            if expected_inner_count
+            else {"outer_outline"},
+        )
 
         self.assertEqual(role_counts.get("ground"), 1)
         self.assertEqual(role_counts.get("track"), 1)
         self.assertEqual(role_counts.get("island", 0), expected_inner_count)
         self.assertGreater(role_counts.get("outer_barrier", 0), 0)
+        self.assertEqual(role_counts.get("outer_outline"), 1)
+        self.assertEqual(role_counts.get("inner_outline", 0), expected_inner_count)
         if expected_inner_count:
             self.assertGreater(role_counts.get("inner_barrier", 0), 0)
         else:
             self.assertEqual(role_counts.get("inner_barrier", 0), 0)
         self.assertEqual(
             set(role_counts),
-            {"ground", "track", "island", "outer_barrier", "inner_barrier"}
+            {
+                "ground",
+                "track",
+                "island",
+                "outer_barrier",
+                "inner_barrier",
+                "outer_outline",
+                "inner_outline",
+            }
             if expected_inner_count
-            else {"ground", "track", "outer_barrier"},
+            else {"ground", "track", "outer_barrier", "outer_outline"},
         )
 
     def load_example_input(self) -> tuple[float, float, float, list[str]]:
@@ -653,6 +677,61 @@ class TrackBuilderTests(unittest.TestCase):
                 contact_points[outline.object_name],
             )
 
+    def test_outline_meshes_match_evaluated_barrier_contact_loops(self) -> None:
+        width, height, target, material_names = self.load_test_input(4)
+        raw = TrackBuilder._read_raw_outlines(_outlines_collection())
+        epsilon = TrackBuilder._world_epsilon(raw)
+        ground, outer, inner = TrackBuilder._classify_outlines(
+            TrackBuilder._validated_outlines(raw, epsilon)
+        )
+        _, outer, inner = TrackBuilder._refine_classified_outlines(
+            ground,
+            outer,
+            inner,
+            width,
+            epsilon,
+            _track_builder_collection(),
+        )
+
+        output = TrackBuilder.build_track(
+            width,
+            height,
+            target,
+            material_names,
+        )
+        outline_meshes = TrackBuilder._direct_child(output, "OutlineMeshes")
+        generated_by_source = {
+            obj["track_builder_source"]: obj for obj in outline_meshes.objects
+        }
+
+        expected_outlines = [outer, *inner]
+        self.assertEqual(
+            set(generated_by_source),
+            {outline.object_name for outline in expected_outlines},
+        )
+        for index, outline in enumerate(expected_outlines):
+            obj = generated_by_source[outline.object_name]
+            expected_role = "outer_outline" if index == 0 else "inner_outline"
+            expected_name = "Outline_Outer" if index == 0 else f"Outline_Inner_{index - 1:02d}"
+            self.assertEqual(obj.name, expected_name)
+            self.assertEqual(obj["track_builder_role"], expected_role)
+            self.assertIs(obj.data.materials[0], outline.material)
+            self.assertEqual(
+                [tuple(float(component) for component in vertex.co) for vertex in obj.data.vertices],
+                [(float(point.x), float(point.y), 0.0) for point in outline.points],
+            )
+            self.assertEqual(
+                {
+                    tuple(sorted((int(edge.vertices[0]), int(edge.vertices[1]))))
+                    for edge in obj.data.edges
+                },
+                {
+                    tuple(sorted((vertex_index, (vertex_index + 1) % len(outline.points))))
+                    for vertex_index in range(len(outline.points))
+                },
+            )
+            self.assertEqual(len(obj.data.polygons), 0)
+
     def test_resolution_issue_example_adapts_only_offset_and_preserves_contact_topology(self) -> None:
         width, height, target, material_names = self.load_example_input()
         original_state = {
@@ -829,6 +908,12 @@ class TrackBuilderTests(unittest.TestCase):
             f"Missing representative performance input: {PERFORMANCE_INPUT_PATH}",
         )
         bpy.ops.wm.open_mainfile(filepath=PERFORMANCE_INPUT_PATH)
+        previous_output = _output_collection()
+        self.assertIsNotNone(previous_output)
+        self.assertEqual(
+            {child.name for child in previous_output.children},
+            {"Planes", "BarrierSegments", "OutlineMeshes"},
+        )
 
         output = TrackBuilder.build_track(
             1.0,
@@ -838,8 +923,8 @@ class TrackBuilderTests(unittest.TestCase):
         )
 
         self.assertEqual(_output_geometry_hash(output), PERFORMANCE_GEOMETRY_HASH)
-        self.assertEqual(len(output.all_objects), 180)
-        self.assertEqual(sum(len(obj.data.vertices) for obj in output.all_objects), 14_236)
+        self.assertEqual(len(output.all_objects), 183)
+        self.assertEqual(sum(len(obj.data.vertices) for obj in output.all_objects), 16_220)
         self.assertEqual(sum(len(obj.data.polygons) for obj in output.all_objects), 9_454)
 
     def test_poly_curve_remains_linear_and_unresampled(self) -> None:
@@ -1156,6 +1241,31 @@ class TrackBuilderTests(unittest.TestCase):
             )
         )
 
+    def test_existing_output_missing_outline_meshes_is_rejected(self) -> None:
+        width, height, target, material_names = self.load_test_input(3)
+        output = bpy.data.collections.new("Output")
+        output.children.link(bpy.data.collections.new("Planes"))
+        output.children.link(bpy.data.collections.new("BarrierSegments"))
+        _track_builder_collection().children.link(output)
+
+        with self.assertRaisesRegex(
+            TrackBuilder.TrackBuilderValidationError,
+            "existing TrackBuilder/Output collection must contain exactly",
+        ):
+            TrackBuilder.build_track(width, height, target, material_names)
+
+        self.assertIs(output, _output_collection())
+        self.assertEqual(
+            {child.name for child in output.children},
+            {"Planes", "BarrierSegments"},
+        )
+        self.assertFalse(
+            any(
+                collection.name.startswith("__TrackBuilderPending_")
+                for collection in bpy.data.collections
+            )
+        )
+
     def test_collection_removal_batches_exclusive_data_and_preserves_shared_objects(self) -> None:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         root = bpy.data.collections.new("RemovalRoot")
@@ -1211,6 +1321,7 @@ class TrackBuilderTests(unittest.TestCase):
         source_output = bpy.data.collections.new("Output")
         source_output.children.link(bpy.data.collections.new("Planes"))
         source_output.children.link(bpy.data.collections.new("BarrierSegments"))
+        source_output.children.link(bpy.data.collections.new("OutlineMeshes"))
         bpy.data.libraries.write(library_path, {source_output})
         TrackBuilder._remove_collection_tree(source_output)
 

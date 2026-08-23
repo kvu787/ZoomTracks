@@ -120,7 +120,7 @@ opened file.
 From the repository root:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\BenchmarkTrackBuilder.py" -- --blend "Blender\TrackBuilderSandbox\TrackBuilder -- test -- perf issue.blend" --runs 9 --expected-hash eebbde3b05254530cf9a1d6a3902e485667896d025f2fdc2625ca42e61c0c8ed
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\BenchmarkTrackBuilder.py" -- --blend "Blender\TrackBuilderSandbox\TrackBuilder -- test -- perf issue.blend" --runs 9 --expected-hash ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649
 ```
 
 The defaults match that representative scene: `W=1`, `H=0.1`,
@@ -141,8 +141,9 @@ inspectable `.blend` file per committed fixture and overwrites
 `Blender\TrackBuilder\TestArtifacts\TestReport.txt` with the complete run and a
 per-fixture expected/actual summary.
 
-Successful artifacts contain generated `TrackBuilder/Output/Planes` and
-`TrackBuilder/Output/BarrierSegments`. Expected-failure artifacts retain input
+Successful artifacts contain generated `TrackBuilder/Output/Planes`,
+`TrackBuilder/Output/BarrierSegments`, and
+`TrackBuilder/Output/OutlineMeshes`. Expected-failure artifacts retain input
 geometry without a `TrackBuilder/Output` collection. Every fixture artifact
 records `track_builder_actual_result` as a scene custom property.
 

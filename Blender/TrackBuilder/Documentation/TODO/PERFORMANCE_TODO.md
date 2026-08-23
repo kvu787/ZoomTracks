@@ -16,8 +16,8 @@ This file now retains the useful historical context and the work that remains.
 - Before optimization, nine-process existing-output median: 1.144392 seconds
 - Final nine-process median: 0.179479 seconds
 - Speedup: approximately 6.38 times
-- Final geometry hash:
-  `eebbde3b05254530cf9a1d6a3902e485667896d025f2fdc2625ca42e61c0c8ed`
+- Current complete-output geometry hash:
+  `ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649`
 
 Treat timings as historical measurements rather than permanent thresholds. Use
 `BenchmarkTrackBuilder.py` to rerun them on the current machine and Blender

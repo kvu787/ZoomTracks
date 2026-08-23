@@ -29,6 +29,7 @@ TrackBuilder/
   Output/
     Planes/
     BarrierSegments/
+    OutlineMeshes/
 ```
 
 `TrackBuilder`, `Input`, and `Outlines` must exist before a build. `Output` and
@@ -61,9 +62,9 @@ of these checked preconditions fails:
     contains `Input`, which directly contains `Outlines`; `Outlines` recursively
     contains at least two unique objects. If `TrackBuilder/Output` already
     exists, it is local and editable, contains no objects directly, contains
-    exactly the local editable leaf collections `Planes` and
-    `BarrierSegments`, is not nested with `Outlines`, and shares no objects with
-    `Outlines`. The generated collection names must not be occupied outside
+    exactly the local editable leaf collections `Planes`, `BarrierSegments`,
+    and `OutlineMeshes`, is not nested with `Outlines`, and shares no objects
+    with `Outlines`. The generated collection names must not be occupied outside
     `TrackBuilder/Output`.
 - **Object types and materials:**
   - every object found recursively in `TrackBuilder/Input/Outlines` is
@@ -256,7 +257,9 @@ vertex, and never simplified by removing vertices.
 
 All generated objects are meshes. Flat ground, track, and island meshes are
 placed directly in `TrackBuilder/Output/Planes`; barrier segment objects are
-placed directly in `TrackBuilder/Output/BarrierSegments`. Fill meshes are
+placed directly in `TrackBuilder/Output/BarrierSegments`. The evaluated
+track-facing outer outline and each evaluated track-facing inner outline are
+closed edge-only meshes in `TrackBuilder/Output/OutlineMeshes`. Fill meshes are
 triangulated, face global +Z, and retain the material from their source outline.
 Every object has a `track_builder_role` custom property:
 
@@ -267,6 +270,8 @@ Every object has a `track_builder_role` custom property:
 | `island` | Fill inside an inner track outline |
 | `outer_barrier` | Segmented barrier outside the outer track outline |
 | `inner_barrier` | Segmented barrier around an island |
+| `outer_outline` | Evaluated outer track-facing barrier boundary |
+| `inner_outline` | Evaluated inner track-facing barrier boundary |
 
 Barrier objects also record their source outline, segment index, and adjusted
 segment length. Objects sourced from curves record

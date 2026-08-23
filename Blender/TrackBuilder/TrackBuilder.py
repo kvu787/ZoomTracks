@@ -40,6 +40,7 @@ OUTLINES_COLLECTION_NAME = "Outlines"
 OUTPUT_COLLECTION_NAME = "Output"
 PLANES_COLLECTION_NAME = "Planes"
 BARRIER_SEGMENTS_COLLECTION_NAME = "BarrierSegments"
+OUTLINE_MESHES_COLLECTION_NAME = "OutlineMeshes"
 
 
 class TrackBuilderError(RuntimeError):
@@ -81,6 +82,7 @@ class _Outline:
 class _MeshPlan:
     name: str
     vertices: list[tuple[float, float, float]]
+    edges: list[tuple[int, int]]
     faces: list[tuple[int, ...]]
     material: bpy.types.Material
     properties: dict[str, object]
@@ -883,6 +885,7 @@ def _required_collection_structure(
         OUTPUT_COLLECTION_NAME,
         PLANES_COLLECTION_NAME,
         BARRIER_SEGMENTS_COLLECTION_NAME,
+        OUTLINE_MESHES_COLLECTION_NAME,
     ):
         existing = bpy.data.collections.get(generated_name)
         if existing is not None and existing not in existing_output_tree:
@@ -906,12 +909,16 @@ def _validate_collection_separation(
         raise TrackBuilderValidationError(
             "The existing TrackBuilder/Output collection must not contain objects directly"
         )
-    expected_children = {PLANES_COLLECTION_NAME, BARRIER_SEGMENTS_COLLECTION_NAME}
+    expected_children = {
+        PLANES_COLLECTION_NAME,
+        BARRIER_SEGMENTS_COLLECTION_NAME,
+        OUTLINE_MESHES_COLLECTION_NAME,
+    }
     actual_children = {child.name for child in output_collection.children}
     if actual_children != expected_children:
         raise TrackBuilderValidationError(
             "The existing TrackBuilder/Output collection must contain exactly the child "
-            "collections 'Planes' and 'BarrierSegments'"
+            "collections 'Planes', 'BarrierSegments', and 'OutlineMeshes'"
         )
     for child in output_collection.children:
         if not child.is_editable:
@@ -1011,6 +1018,7 @@ def _triangulate_region(
     return _MeshPlan(
         name=name,
         vertices=vertices,
+        edges=[],
         faces=faces,
         material=material,
         properties=properties,
@@ -1135,7 +1143,38 @@ def _extruded_barrier_plan(
         )
         for index in range(count)
     ]
-    return _MeshPlan(name, vertices, [bottom, top, *sides], material, properties)
+    return _MeshPlan(name, vertices, [], [bottom, top, *sides], material, properties)
+
+
+def _outline_mesh_plan(
+    outline: _Outline,
+    role: str,
+    role_index: int,
+) -> _MeshPlan:
+    count = len(outline.points)
+    properties: dict[str, object] = {
+        "track_builder_role": role,
+        "track_builder_source": outline.object_name,
+    }
+    if outline.is_curve:
+        properties.update(
+            {
+                "track_builder_curve_sampling": outline.sampling_method,
+                "track_builder_curve_sample_count": count,
+            }
+        )
+    return _MeshPlan(
+        name=(
+            "Outline_Outer"
+            if role == "outer_outline"
+            else f"Outline_Inner_{role_index:02d}"
+        ),
+        vertices=[(float(point.x), float(point.y), 0.0) for point in outline.points],
+        edges=[(index, (index + 1) % count) for index in range(count)],
+        faces=[],
+        material=outline.material,
+        properties=properties,
+    )
 
 
 def _barrier_plans(
@@ -1290,6 +1329,7 @@ def _build_plans(
     plans = [
         _triangulate_region(ground, [outer], epsilon, "Ground", ground.material, "ground"),
         _triangulate_region(outer, inner, epsilon, "Track", outer.material, "track"),
+        _outline_mesh_plan(outer, "outer_outline", 0),
     ]
     for index, island in enumerate(inner):
         plans.append(
@@ -1302,6 +1342,7 @@ def _build_plans(
                 "island",
             )
         )
+        plans.append(_outline_mesh_plan(island, "inner_outline", index))
     plans.extend(
         _barrier_plans(
             outer,
@@ -1380,21 +1421,24 @@ def _instantiate_plans(
     bpy.types.Collection,
     bpy.types.Collection,
     bpy.types.Collection,
+    bpy.types.Collection,
     list[tuple[bpy.types.Object, str]],
 ]:
     pending_name = f"__TrackBuilderPending_{uuid.uuid4().hex}"
     pending = bpy.data.collections.new(pending_name)
     planes = bpy.data.collections.new(f"{pending_name}_Planes")
     barrier_segments = bpy.data.collections.new(f"{pending_name}_BarrierSegments")
+    outline_meshes = bpy.data.collections.new(f"{pending_name}_OutlineMeshes")
     track_builder_collection.children.link(pending)
     pending.children.link(planes)
     pending.children.link(barrier_segments)
+    pending.children.link(outline_meshes)
     created: list[tuple[bpy.types.Object, str]] = []
     try:
         for index, plan in enumerate(plans):
             temporary_name = f"{pending_name}_{index:05d}"
             mesh = bpy.data.meshes.new(f"{temporary_name}Mesh")
-            mesh.from_pydata(plan.vertices, [], plan.faces)
+            mesh.from_pydata(plan.vertices, plan.edges, plan.faces)
             mesh.materials.append(plan.material)
             mesh.validate(clean_customdata=False)
             mesh.update()
@@ -1403,6 +1447,8 @@ def _instantiate_plans(
             destination = (
                 barrier_segments
                 if role in {"outer_barrier", "inner_barrier"}
+                else outline_meshes
+                if role in {"outer_outline", "inner_outline"}
                 else planes
             )
             destination.objects.link(obj)
@@ -1412,13 +1458,14 @@ def _instantiate_plans(
     except Exception:
         _remove_collection_tree(pending)
         raise
-    return pending, planes, barrier_segments, created
+    return pending, planes, barrier_segments, outline_meshes, created
 
 
 def _commit_output(
     pending: bpy.types.Collection,
     planes: bpy.types.Collection,
     barrier_segments: bpy.types.Collection,
+    outline_meshes: bpy.types.Collection,
     created: list[tuple[bpy.types.Object, str]],
     previous: bpy.types.Collection | None,
 ) -> bpy.types.Collection:
@@ -1434,10 +1481,13 @@ def _commit_output(
     try:
         planes.name = PLANES_COLLECTION_NAME
         barrier_segments.name = BARRIER_SEGMENTS_COLLECTION_NAME
+        outline_meshes.name = OUTLINE_MESHES_COLLECTION_NAME
         pending.name = OUTPUT_COLLECTION_NAME
     except Exception:
         rollback_prefix = f"__TrackBuilderRollback_{uuid.uuid4().hex}"
-        for index, collection in enumerate((pending, planes, barrier_segments)):
+        for index, collection in enumerate(
+            (pending, planes, barrier_segments, outline_meshes)
+        ):
             collection.name = f"{rollback_prefix}_{index:02d}"
         for collection, name in previous_names:
             collection.name = name
@@ -1503,7 +1553,7 @@ def build_track(
         barrier_materials,
         epsilon,
     )
-    pending, planes, barrier_segments, created = _instantiate_plans(
+    pending, planes, barrier_segments, outline_meshes, created = _instantiate_plans(
         plans,
         track_builder_collection,
     )
@@ -1511,6 +1561,7 @@ def build_track(
         pending,
         planes,
         barrier_segments,
+        outline_meshes,
         created,
         previous_output,
     )
