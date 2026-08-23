@@ -1,6 +1,8 @@
 # Prompt
 
-Find, implement, and compare practical algorithms for the task below.
+If there any issues with this prompt, address them in a reasonable way.
+
+Find, implement, and compare optimal practical algorithms for the task below.
 
 Constraints:
 
