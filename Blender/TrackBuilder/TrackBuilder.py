@@ -852,6 +852,42 @@ def _direct_child(
     return next((child for child in parent.children if child.name == name), None)
 
 
+def _layer_collection_for_collection(
+    root: bpy.types.LayerCollection,
+    collection: bpy.types.Collection,
+) -> bpy.types.LayerCollection | None:
+    if root.collection == collection:
+        return root
+    for child in root.children:
+        match = _layer_collection_for_collection(child, collection)
+        if match is not None:
+            return match
+    return None
+
+
+def _set_successful_build_visibility(
+    outlines: bpy.types.Collection,
+    output: bpy.types.Collection,
+) -> None:
+    outline_meshes = _direct_child(output, OUTLINE_MESHES_COLLECTION_NAME)
+    if outline_meshes is None:
+        return
+
+    view_layer_root = bpy.context.view_layer.layer_collection
+    outlines_layer_collection = _layer_collection_for_collection(
+        view_layer_root,
+        outlines,
+    )
+    outline_meshes_layer_collection = _layer_collection_for_collection(
+        view_layer_root,
+        outline_meshes,
+    )
+    if outline_meshes_layer_collection is not None:
+        outline_meshes_layer_collection.hide_viewport = True
+    if outlines_layer_collection is not None:
+        outlines_layer_collection.exclude = True
+
+
 def _required_collection_structure(
 ) -> tuple[bpy.types.Collection, bpy.types.Collection, bpy.types.Collection | None]:
     track_builder = bpy.data.collections.get(TRACK_BUILDER_COLLECTION_NAME)
@@ -1557,7 +1593,7 @@ def build_track(
         plans,
         track_builder_collection,
     )
-    return _commit_output(
+    output = _commit_output(
         pending,
         planes,
         barrier_segments,
@@ -1565,3 +1601,5 @@ def build_track(
         created,
         previous_output,
     )
+    _set_successful_build_visibility(outlines_collection, output)
+    return output
