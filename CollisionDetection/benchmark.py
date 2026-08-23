@@ -18,14 +18,17 @@ if __package__:
         CoherentHierarchyIndex,
         LinearScanIndex,
         OrientedRectangle,
-        PreparedSegments,
+        PreparedOutlines,
+        SpatialChainBVHIndex,
         UniformGridIndex,
     )
     from .workloads import (
         generate_far_queries,
+        generate_folded_outlines,
+        generate_folded_queries,
         generate_lap_queries,
         generate_near_miss_queries,
-        generate_track_segments,
+        generate_track_outlines,
     )
 else:
     from rectangle_segments import (
@@ -34,18 +37,21 @@ else:
         CoherentHierarchyIndex,
         LinearScanIndex,
         OrientedRectangle,
-        PreparedSegments,
+        PreparedOutlines,
+        SpatialChainBVHIndex,
         UniformGridIndex,
     )
     from workloads import (
         generate_far_queries,
+        generate_folded_outlines,
+        generate_folded_queries,
         generate_lap_queries,
         generate_near_miss_queries,
-        generate_track_segments,
+        generate_track_outlines,
     )
 
 
-Factory = Callable[[PreparedSegments], object]
+Factory = Callable[[PreparedOutlines], object]
 
 
 def _parse_sizes(value: str) -> list[int]:
@@ -58,7 +64,7 @@ def _parse_sizes(value: str) -> list[int]:
     return sizes
 
 
-def _time_build(factory: Factory, prepared: PreparedSegments, repeats: int) -> int:
+def _time_build(factory: Factory, prepared: PreparedOutlines, repeats: int) -> int:
     samples: list[int] = []
     for _ in range(repeats):
         start = perf_counter_ns()
@@ -109,21 +115,24 @@ def _format_time(nanoseconds: float) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--segments",
+        "--vertices",
         type=_parse_sizes,
         default=_parse_sizes("256,1024,4096"),
-        help="comma-separated total segment counts (default: 256,1024,4096)",
+        help="comma-separated total loop-vertex counts (default: 256,1024,4096)",
     )
     parser.add_argument("--queries", type=int, default=2_000)
     parser.add_argument("--repeats", type=int, default=7)
     parser.add_argument("--seed", type=int, default=17)
     parser.add_argument(
         "--workload",
-        choices=("lap", "near", "far", "both", "all"),
+        choices=("lap", "near", "far", "both", "all", "folded"),
         default="all",
     )
+    parser.add_argument("--folds", type=int, default=20)
     parser.add_argument("--block-size", type=int, default=16)
     parser.add_argument("--hierarchy-leaf-size", type=int, default=8)
+    parser.add_argument("--hierarchy-branching-factor", type=int, default=4)
+    parser.add_argument("--chain-size", type=int, default=8)
     parser.add_argument(
         "--cell-size",
         type=float,
@@ -134,12 +143,16 @@ def main() -> int:
     parser.add_argument("--max-cells-per-segment", type=int, default=4_096)
     parser.add_argument("--bvh-leaf-size", type=int, default=8)
     parser.add_argument("--bvh-bin-count", type=int, default=12)
+    parser.add_argument("--bvh-expected-query-width", type=float, default=5.0)
+    parser.add_argument("--bvh-expected-query-height", type=float, default=5.0)
     arguments = parser.parse_args()
-    if arguments.queries < 1 or arguments.repeats < 1:
-        parser.error("queries and repeats must be positive")
+    if arguments.queries < 1 or arguments.repeats < 1 or arguments.folds < 1:
+        parser.error("queries, repeats, and folds must be positive")
     if min(
         arguments.block_size,
         arguments.hierarchy_leaf_size,
+        arguments.hierarchy_branching_factor,
+        arguments.chain_size,
         arguments.bvh_leaf_size,
         arguments.max_query_cells,
         arguments.max_cells_per_segment,
@@ -147,10 +160,19 @@ def main() -> int:
         parser.error("index tuning values must be positive")
     if arguments.bvh_bin_count < 2:
         parser.error("bvh-bin-count must be at least two")
+    if arguments.hierarchy_branching_factor < 2:
+        parser.error("hierarchy-branching-factor must be at least two")
     if arguments.cell_size and any(
         not isfinite(value) or value <= 0.0 for value in arguments.cell_size
     ):
         parser.error("cell-size values must be finite and positive")
+    if (
+        not isfinite(arguments.bvh_expected_query_width)
+        or not isfinite(arguments.bvh_expected_query_height)
+        or arguments.bvh_expected_query_width <= 0.0
+        or arguments.bvh_expected_query_height <= 0.0
+    ):
+        parser.error("BVH expected query dimensions must be finite and positive")
 
     factories: list[tuple[str, Factory]] = [
         ("Linear scan", LinearScanIndex),
@@ -165,7 +187,13 @@ def main() -> int:
             lambda prepared: CoherentHierarchyIndex(
                 prepared,
                 leaf_size=arguments.hierarchy_leaf_size,
-                group_sizes=(len(prepared) // 2, len(prepared) // 2),
+                branching_factor=arguments.hierarchy_branching_factor,
+            ),
+        ),
+        (
+            "Spatial chain BVH",
+            lambda prepared: SpatialChainBVHIndex(
+                prepared, chain_size=arguments.chain_size
             ),
         ),
     ]
@@ -190,6 +218,8 @@ def main() -> int:
                 prepared,
                 leaf_size=arguments.bvh_leaf_size,
                 bin_count=arguments.bvh_bin_count,
+                expected_query_width=arguments.bvh_expected_query_width,
+                expected_query_height=arguments.bvh_expected_query_height,
             ),
         )
     )
@@ -199,10 +229,13 @@ def main() -> int:
         f"seed={arguments.seed}"
     )
 
-    for segment_count in arguments.segments:
-        source_segments = generate_track_segments(segment_count, arguments.seed)
+    for vertex_count in arguments.vertices:
+        if arguments.workload == "folded":
+            outer, inner = generate_folded_outlines(vertex_count, arguments.folds)
+        else:
+            outer, inner = generate_track_outlines(vertex_count, arguments.seed)
         preparation_start = perf_counter_ns()
-        prepared = PreparedSegments(source_segments)
+        prepared = PreparedOutlines(outer, inner)
         preparation_ns = perf_counter_ns() - preparation_start
         workloads: list[tuple[str, list[OrientedRectangle]]] = []
         if arguments.workload in ("lap", "both", "all"):
@@ -220,10 +253,15 @@ def main() -> int:
             workloads.append(
                 ("far", generate_far_queries(arguments.queries, arguments.seed))
             )
+        if arguments.workload == "folded":
+            workloads.append(
+                ("folded", generate_folded_queries(arguments.queries, arguments.folds))
+            )
 
         print()
         print(
-            f"{segment_count:,} segments | common preparation "
+            f"{vertex_count:,} vertices / {prepared.edge_count:,} derived edges | "
+            f"common preparation "
             f"{_format_time(preparation_ns)}"
         )
         print(
