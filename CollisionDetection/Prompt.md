@@ -73,7 +73,7 @@ world_x = position_x + x*c + y*s
 world_y = position_y - x*s + y*c
 ```
 
-Use the target environment's ordinary `float32` operations, including its angle conversion, sine, and cosine. The four resulting world-space vertices must have finite `float32` coordinates.
+Implementations may choose how to evaluate the angle conversion, sine, cosine, and coordinate expressions, including their intermediate precision. Explain the chosen numerical policy. Convert each resulting world-space coordinate to a finite `float32` value; those values define the geometry used for intersection testing. Different implementations are not required to produce bit-identical vertices from the same pose.
 
 The resulting vertices and their cyclic connecting segments define `R`. Because of binary32 rounding, do not assume exact parallelism, perpendicularity, or equality of opposite-edge lengths in world space. Implementations do not have to materialize the four vertices, but must return the same result as testing these segments. The per-query benchmark must include the work needed to place `R` from its local bounds and pose.
 
