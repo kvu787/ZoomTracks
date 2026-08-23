@@ -14,7 +14,7 @@ Blender 4.5 and uses only Blender's bundled Python libraries.
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Committed test-fixture generator |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Integration and geometry regression suite |
 | [`TEST.md`](TEST.md) | Test commands, fixtures, coverage, and artifacts |
-| [`PERFORMANCE_OPTIMIZATION.md`](PERFORMANCE_OPTIMIZATION.md) | Implemented algorithms, measurements, compatibility notes, and remaining limits |
+| [`TODO/PERFORMANCE_TODO.md`](TODO/PERFORMANCE_TODO.md) | Performance history, measurements, remaining opportunities, and maintenance checklist |
 
 ## Collection structure
 

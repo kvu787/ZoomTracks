@@ -2,10 +2,9 @@
 
 These possible validations and architectural changes are intentionally deferred.
 
-The completed 2026 performance work, measurements, and remaining performance
-limits are documented in
-[`../PERFORMANCE_OPTIMIZATION.md`](../PERFORMANCE_OPTIMIZATION.md). Historical
-prototypes and rejected options remain in [`PERFORMANCE_TODO.md`](PERFORMANCE_TODO.md).
+The completed 2026 performance work, measurements, historical prototypes,
+rejected options, and remaining performance limits are documented in
+[`PERFORMANCE_TODO.md`](PERFORMANCE_TODO.md).
 
 ## Revisit trusted pairwise edge relationships
 

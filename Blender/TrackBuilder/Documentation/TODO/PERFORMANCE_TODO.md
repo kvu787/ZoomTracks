@@ -1,11 +1,8 @@
 # TrackBuilder performance history and remaining work
 
-The major algorithmic performance work described by the former version of this
-file was implemented on 2026-08-22. See
-[`../PERFORMANCE_OPTIMIZATION.md`](../PERFORMANCE_OPTIMIZATION.md) for the final
-design, measurements, compatibility notes, commands, and maintenance guidance.
-
-This file now retains the useful historical context and the work that remains.
+The major algorithmic performance work was implemented on 2026-08-22. This file
+retains the implemented design, representative measurements, useful historical
+context, maintenance guidance, and the work that remains.
 
 ## Current representative result
 
