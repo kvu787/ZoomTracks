@@ -14,7 +14,6 @@ Blender 4.5 and uses only Blender's bundled Python libraries.
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Committed test-fixture generator |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Integration and geometry regression suite |
 | [`TEST.md`](TEST.md) | Test commands, fixtures, coverage, and artifacts |
-| [`TODO/PERFORMANCE_TODO.md`](TODO/PERFORMANCE_TODO.md) | Performance history, measurements, remaining opportunities, and maintenance checklist |
 
 ## Collection structure
 
@@ -174,8 +173,7 @@ edges. The user must ensure all of the following:
 Violating a trusted precondition may be caught incidentally by triangulation or
 barrier construction, but rejection is not guaranteed. The build can instead
 succeed and commit unexpected geometry, so a successful build and transactional
-rollback are not substitutes for these user checks. Possible future validation
-strategies and revisit conditions are recorded in [`TODO.md`](TODO/TODO.md).
+rollback are not substitutes for these user checks.
 
 TrackBuilder also does not require generated barrier polygons to be simple,
 non-overlapping, or contained within the fill regions. Beyond finite miters and

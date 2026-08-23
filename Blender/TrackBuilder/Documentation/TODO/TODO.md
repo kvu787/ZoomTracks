@@ -1,41 +1,39 @@
 # TrackBuilder TODO
 
-These possible validations and architectural changes are intentionally deferred.
+## Add optional pairwise validation for untrusted inputs
 
-The completed 2026 performance work, measurements, historical prototypes,
-rejected options, and remaining performance limits are documented in
-[`PERFORMANCE_TODO.md`](PERFORMANCE_TODO.md).
+If TrackBuilder gains more users, accepts imported or otherwise untrusted input,
+runs unattended, or encounters failures caused by intersecting outlines,
+consider validating:
 
-## Revisit trusted pairwise edge relationships
+- non-adjacent edges within each outline for self-intersection and
+  self-touching; and
+- edges belonging to different outlines for touching or intersection.
 
-TrackBuilder intentionally does not compare non-adjacent edges within an outline
-or edges belonging to different outlines. Self-intersection, self-touching, and
-cross-outline touching/intersection are trusted input preconditions. Violations
-may produce a committed unexpected result without raising an exception.
+Use a spatial index, sweep-line algorithm, or another subquadratic broad phase
+instead of exhaustive pair iteration.
 
-The exhaustive checks were removed for the current single-user, trusted-input
-workflow. On `TrackBuilderSandbox/TrackBuilder -- test -- perf issue.blend`, the
-original implementation built in about 12.15 seconds, while removing pairwise
-edge checks and redundant post-refinement validation reduced the median to about
-1.19 seconds without changing the output geometry hash.
+## Revalidate contact geometry if refinement starts changing it
 
-Revisit this decision when TrackBuilder gains another user, accepts imported or
-otherwise untrusted input, runs unattended in batch workflows, or encounters a
-real failure caused by intersecting outlines. Prefer a spatial index, sweep-line
-algorithm, or similarly subquadratic broad phase. A simpler epsilon-expanded
-axis-aligned bounding-box rejection preserved output and greatly reduced runtime
-in a read-only prototype, but retaining all quadratic pair iteration was still
-measurably slower than the trusted-input implementation.
+If refinement is expanded to modify contact points or containment roles,
+revalidate and reclassify outlines after refinement. Offset-only refinement does
+not need this additional pass.
 
-## Revisit post-refinement validation if contact points can change
+## Reconsider the basis for material-segment cuts
 
-`_refine_classified_outlines` no longer revalidates or reclassifies outlines.
-Adaptive refinement changes only `offset_points`; contact `points` and their
-ground/outer/inner roles remain unchanged. Reintroduce appropriate validation if
-future refinement starts modifying contact points or containment roles.
+Investigate whether smooth-curve material cuts should use distance along the
+independently sampled offset boundary when it has higher resolution, rather than
+distance along the normally evaluated contact boundary. Define the desired
+visual behavior before changing the segmentation contract.
 
-## Lower-priority opportunities
+## Simplify or justify the curve-sampling limits
 
-- Use squared distances for comparisons that do not require an actual distance.
-- Consider merging the one-segment and incomplete-material-cycle failures in
-  `_segment_count`; the current separate branch provides a more specific error.
+Investigate whether the fixed reference-resolution multiplier, minimum and
+maximum reference resolutions, and maximum evaluated-point count can be derived
+more directly from the offset-error contract and curve characteristics. If the
+fixed limits remain preferable, document their rationale and supported range.
+
+## Simplify segment-count failure handling
+
+Consider whether the one-segment and incomplete-material-cycle failures in
+`_segment_count` should share one branch without making the error less useful.
