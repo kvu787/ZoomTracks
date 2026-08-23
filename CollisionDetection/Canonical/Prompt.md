@@ -1,6 +1,15 @@
 # Prompt
 
-Find, implement, and compare practical algorithms for the task below. Use `<insert programming language here>`.
+Find, implement, and compare practical algorithms for the task below.
+
+Constraints:
+
+- Use C#.
+- Put everything in `C:\Users\k\Repository\Unity\ZoomTracks\CollisionDetection\Canonical`.
+- Don't read anything in the repo outside of that folder.
+  - Exception 1: You must read the ZoomTracks project info to ensure that you use C# that will work in the ZoomTracks Unity game.
+  - Exception 2: You may read the stuff in `C:\Users\k\Repository\Unity\ZoomTracks\CollisionDetection\Experiments`. However, don't use it as a "quick shortcut" to answer the prompt.
+- Do not commit anything.
 
 There may not be one algorithm that is optimal for every workload. Include worthwhile approaches with different optimization objectives and recommend a practical default.
 
