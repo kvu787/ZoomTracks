@@ -7,6 +7,9 @@ For each algorithm:
 - Explain how it works.
 - Explain what tolerance or tolerances are used and why.
 - Identify the optimization objective or objectives.
+- Report its preprocessing-time complexity.
+- Report its per-query-time complexity.
+- Report its storage complexity.
 - Explain trade-offs.
 
 The intended usage of the task is to execute it for many different R for the same immutable O1 and O2. Your optimization should take this into account. Preprocessing is allowed.
