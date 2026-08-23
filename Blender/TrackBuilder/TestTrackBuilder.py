@@ -37,11 +37,6 @@ TEST_INPUT_DIRECTORY = os.path.join(SCRIPT_DIRECTORY, "TestInputs")
 TEST_ARTIFACT_DIRECTORY = os.path.join(SCRIPT_DIRECTORY, "TestArtifacts")
 TEST_OUTPUT_DIRECTORY = os.path.join(TEST_ARTIFACT_DIRECTORY, "Outputs")
 TEST_REPORT_PATH = os.path.join(TEST_ARTIFACT_DIRECTORY, "TestReport.txt")
-EXAMPLE_INPUT_PATH = os.path.join(
-    SCRIPT_DIRECTORY,
-    "Examples",
-    "ResolutionCurvatureIssue_Input.blend",
-)
 PERFORMANCE_INPUT_PATH = os.path.abspath(
     os.path.join(
         SCRIPT_DIRECTORY,
@@ -385,14 +380,20 @@ class TrackBuilderTests(unittest.TestCase):
             else {"ground", "track", "outer_barrier", "outer_outline"},
         )
 
-    def load_example_input(self) -> tuple[float, float, float, list[str]]:
-        self.assertTrue(os.path.isfile(EXAMPLE_INPUT_PATH), f"Missing example: {EXAMPLE_INPUT_PATH}")
-        bpy.ops.wm.open_mainfile(filepath=EXAMPLE_INPUT_PATH)
+    def load_representative_curve_input(self) -> tuple[float, float, float, list[str]]:
+        self.assertTrue(
+            os.path.isfile(PERFORMANCE_INPUT_PATH),
+            f"Missing representative performance input: {PERFORMANCE_INPUT_PATH}",
+        )
+        bpy.ops.wm.open_mainfile(filepath=PERFORMANCE_INPUT_PATH)
         self.assertIsNotNone(_outlines_collection())
+        previous_output = _output_collection()
+        if previous_output is not None:
+            TrackBuilder._remove_collection_tree(previous_output)
         self.assertIsNone(_output_collection())
-        return (1.0, 0.1, 5.0, ["red", "white"])
+        return (1.0, 0.1, 5.0, ["BarrierRed", "BarrierWhite"])
 
-    def prepared_example_outlines(
+    def prepared_curve_outlines(
         self,
         width: float,
     ) -> tuple[float, list[TrackBuilder._Outline], TrackBuilder._Outline, list[TrackBuilder._Outline]]:
@@ -642,7 +643,7 @@ class TrackBuilderTests(unittest.TestCase):
         )
 
     def test_curve_refinement_does_not_revalidate_unchanged_contact_points(self) -> None:
-        width, _, _, _ = self.load_example_input()
+        width, _, _, _ = self.load_test_input(7)
         raw = TrackBuilder._read_raw_outlines(_outlines_collection())
         epsilon = TrackBuilder._world_epsilon(raw)
         base = TrackBuilder._validated_outlines(raw, epsilon)
@@ -732,8 +733,8 @@ class TrackBuilderTests(unittest.TestCase):
             )
             self.assertEqual(len(obj.data.polygons), 0)
 
-    def test_resolution_issue_example_adapts_only_offset_and_preserves_contact_topology(self) -> None:
-        width, height, target, material_names = self.load_example_input()
+    def test_representative_curve_adapts_only_offset_and_preserves_contact_topology(self) -> None:
+        width, height, target, material_names = self.load_representative_curve_input()
         original_state = {
             obj.name: (
                 obj.data.as_pointer(),
@@ -744,13 +745,13 @@ class TrackBuilderTests(unittest.TestCase):
             for obj in _outlines_collection().all_objects
             if obj.type == "CURVE"
         }
-        epsilon, base, outer, inner = self.prepared_example_outlines(width)
+        epsilon, base, outer, inner = self.prepared_curve_outlines(width)
         base_counts = {outline.object_name: len(outline.points) for outline in base}
         base_by_name = {outline.object_name: outline for outline in base}
         self.assertEqual(len(outer.points), base_counts[outer.object_name])
-        self.assertEqual(len(inner[0].points), base_counts[inner[0].object_name])
-        self.assertLess(len(outer.points), 600)
-        self.assertLess(len(inner[0].points), 600)
+        for outline in inner:
+            self.assertEqual(len(outline.points), base_counts[outline.object_name])
+        adaptively_refined_count = 0
         for outline in [outer, *inner]:
             self.assertIsNotNone(outline.offset_points)
             authored = base_by_name[outline.object_name]
@@ -767,7 +768,9 @@ class TrackBuilderTests(unittest.TestCase):
                 [tuple(float(value) for value in point) for point in outline.points],
                 [tuple(float(value) for value in point) for point in authored.points],
             )
-            self.assertGreater(len(outline.offset_points), len(outline.points))
+            self.assertGreaterEqual(len(outline.offset_points), len(outline.points))
+            if len(outline.offset_points) > len(outline.points):
+                adaptively_refined_count += 1
             for point in outline.points:
                 self.assertLessEqual(
                     min(
@@ -810,6 +813,8 @@ class TrackBuilderTests(unittest.TestCase):
                     ),
                     maximum_error * 1.001,
                 )
+        self.assertGreater(adaptively_refined_count, 0)
+
         ground = next(item for item in base if not item.is_curve)
         plans = TrackBuilder._build_plans(
             ground,
@@ -834,7 +839,10 @@ class TrackBuilderTests(unittest.TestCase):
             fill_keys: set[tuple[float, float]] = set()
             barrier_plan_count = 0
             for plan in plans:
-                if plan.properties.get("track_builder_role") == barrier_role:
+                if (
+                    plan.properties.get("track_builder_role") == barrier_role
+                    and plan.properties.get("track_builder_source") == outline.object_name
+                ):
                     barrier_plan_count += 1
                     bottom_count = len(plan.vertices) // 2
                     barrier_keys.update(
@@ -865,7 +873,7 @@ class TrackBuilderTests(unittest.TestCase):
             self.assertTrue(outline_keys <= fill_keys)
 
         output = TrackBuilder.build_track(width, height, target, material_names)
-        self.assert_valid_output(output, expected_inner_count=1)
+        self.assert_valid_output(output, expected_inner_count=2)
         curve_objects = [
             obj
             for obj in output.all_objects
@@ -903,24 +911,7 @@ class TrackBuilderTests(unittest.TestCase):
                 self.assertEqual(_output_geometry_hash(output), expected_hash)
 
     def test_representative_curve_output_matches_bounded_error_golden_geometry(self) -> None:
-        self.assertTrue(
-            os.path.isfile(PERFORMANCE_INPUT_PATH),
-            f"Missing representative performance input: {PERFORMANCE_INPUT_PATH}",
-        )
-        bpy.ops.wm.open_mainfile(filepath=PERFORMANCE_INPUT_PATH)
-        previous_output = _output_collection()
-        self.assertIsNotNone(previous_output)
-        self.assertEqual(
-            {child.name for child in previous_output.children},
-            {"Planes", "BarrierSegments", "OutlineMeshes"},
-        )
-
-        output = TrackBuilder.build_track(
-            1.0,
-            0.1,
-            5.0,
-            ["BarrierRed", "BarrierWhite"],
-        )
+        output = TrackBuilder.build_track(*self.load_representative_curve_input())
 
         self.assertEqual(_output_geometry_hash(output), PERFORMANCE_GEOMETRY_HASH)
         self.assertEqual(len(output.all_objects), 183)

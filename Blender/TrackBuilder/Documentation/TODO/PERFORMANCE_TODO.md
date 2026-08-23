@@ -57,8 +57,7 @@ measures only offset chord error.
 
 This deliberately changed smooth-barrier topology while preserving the visual
 contract: maximum deviation from the dense away-edge reference remains no more
-than `W * 0.001`. The committed example output and representative curve golden
-hash were updated deliberately.
+than `W * 0.001`. The representative curve golden hash was updated deliberately.
 
 ### Secondary scaling fixes
 
@@ -138,8 +137,8 @@ additional lifecycle complexity.
 4. For output-exact work, compare vertices, ordered faces, object metadata, and
    the representative hash.
 5. For topology-changing work, preserve the dense-reference error bound, inspect
-   the generated example, update the explicit curve golden hash, and regenerate
-   the committed example output deliberately.
+   the representative output, and update the explicit curve golden hash
+   deliberately.
 6. Exercise both ordinary and very high segment counts when changing Blender ID
    creation or removal.
 7. Never commit `TestArtifacts`.

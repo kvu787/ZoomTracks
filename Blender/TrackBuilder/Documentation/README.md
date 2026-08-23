@@ -13,8 +13,6 @@ Blender 4.5 and uses only Blender's bundled Python libraries.
 | [`BenchmarkTrackBuilder.py`](../BenchmarkTrackBuilder.py) | Repeatable benchmark and geometry-hash reporter |
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Committed test-fixture generator |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Integration and geometry regression suite |
-| [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed curve-sampling output from its bundled input |
-| [`Examples`](../Examples) | Inspectable adaptive-sampling input and output |
 | [`TEST.md`](TEST.md) | Test commands, fixtures, coverage, and artifacts |
 | [`PERFORMANCE_OPTIMIZATION.md`](PERFORMANCE_OPTIMIZATION.md) | Implemented algorithms, measurements, compatibility notes, and remaining limits |
 
@@ -370,8 +368,7 @@ The public exception hierarchy is:
 - `TrackBuilderGeometryError`: Valid input that cannot produce the requested
   output geometry.
 
-## Example and testing
+## Testing
 
-The committed adaptive-sampling example is in [`Examples`](../Examples). See
-[`TEST.md`](TEST.md) for regeneration commands, fixture architecture, test
-coverage, and inspection artifacts.
+See [`TEST.md`](TEST.md) for fixture generation, test commands, coverage, and
+inspection artifacts.

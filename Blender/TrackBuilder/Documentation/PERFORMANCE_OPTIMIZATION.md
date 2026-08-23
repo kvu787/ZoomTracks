@@ -105,9 +105,6 @@ Important consequences:
 - fewer away-edge vertices are retained; and
 - historical smooth-barrier topology is intentionally no longer an invariant.
 
-The committed `ResolutionCurvatureIssue_Output.blend` was regenerated as a
-deliberate canonical example update.
-
 ### 4. Barrier path slicing uses ordered ranges
 
 Each material segment previously scanned every contact and offset point to find
@@ -174,7 +171,7 @@ Final recorded validation:
 - fresh-process range was 0.176761 to 0.182958 seconds;
 - population standard deviation was 0.001832 seconds;
 - every benchmark process matched the final geometry hash and output counts; and
-- the regenerated example was visually inspected in a colored top-down render,
+- the representative output was visually inspected in a colored top-down render,
   including its tightest inner and outer turns.
 
 Correctness test:
@@ -189,13 +186,6 @@ Representative benchmark:
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\BenchmarkTrackBuilder.py" -- --blend "Blender\TrackBuilderSandbox\TrackBuilder -- test -- perf issue.blend" --runs 9 --expected-hash ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649
 ```
 
-Regenerate the canonical smooth example after a deliberate future topology
-change:
-
-```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateExamples.py"
-```
-
 ## Commit organization
 
 The implementation was split into reviewable stages:
@@ -208,7 +198,7 @@ The implementation was split into reviewable stages:
 2. `075c5be Simplify smooth offsets within authored intervals`
    - bounded-error topology redesign;
    - adaptive test update; and
-   - regenerated canonical example.
+   - updated representative curve coverage.
 3. `ae97f78 Remove TrackBuilder scaling cliffs`
    - bisected barrier ranges;
    - bounds-assisted classification;

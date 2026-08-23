@@ -1,11 +1,9 @@
 # TrackBuilder testing
 
-TrackBuilder tests keep committed inputs and examples separate from generated
-test artifacts:
+TrackBuilder tests keep committed inputs separate from generated test artifacts:
 
 ```text
 Blender/TrackBuilder/
-  Examples/                   committed curve-sampling input and output
   TestInputs/                 committed, input-only regression fixtures
   TestArtifacts/              gitignored and replaced on each test run
     Outputs/                  inspectable fixture results
@@ -25,8 +23,6 @@ and the report remain temporary.
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Generates and synchronizes committed input fixtures without importing or running TrackBuilder |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Runs integration, regression, adaptive-quality, and rollback tests |
 | [`TestInputs`](../TestInputs) | Ten committed `.blend` scenes containing `TrackBuilder/Input/Outlines` but no generated `TrackBuilder/Output` |
-| [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed adaptive-sampling output from its bundled input |
-| [`Examples`](../Examples) | Input-only curvature issue scene and its inspectable canonical output |
 
 ## Generate committed test inputs
 
@@ -53,20 +49,6 @@ Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
 0.005-degree mesh turn and must be rejected. Sample 10 uses a segment length that
 would produce one barrier segment and must also be rejected.
 
-## Regenerate the committed example output
-
-The example generator reads the bundled input-only
-`Blender\TrackBuilder\Examples\ResolutionCurvatureIssue_Input.blend`, runs
-canonical TrackBuilder, and writes the inspectable output beside it. It does not
-read or write files outside `Blender\TrackBuilder`:
-
-```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateExamples.py"
-```
-
-The example parameters are `W=1`, `H=0.1`, `segment_length=5`, and materials
-`red`, `white`.
-
 ## Run tests
 
 From the repository root, run:
@@ -90,7 +72,7 @@ The suite covers:
 - Complete barrier-material sequences and adjusted segment lengths.
 - `POLY` curve behavior.
 - A generated cyclic Bézier outline.
-- The committed NURBS curvature issue scene.
+- The representative NURBS curvature scene.
 - Exact preservation of the normally evaluated contact topology.
 - Adaptive away-edge chord-error bounds.
 - Material-cut behavior with independently sampled ribbon sides.
