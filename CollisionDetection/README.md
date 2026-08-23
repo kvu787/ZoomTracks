@@ -1,6 +1,6 @@
 # Prompt
 
-Find optimal algorithms for the following task.
+Find optimal algorithms for the following task. Do this for `<insert programming language here>`.
 
 For each algorithm:
 
@@ -11,8 +11,11 @@ For each algorithm:
 - Report its per-query-time complexity.
 - Report its storage complexity.
 - Explain trade-offs.
+- Do proper testing and performance profiling.
 
 The intended usage of the task is to execute it for many different R for the same immutable O1 and O2. Your optimization should take this into account. Preprocessing is allowed.
+
+Generally speaking, the lengths L of edges in all the inputs should be `0.1 <= L <= 1,000`.
 
 # Task
 
