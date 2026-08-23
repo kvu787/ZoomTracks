@@ -25,11 +25,12 @@ Each outline is a simple, connected, closed polygonal loop: it does not self-int
 
 O1 fully encloses O2. O1 doesn't touch O2 at all.
 
-Each query rectangle:
+Each R:
 
 - May have any rotation in the XY plane.
 - Has strictly positive width and height.
 - Is represented by four finite `float32` XY vertices supplied in cyclic perimeter order, either clockwise or counterclockwise.
+- Has a perimeter authoritatively defined by the four supplied vertices and the four segments connecting them in cyclic order. Implementations must test these segments directly without reconstructing or regularizing an ideal mathematical rectangle. Small deviations from exact parallelism or perpendicularity caused by `float32` rounding are permitted.
 - Is treated as its perimeter only, consisting of four closed edge segments—not as a filled region.
 
 Return `True` if and only if at least one rectangle edge touches or intersects at least one segment from either outline. This includes proper crossings, endpoint contact, tangential contact, and collinear overlap. Containment without edge contact does not count.
