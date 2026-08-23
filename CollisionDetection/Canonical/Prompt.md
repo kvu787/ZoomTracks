@@ -95,3 +95,34 @@ Interpret every `float32` coordinate as the exact real value represented by that
 Return `True` for proper crossings, endpoint contact, tangential contact, and collinear overlap. Containment without edge contact does not count.
 
 Numerical robustness is part of the task. Exact solutions must preserve the mathematical predicate above. Tolerance-based solutions may also be explored as practical alternatives, but they must be identified as approximate and must define and justify their tolerance policy and error behavior.
+
+# API Contract
+
+All public types are in the `ZoomTracks.CollisionDetection` namespace.
+
+## `CoordinateXY`
+
+```csharp
+public readonly struct CoordinateXY
+{
+    public CoordinateXY(float x, float y);
+    public float X { get; }
+    public float Y { get; }
+}
+```
+
+Represents a two-dimensional point. Both coordinates must be finite; the constructor
+throws `ArgumentOutOfRangeException` for `NaN` or positive/negative infinity.
+
+## `ICollisionDetector`
+
+```csharp
+public interface ICollisionDetector
+{
+    bool IsColliding(/* rectangle R */);
+}
+```
+
+## Constructor for ICollisionDetector
+
+must accept O1 and O2.
