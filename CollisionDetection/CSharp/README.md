@@ -13,10 +13,154 @@ usually small and local; it was the fastest option on those measured workloads b
 lost badly on large enclosing queries.
 
 The reusable library targets .NET Standard 2.1 and C# 8. It has no Unity dependency,
-so callers can copy `UnityEngine.Vector2.x/y` into `FloatPoint`. This target was chosen
+so callers can copy `UnityEngine.Vector2.x/y` into `CoordinateXY`. This target was chosen
 from the ZoomTracks Unity 6000.3.22f1 project metadata. Validation and timings were run
 with the standalone .NET 10 JIT, not inside Unity Mono or IL2CPP; target-player profiling
 is still required before treating the measured ranking as final.
+
+## API reference
+
+All public types are in the `ZoomTracks.CollisionDetection` namespace.
+
+### `CoordinateXY`
+
+```csharp
+public readonly struct CoordinateXY
+{
+    public CoordinateXY(float x, float y);
+    public float X { get; }
+    public float Y { get; }
+}
+```
+
+Represents a two-dimensional point. Both coordinates must be finite; the constructor
+throws `ArgumentOutOfRangeException` for `NaN` or positive/negative infinity.
+
+### `ConvexQuadrilateralOutline`
+
+```csharp
+public readonly struct ConvexQuadrilateralOutline
+{
+    public ConvexQuadrilateralOutline(
+        CoordinateXY p0,
+        CoordinateXY p1,
+        CoordinateXY p2,
+        CoordinateXY p3);
+    public CoordinateXY P0 { get; }
+    public CoordinateXY P1 { get; }
+    public CoordinateXY P2 { get; }
+    public CoordinateXY P3 { get; }
+    public CoordinateXY GetVertex(int index);
+}
+```
+
+Represents the four edges `P0-P1`, `P1-P2`, `P2-P3`, and `P3-P0`. Supply the vertices
+in cyclic order around a strictly convex perimeter. `GetVertex` accepts indices 0
+through 3 and throws `ArgumentOutOfRangeException` for any other index.
+
+### `ICollisionDetector`
+
+```csharp
+public interface ICollisionDetector
+{
+    bool IsColliding(ConvexQuadrilateralOutline outline);
+}
+```
+
+- `IsColliding` returns `true` when any query-perimeter edge touches or crosses any
+  outline edge. Endpoint contact, tangency, and collinear overlap count as intersections.
+  It returns `false` when there is no edge contact, including when one shape merely
+  contains another.
+
+An index copies both outlines during construction. Later changes to the input lists do
+not affect it, and the completed index can be queried concurrently from multiple threads.
+
+### Index implementations
+
+Each constructor takes two closed outlines as vertex lists. Do not repeat the first
+vertex at the end: the closing edge from the last vertex to the first is added
+automatically. Each outline must contain at least three vertices, and consecutive
+vertices must be distinct. A null outline throws `ArgumentNullException`; an outline
+that violates either of the other rules throws `ArgumentException`.
+
+#### `MortonBvhIndex`
+
+```csharp
+public MortonBvhIndex(
+    IReadOnlyList<CoordinateXY> outline1,
+    IReadOnlyList<CoordinateXY> outline2,
+    int leafSize = MortonBvhIndex.DefaultLeafSize);
+
+public int LeafSize { get; }
+public int NodeCount { get; }
+```
+
+The general-purpose default. `leafSize` controls how many outline segments are stored
+in each BVH leaf and must be from 1 through 64. Its default value is 8. `NodeCount`
+reports the number of nodes in the built hierarchy.
+
+#### `LinearScanIndex`
+
+```csharp
+public LinearScanIndex(
+    IReadOnlyList<CoordinateXY> outline1,
+    IReadOnlyList<CoordinateXY> outline2);
+```
+
+Checks outline segments directly. Use it for small outlines, few queries, or as a
+simple baseline.
+
+#### `SparseUniformGridIndex`
+
+```csharp
+public SparseUniformGridIndex(
+    IReadOnlyList<CoordinateXY> outline1,
+    IReadOnlyList<CoordinateXY> outline2,
+    int targetSegmentsPerCell = SparseUniformGridIndex.DefaultTargetSegmentsPerCell,
+    int maxAxisCells = SparseUniformGridIndex.DefaultMaxAxisCells,
+    int maxCellsPerSegment = SparseUniformGridIndex.DefaultMaxCellsPerSegment);
+
+public int TargetSegmentsPerCell { get; }
+public int MaxAxisCells { get; }
+public int MaxCellsPerSegment { get; }
+public int CellsX { get; }
+public int CellsY { get; }
+public int OccupiedCellCount { get; }
+public int CellReferenceCount { get; }
+public int OverflowSegmentCount { get; }
+```
+
+Optimized for many small, local queries against fairly uniformly sampled outlines.
+Constructor limits are:
+
+- `targetSegmentsPerCell`: 1 through 1,024; default 4.
+- `maxAxisCells`: 1 through 65,536; default 4,096.
+- `maxCellsPerSegment`: 1 through 1,048,576; default 64.
+
+An out-of-range setting throws `ArgumentOutOfRangeException`. The remaining properties
+describe the built grid and can be used when profiling its effectiveness. In particular,
+a high `OverflowSegmentCount` means more segments must be checked outside the grid.
+
+### `ExactSegmentPredicates`
+
+```csharp
+public static bool Intersects(
+    CoordinateXY a, CoordinateXY b, CoordinateXY c, CoordinateXY d);
+
+public static int OrientationSign(
+    CoordinateXY a, CoordinateXY b, CoordinateXY c);
+```
+
+- `Intersects` tests the closed segments `a-b` and `c-d`, using the same exact policy
+  as the indexes.
+- `OrientationSign` returns `1` when `a`, `b`, `c` make a counterclockwise turn, `-1`
+  for a clockwise turn, and `0` when they are collinear.
+
+### Base class
+
+`OutlineIndexBase` is the public abstract base of the three indexes. Most callers should
+program against `ICollisionDetector` and construct one of the implementations
+above.
 
 ## Contents and use
 
@@ -32,13 +176,13 @@ Typical use:
 ```csharp
 using ZoomTracks.CollisionDetection;
 
-FloatPoint[] o1 = GetOuterOutline();
-FloatPoint[] o2 = GetInnerOutline();
+CoordinateXY[] o1 = GetOuterOutline();
+CoordinateXY[] o2 = GetInnerOutline();
 
-IOutlineIntersectionIndex detector = new MortonBvhIndex(o1, o2);
+ICollisionDetector detector = new MortonBvhIndex(o1, o2);
 
-var perimeter = new QueryPerimeter(p0, p1, p2, p3);
-bool anyEdgeContact = detector.Intersects(perimeter);
+var outline = new ConvexQuadrilateralOutline(p0, p1, p2, p3);
+bool anyEdgeContact = detector.IsColliding(outline);
 ```
 
 `p0..p3` are used exactly as supplied, in cyclic order. No ideal rectangle is
