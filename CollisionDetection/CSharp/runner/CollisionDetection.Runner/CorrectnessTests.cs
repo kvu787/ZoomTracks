@@ -102,9 +102,9 @@ namespace ZoomTracks.CollisionDetection.Runner
                 _segmentCases++;
             }
 
-            FloatPoint hugeA = P(float.MaxValue, float.MaxValue);
-            FloatPoint hugeB = P(-float.MaxValue, -float.MaxValue);
-            FloatPoint offLine = P(1.0f, 0.0f);
+            CoordinateXY hugeA = P(float.MaxValue, float.MaxValue);
+            CoordinateXY hugeB = P(-float.MaxValue, -float.MaxValue);
+            CoordinateXY offLine = P(1.0f, 0.0f);
             int expectedOrientation = ReferenceOracle.OrientationSign(hugeA, hugeB, offLine);
             Check(expectedOrientation != 0, "Mixed-exponent orientation fixture must be non-collinear.");
             Check(
@@ -115,7 +115,7 @@ namespace ZoomTracks.CollisionDetection.Runner
 
         private static void TestExhaustiveSmallGrid()
         {
-            var points = new List<FloatPoint>();
+            var points = new List<CoordinateXY>();
             for (int x = -3; x <= 3; ++x)
             {
                 for (int y = -3; y <= 3; ++y)
@@ -167,9 +167,9 @@ namespace ZoomTracks.CollisionDetection.Runner
             const int count = 250000;
             for (int i = 0; i < count; ++i)
             {
-                FloatPoint a;
-                FloatPoint b;
-                FloatPoint c;
+                CoordinateXY a;
+                CoordinateXY b;
+                CoordinateXY c;
 
                 if ((i % 5) == 0)
                 {
@@ -184,7 +184,7 @@ namespace ZoomTracks.CollisionDetection.Runner
 
                     if ((i & 1) != 0)
                     {
-                        c = new FloatPoint(c.X, MathF.BitIncrement(c.Y));
+                        c = new CoordinateXY(c.X, MathF.BitIncrement(c.Y));
                     }
                 }
                 else if ((i % 17) == 0)
@@ -213,10 +213,10 @@ namespace ZoomTracks.CollisionDetection.Runner
             const int count = 125000;
             for (int i = 0; i < count; ++i)
             {
-                FloatPoint a = RandomPoint(random);
-                FloatPoint b = RandomDistinctPoint(random, a);
-                FloatPoint c = RandomPoint(random);
-                FloatPoint d = RandomDistinctPoint(random, c);
+                CoordinateXY a = RandomPoint(random);
+                CoordinateXY b = RandomDistinctPoint(random, a);
+                CoordinateXY c = RandomPoint(random);
+                CoordinateXY d = RandomDistinctPoint(random, c);
 
                 bool expected = ReferenceOracle.SegmentIntersects(a, b, c, d);
                 bool parametric = ReferenceOracle.ParametricSegmentIntersects(a, b, c, d);
@@ -231,11 +231,11 @@ namespace ZoomTracks.CollisionDetection.Runner
 
         private static void TestCuratedOutlineQueries()
         {
-            FloatPoint[] outer =
+            CoordinateXY[] outer =
             {
                 P(-10, -10), P(10, -10), P(10, 10), P(-10, 10),
             };
-            FloatPoint[] inner =
+            CoordinateXY[] inner =
             {
                 P(-3, -3), P(-3, 3), P(3, 3), P(3, -3),
             };
@@ -252,7 +252,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                 QueryCase.Create("collinear overlap", AxisRectangle(-2, 10, 2, 11), true),
                 QueryCase.Create(
                     "rotated vertex tangent",
-                    new QueryPerimeter(P(10, 10), P(12, 8), P(14, 10), P(12, 12)),
+                    new ConvexQuadrilateralOutline(P(10, 10), P(12, 8), P(14, 10), P(12, 12)),
                     true),
                 QueryCase.Create("crosses both loops", AxisRectangle(-11, -0.5f, 11, 0.5f), true),
             };
@@ -261,14 +261,14 @@ namespace ZoomTracks.CollisionDetection.Runner
             List<NamedIndex> indexes = CreateIndexes(outer, inner);
             foreach (QueryCase testCase in cases)
             {
-                Check(oracle.Intersects(testCase.Query) == testCase.Expected, "Curated oracle failed: " + testCase.Name);
+                Check(oracle.IsColliding(testCase.Query) == testCase.Expected, "Curated oracle failed: " + testCase.Name);
                 CheckIndexes(indexes, testCase.Query, testCase.Expected, "curated " + testCase.Name);
                 CheckIndexes(indexes, Reverse(testCase.Query), testCase.Expected, "reversed " + testCase.Name);
                 CheckIndexes(indexes, Rotate(testCase.Query), testCase.Expected, "rotated-order " + testCase.Name);
             }
 
-            FloatPoint[] reversedOuter = ReverseLoop(outer);
-            FloatPoint[] rotatedInner = RotateLoop(inner);
+            CoordinateXY[] reversedOuter = ReverseLoop(outer);
+            CoordinateXY[] rotatedInner = RotateLoop(inner);
             List<NamedIndex> transformedIndexes = CreateIndexes(reversedOuter, rotatedInner);
             foreach (QueryCase testCase in cases)
             {
@@ -284,16 +284,16 @@ namespace ZoomTracks.CollisionDetection.Runner
         {
             float max = float.MaxValue;
             float beforeMax = MathF.BitDecrement(max);
-            FloatPoint[] hugeOuter =
+            CoordinateXY[] hugeOuter =
             {
                 P(-max, -max), P(max, -max), P(max, max), P(-max, max),
             };
-            FloatPoint[] unitInner =
+            CoordinateXY[] unitInner =
             {
                 P(-1, -1), P(-1, 1), P(1, 1), P(1, -1),
             };
 
-            QueryPerimeter hugeContact = new QueryPerimeter(
+            ConvexQuadrilateralOutline hugeContact = new ConvexQuadrilateralOutline(
                 P(beforeMax, -1),
                 P(max, -1),
                 P(max, 1),
@@ -301,15 +301,15 @@ namespace ZoomTracks.CollisionDetection.Runner
             CheckIndexes(CreateIndexes(hugeOuter, unitInner), hugeContact, true, "maximum finite grid mapping");
 
             float e = float.Epsilon;
-            FloatPoint[] tinyOuter =
+            CoordinateXY[] tinyOuter =
             {
                 P(-4 * e, -4 * e), P(4 * e, -4 * e), P(4 * e, 4 * e), P(-4 * e, 4 * e),
             };
-            FloatPoint[] tinyInner =
+            CoordinateXY[] tinyInner =
             {
                 P(-e, -e), P(-e, e), P(e, e), P(e, -e),
             };
-            QueryPerimeter tinyContact = new QueryPerimeter(
+            ConvexQuadrilateralOutline tinyContact = new ConvexQuadrilateralOutline(
                 P(3 * e, -e),
                 P(4 * e, -e),
                 P(4 * e, e),
@@ -319,11 +319,11 @@ namespace ZoomTracks.CollisionDetection.Runner
 
         private static void TestMinimumAndRedundantOutlines()
         {
-            FloatPoint[] triangularOuter =
+            CoordinateXY[] triangularOuter =
             {
                 P(-10, -10), P(10, -10), P(0, 10),
             };
-            FloatPoint[] triangularInner =
+            CoordinateXY[] triangularInner =
             {
                 P(-1, -1), P(1, -1), P(0, 1),
             };
@@ -339,12 +339,12 @@ namespace ZoomTracks.CollisionDetection.Runner
                 false,
                 "minimum n1=n2=3 containment miss");
 
-            FloatPoint[] redundantOuter =
+            CoordinateXY[] redundantOuter =
             {
                 P(-10, -10), P(0, -10), P(10, -10), P(10, 10),
                 P(0, 10), P(-10, 10),
             };
-            FloatPoint[] squareInner =
+            CoordinateXY[] squareInner =
             {
                 P(-2, -2), P(-2, 2), P(2, 2), P(2, -2),
             };
@@ -389,14 +389,14 @@ namespace ZoomTracks.CollisionDetection.Runner
             {
                 int outerCount = 24 + (dataSet * 11);
                 int innerCount = 13 + (dataSet * 5);
-                FloatPoint[] outer = MakeLoop(
+                CoordinateXY[] outer = MakeLoop(
                     outerCount,
                     1000.0,
                     760.0,
                     dataSet * 0.071,
                     0.16,
                     3 + (dataSet % 5));
-                FloatPoint[] inner = MakeLoop(
+                CoordinateXY[] inner = MakeLoop(
                     innerCount,
                     300.0,
                     220.0,
@@ -406,12 +406,12 @@ namespace ZoomTracks.CollisionDetection.Runner
 
                 List<NamedIndex> indexes = CreateIndexes(outer, inner);
                 ReferenceOracle.PreparedOutlines oracle = ReferenceOracle.Prepare(outer, inner);
-                var queries = new List<QueryPerimeter>();
+                var queries = new List<ConvexQuadrilateralOutline>();
                 var expectedResults = new List<bool>();
 
                 while (queries.Count < 500)
                 {
-                    QueryPerimeter query;
+                    ConvexQuadrilateralOutline query;
                     if ((queries.Count % 25) == 0)
                     {
                         int edge = random.Next(outer.Length);
@@ -437,7 +437,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                     }
 
                     queries.Add(query);
-                    expectedResults.Add(oracle.Intersects(query));
+                    expectedResults.Add(oracle.IsColliding(query));
                 }
 
                 for (int i = 0; i < queries.Count; ++i)
@@ -459,10 +459,10 @@ namespace ZoomTracks.CollisionDetection.Runner
 
         private static void TestConcurrentQueries()
         {
-            FloatPoint[] outer = MakeLoop(512, 1000.0, 800.0, 0.0, 0.12, 7);
-            FloatPoint[] inner = MakeLoop(257, 300.0, 240.0, 0.2, 0.08, 5);
+            CoordinateXY[] outer = MakeLoop(512, 1000.0, 800.0, 0.0, 0.12, 7);
+            CoordinateXY[] inner = MakeLoop(257, 300.0, 240.0, 0.2, 0.08, 5);
             var random = new Random(77331);
-            var queries = new QueryPerimeter[512];
+            var queries = new ConvexQuadrilateralOutline[512];
             var expected = new bool[queries.Length];
             var oracle = ReferenceOracle.Prepare(outer, inner);
             for (int i = 0; i < queries.Length; ++i)
@@ -473,7 +473,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                     1.0 + (random.NextDouble() * 30.0),
                     1.0 + (random.NextDouble() * 20.0),
                     random.NextDouble() * Math.PI);
-                expected[i] = oracle.Intersects(queries[i]);
+                expected[i] = oracle.IsColliding(queries[i]);
             }
 
             foreach (NamedIndex named in CreateIndexes(outer, inner))
@@ -483,7 +483,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                     queries.Length,
                     i =>
                     {
-                        if (named.Index.Intersects(queries[i]) != expected[i])
+                        if (named.Index.IsColliding(queries[i]) != expected[i])
                         {
                             throw new InvalidOperationException("Concurrent mismatch: " + named.Name);
                         }
@@ -493,7 +493,7 @@ namespace ZoomTracks.CollisionDetection.Runner
             }
         }
 
-        internal static FloatPoint[] MakeLoop(
+        internal static CoordinateXY[] MakeLoop(
             int count,
             double radiusX,
             double radiusY,
@@ -501,12 +501,12 @@ namespace ZoomTracks.CollisionDetection.Runner
             double wobble,
             int harmonic)
         {
-            var result = new FloatPoint[count];
+            var result = new CoordinateXY[count];
             for (int i = 0; i < count; ++i)
             {
                 double angle = phase + ((Math.PI * 2.0 * i) / count);
                 double scale = 1.0 + (wobble * Math.Sin((harmonic * angle) + 0.37));
-                result[i] = new FloatPoint(
+                result[i] = new CoordinateXY(
                     (float)(radiusX * scale * Math.Cos(angle)),
                     (float)(radiusY * scale * Math.Sin(angle)));
             }
@@ -514,7 +514,7 @@ namespace ZoomTracks.CollisionDetection.Runner
             return result;
         }
 
-        internal static QueryPerimeter MakeRectangle(
+        internal static ConvexQuadrilateralOutline MakeRectangle(
             double centerX,
             double centerY,
             double halfWidth,
@@ -528,28 +528,28 @@ namespace ZoomTracks.CollisionDetection.Runner
             double vx = -sin * halfHeight;
             double vy = cos * halfHeight;
 
-            return new QueryPerimeter(
+            return new ConvexQuadrilateralOutline(
                 P(centerX - ux - vx, centerY - uy - vy),
                 P(centerX + ux - vx, centerY + uy - vy),
                 P(centerX + ux + vx, centerY + uy + vy),
                 P(centerX - ux + vx, centerY - uy + vy));
         }
 
-        private static QueryPerimeter RectangleFromEdge(FloatPoint a, FloatPoint b, double depth)
+        private static ConvexQuadrilateralOutline RectangleFromEdge(CoordinateXY a, CoordinateXY b, double depth)
         {
             double dx = (double)b.X - a.X;
             double dy = (double)b.Y - a.Y;
             double length = Math.Sqrt((dx * dx) + (dy * dy));
             double nx = (-dy / length) * depth;
             double ny = (dx / length) * depth;
-            return new QueryPerimeter(
+            return new ConvexQuadrilateralOutline(
                 a,
                 b,
                 P(b.X + nx, b.Y + ny),
                 P(a.X + nx, a.Y + ny));
         }
 
-        private static bool IsStrictlyConvex(QueryPerimeter query)
+        private static bool IsStrictlyConvex(ConvexQuadrilateralOutline query)
         {
             int sign = 0;
             for (int i = 0; i < 4; ++i)
@@ -577,8 +577,8 @@ namespace ZoomTracks.CollisionDetection.Runner
         }
 
         private static List<NamedIndex> CreateIndexes(
-            IReadOnlyList<FloatPoint> outer,
-            IReadOnlyList<FloatPoint> inner)
+            IReadOnlyList<CoordinateXY> outer,
+            IReadOnlyList<CoordinateXY> inner)
         {
             return new List<NamedIndex>
             {
@@ -590,36 +590,36 @@ namespace ZoomTracks.CollisionDetection.Runner
 
         private static void CheckIndexes(
             IReadOnlyList<NamedIndex> indexes,
-            QueryPerimeter query,
+            ConvexQuadrilateralOutline query,
             bool expected,
             string context)
         {
             foreach (NamedIndex named in indexes)
             {
-                bool actual = named.Index.Intersects(query);
+                bool actual = named.Index.IsColliding(query);
                 Check(actual == expected, named.Name + " mismatch: " + context);
                 _queryCases++;
             }
         }
 
-        private static QueryPerimeter AxisRectangle(float minX, float minY, float maxX, float maxY)
+        private static ConvexQuadrilateralOutline AxisRectangle(float minX, float minY, float maxX, float maxY)
         {
-            return new QueryPerimeter(P(minX, minY), P(maxX, minY), P(maxX, maxY), P(minX, maxY));
+            return new ConvexQuadrilateralOutline(P(minX, minY), P(maxX, minY), P(maxX, maxY), P(minX, maxY));
         }
 
-        private static QueryPerimeter Reverse(QueryPerimeter query)
+        private static ConvexQuadrilateralOutline Reverse(ConvexQuadrilateralOutline query)
         {
-            return new QueryPerimeter(query.P0, query.P3, query.P2, query.P1);
+            return new ConvexQuadrilateralOutline(query.P0, query.P3, query.P2, query.P1);
         }
 
-        private static QueryPerimeter Rotate(QueryPerimeter query)
+        private static ConvexQuadrilateralOutline Rotate(ConvexQuadrilateralOutline query)
         {
-            return new QueryPerimeter(query.P1, query.P2, query.P3, query.P0);
+            return new ConvexQuadrilateralOutline(query.P1, query.P2, query.P3, query.P0);
         }
 
-        private static FloatPoint[] ReverseLoop(FloatPoint[] loop)
+        private static CoordinateXY[] ReverseLoop(CoordinateXY[] loop)
         {
-            var result = new FloatPoint[loop.Length];
+            var result = new CoordinateXY[loop.Length];
             result[0] = loop[0];
             for (int i = 1; i < loop.Length; ++i)
             {
@@ -629,9 +629,9 @@ namespace ZoomTracks.CollisionDetection.Runner
             return result;
         }
 
-        private static FloatPoint[] RotateLoop(FloatPoint[] loop)
+        private static CoordinateXY[] RotateLoop(CoordinateXY[] loop)
         {
-            var result = new FloatPoint[loop.Length];
+            var result = new CoordinateXY[loop.Length];
             for (int i = 0; i < loop.Length; ++i)
             {
                 result[i] = loop[(i + 1) % loop.Length];
@@ -640,14 +640,14 @@ namespace ZoomTracks.CollisionDetection.Runner
             return result;
         }
 
-        private static FloatPoint RandomPoint(Random random)
+        private static CoordinateXY RandomPoint(Random random)
         {
-            return new FloatPoint(RandomFiniteFloat(random), RandomFiniteFloat(random));
+            return new CoordinateXY(RandomFiniteFloat(random), RandomFiniteFloat(random));
         }
 
-        private static FloatPoint RandomDistinctPoint(Random random, FloatPoint other)
+        private static CoordinateXY RandomDistinctPoint(Random random, CoordinateXY other)
         {
-            FloatPoint result;
+            CoordinateXY result;
             do
             {
                 result = RandomPoint(random);
@@ -682,9 +682,9 @@ namespace ZoomTracks.CollisionDetection.Runner
             return BitConverter.Int32BitsToSingle(unchecked((int)bits));
         }
 
-        private static FloatPoint P(double x, double y)
+        private static CoordinateXY P(double x, double y)
         {
-            return new FloatPoint((float)x, (float)y);
+            return new CoordinateXY((float)x, (float)y);
         }
 
         private static void Check(bool condition, string message)
@@ -705,33 +705,33 @@ namespace ZoomTracks.CollisionDetection.Runner
             }
         }
 
-        private readonly record struct NamedIndex(string Name, IOutlineIntersectionIndex Index);
+        private readonly record struct NamedIndex(string Name, ICollisionDetector Index);
 
-        private readonly record struct SegmentPair(FloatPoint A, FloatPoint B);
+        private readonly record struct SegmentPair(CoordinateXY A, CoordinateXY B);
 
         private readonly record struct SegmentCase(
             string Name,
-            FloatPoint A,
-            FloatPoint B,
-            FloatPoint C,
-            FloatPoint D,
+            CoordinateXY A,
+            CoordinateXY B,
+            CoordinateXY C,
+            CoordinateXY D,
             bool Expected)
         {
             public static SegmentCase Create(
                 string name,
-                FloatPoint a,
-                FloatPoint b,
-                FloatPoint c,
-                FloatPoint d,
+                CoordinateXY a,
+                CoordinateXY b,
+                CoordinateXY c,
+                CoordinateXY d,
                 bool expected)
             {
                 return new SegmentCase(name, a, b, c, d, expected);
             }
         }
 
-        private readonly record struct QueryCase(string Name, QueryPerimeter Query, bool Expected)
+        private readonly record struct QueryCase(string Name, ConvexQuadrilateralOutline Query, bool Expected)
         {
-            public static QueryCase Create(string name, QueryPerimeter query, bool expected)
+            public static QueryCase Create(string name, ConvexQuadrilateralOutline query, bool expected)
             {
                 return new QueryCase(name, query, expected);
             }

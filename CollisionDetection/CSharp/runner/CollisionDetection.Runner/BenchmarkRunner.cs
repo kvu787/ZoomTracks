@@ -48,14 +48,14 @@ namespace ZoomTracks.CollisionDetection.Runner
             {
                 int outerCount = size / 2;
                 int innerCount = size - outerCount;
-                FloatPoint[] outer = CorrectnessTests.MakeLoop(
+                CoordinateXY[] outer = CorrectnessTests.MakeLoop(
                     outerCount,
                     1000.0,
                     800.0,
                     0.017,
                     0.12,
                     7);
-                FloatPoint[] inner = CorrectnessTests.MakeLoop(
+                CoordinateXY[] inner = CorrectnessTests.MakeLoop(
                     innerCount,
                     300.0,
                     240.0,
@@ -91,7 +91,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                 for (int workloadIndex = 0; workloadIndex < workloadNames.Length; ++workloadIndex)
                 {
                     string workloadName = workloadNames[workloadIndex];
-                    QueryPerimeter[] queries = CreateWorkload(
+                    ConvexQuadrilateralOutline[] queries = CreateWorkload(
                         workloadName,
                         queryCount,
                         outer,
@@ -124,7 +124,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                     var queryMeasurements = new Dictionary<string, QueryMeasurement>();
                     foreach (AlgorithmSpec algorithm in order)
                     {
-                        IOutlineIntersectionIndex index = algorithm.Create(outer, inner);
+                        ICollisionDetector index = algorithm.Create(outer, inner);
                         QueryMeasurement query = MeasureQueries(index, queries, expectedResults);
                         queryMeasurements.Add(algorithm.Name, query);
                         BuildMeasurement build = buildResults[algorithm.Name];
@@ -176,8 +176,8 @@ namespace ZoomTracks.CollisionDetection.Runner
 
         private static BuildMeasurement MeasureBuild(
             AlgorithmSpec algorithm,
-            FloatPoint[] outer,
-            FloatPoint[] inner,
+            CoordinateXY[] outer,
+            CoordinateXY[] inner,
             int size)
         {
             for (int i = 0; i < 3; ++i)
@@ -187,7 +187,7 @@ namespace ZoomTracks.CollisionDetection.Runner
 
             long probeAllocatedBefore = GC.GetAllocatedBytesForCurrentThread();
             long probeStart = Stopwatch.GetTimestamp();
-            IOutlineIntersectionIndex probe = algorithm.Create(outer, inner);
+            ICollisionDetector probe = algorithm.Create(outer, inner);
             long probeTicks = Math.Max(1L, Stopwatch.GetTimestamp() - probeStart);
             long probeAllocated = Math.Max(
                 1L,
@@ -203,7 +203,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                 8192L);
             var times = new double[TimingSamples];
             var allocations = new double[TimingSamples];
-            IOutlineIntersectionIndex? retained = null;
+            ICollisionDetector? retained = null;
 
             for (int sample = 0; sample < TimingSamples; ++sample)
             {
@@ -221,17 +221,17 @@ namespace ZoomTracks.CollisionDetection.Runner
                 allocations[sample] = (allocatedAfter - allocatedBefore) / (double)repetitions;
             }
 
-            IOutlineIntersectionIndex detailsIndex = algorithm.Create(outer, inner);
+            ICollisionDetector detailsIndex = algorithm.Create(outer, inner);
             return new BuildMeasurement(
                 Median(times),
                 MedianAbsoluteDeviation(times),
                 Median(allocations),
-                Describe(detailsIndex));
+                Describe(detailsIndex, outer.Length + inner.Length));
         }
 
         private static QueryMeasurement MeasureQueries(
-            IOutlineIntersectionIndex index,
-            QueryPerimeter[] queries,
+            ICollisionDetector index,
+            ConvexQuadrilateralOutline[] queries,
             bool[] expectedResults)
         {
             VerifyPerQuery(index, queries, expectedResults);
@@ -298,25 +298,25 @@ namespace ZoomTracks.CollisionDetection.Runner
                 finalChecksum);
         }
 
-        private static QueryPerimeter[] CreateWorkload(
+        private static ConvexQuadrilateralOutline[] CreateWorkload(
             string name,
             int count,
-            FloatPoint[] outer,
-            FloatPoint[] inner,
+            CoordinateXY[] outer,
+            CoordinateXY[] inner,
             int seed)
         {
             var random = new Random(seed);
-            var result = new QueryPerimeter[count];
+            var result = new ConvexQuadrilateralOutline[count];
             for (int i = 0; i < result.Length; ++i)
             {
                 switch (name)
                 {
                     case "boundary-50pct":
                     {
-                        FloatPoint[] loop = (i & 2) == 0 ? outer : inner;
+                        CoordinateXY[] loop = (i & 2) == 0 ? outer : inner;
                         int edgeIndex = random.Next(loop.Length);
-                        FloatPoint a = loop[edgeIndex];
-                        FloatPoint b = loop[(edgeIndex + 1) % loop.Length];
+                        CoordinateXY a = loop[edgeIndex];
+                        CoordinateXY b = loop[(edgeIndex + 1) % loop.Length];
                         if ((i & 1) == 0)
                         {
                             result[i] = RectangleFromEdge(a, b, 2.0 + (random.NextDouble() * 8.0));
@@ -374,30 +374,30 @@ namespace ZoomTracks.CollisionDetection.Runner
             return result;
         }
 
-        private static QueryPerimeter RectangleFromEdge(FloatPoint a, FloatPoint b, double depth)
+        private static ConvexQuadrilateralOutline RectangleFromEdge(CoordinateXY a, CoordinateXY b, double depth)
         {
             double dx = (double)b.X - a.X;
             double dy = (double)b.Y - a.Y;
             double length = Math.Sqrt((dx * dx) + (dy * dy));
             double nx = (-dy / length) * depth;
             double ny = (dx / length) * depth;
-            return new QueryPerimeter(
+            return new ConvexQuadrilateralOutline(
                 a,
                 b,
-                new FloatPoint((float)(b.X + nx), (float)(b.Y + ny)),
-                new FloatPoint((float)(a.X + nx), (float)(a.Y + ny)));
+                new CoordinateXY((float)(b.X + nx), (float)(b.Y + ny)),
+                new CoordinateXY((float)(a.X + nx), (float)(a.Y + ny)));
         }
 
         private static bool[] LabelQueries(
             LinearScanIndex index,
-            QueryPerimeter[] queries,
+            ConvexQuadrilateralOutline[] queries,
             out int hitCount)
         {
             var results = new bool[queries.Length];
             int hits = 0;
             for (int i = 0; i < queries.Length; ++i)
             {
-                bool result = index.Intersects(queries[i]);
+                bool result = index.IsColliding(queries[i]);
                 results[i] = result;
                 if (result)
                 {
@@ -410,13 +410,13 @@ namespace ZoomTracks.CollisionDetection.Runner
         }
 
         private static void VerifyPerQuery(
-            IOutlineIntersectionIndex index,
-            QueryPerimeter[] queries,
+            ICollisionDetector index,
+            ConvexQuadrilateralOutline[] queries,
             bool[] expectedResults)
         {
             for (int i = 0; i < queries.Length; ++i)
             {
-                if (index.Intersects(queries[i]) != expectedResults[i])
+                if (index.IsColliding(queries[i]) != expectedResults[i])
                 {
                     throw new InvalidOperationException(
                         "Per-query benchmark verification failed at query " +
@@ -426,13 +426,13 @@ namespace ZoomTracks.CollisionDetection.Runner
         }
 
         private static long ExecuteSignature(
-            IOutlineIntersectionIndex index,
-            QueryPerimeter[] queries)
+            ICollisionDetector index,
+            ConvexQuadrilateralOutline[] queries)
         {
             long signature = 1469598103934665603L;
             for (int i = 0; i < queries.Length; ++i)
             {
-                if (index.Intersects(queries[i]))
+                if (index.IsColliding(queries[i]))
                 {
                     signature = unchecked((signature * 1099511628211L) ^ (i + 1L));
                 }
@@ -456,9 +456,9 @@ namespace ZoomTracks.CollisionDetection.Runner
         }
 
         private static int ValidateWithIndependentOracle(
-            FloatPoint[] outer,
-            FloatPoint[] inner,
-            QueryPerimeter[] queries,
+            CoordinateXY[] outer,
+            CoordinateXY[] inner,
+            ConvexQuadrilateralOutline[] queries,
             bool[] expectedResults,
             int maximumChecks)
         {
@@ -469,7 +469,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                 int queryIndex = checks == queries.Length
                     ? check
                     : (int)(((long)check * queries.Length) / checks);
-                bool exactResult = oracle.Intersects(queries[queryIndex]);
+                bool exactResult = oracle.IsColliding(queries[queryIndex]);
                 if (exactResult != expectedResults[queryIndex])
                 {
                     throw new InvalidOperationException(
@@ -517,7 +517,7 @@ namespace ZoomTracks.CollisionDetection.Runner
             }
         }
 
-        private static string Describe(IOutlineIntersectionIndex index)
+        private static string Describe(ICollisionDetector index, int segmentCount)
         {
             if (index is MortonBvhIndex bvh)
             {
@@ -542,7 +542,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                     grid.MaxCellsPerSegment);
             }
 
-            return "segments=" + index.SegmentCount.ToString(CultureInfo.InvariantCulture);
+            return "segments=" + segmentCount.ToString(CultureInfo.InvariantCulture);
         }
 
         private static AlgorithmSpec[] RotateAlgorithms(int amount)
@@ -557,19 +557,19 @@ namespace ZoomTracks.CollisionDetection.Runner
         }
 
         private static string ComputeDataHash(
-            FloatPoint[] outer,
-            FloatPoint[] inner,
-            QueryPerimeter[] queries)
+            CoordinateXY[] outer,
+            CoordinateXY[] inner,
+            ConvexQuadrilateralOutline[] queries)
         {
             using IncrementalHash hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
             AppendPoints(hash, outer);
             AppendPoints(hash, inner);
             Span<byte> bytes = stackalloc byte[4];
-            foreach (QueryPerimeter query in queries)
+            foreach (ConvexQuadrilateralOutline query in queries)
             {
                 for (int i = 0; i < 4; ++i)
                 {
-                    FloatPoint point = query.GetVertex(i);
+                    CoordinateXY point = query.GetVertex(i);
                     BitConverter.TryWriteBytes(bytes, BitConverter.SingleToInt32Bits(point.X));
                     hash.AppendData(bytes);
                     BitConverter.TryWriteBytes(bytes, BitConverter.SingleToInt32Bits(point.Y));
@@ -580,10 +580,10 @@ namespace ZoomTracks.CollisionDetection.Runner
             return Convert.ToHexString(hash.GetHashAndReset()).ToLowerInvariant();
         }
 
-        private static void AppendPoints(IncrementalHash hash, FloatPoint[] points)
+        private static void AppendPoints(IncrementalHash hash, CoordinateXY[] points)
         {
             Span<byte> bytes = stackalloc byte[4];
-            foreach (FloatPoint point in points)
+            foreach (CoordinateXY point in points)
             {
                 BitConverter.TryWriteBytes(bytes, BitConverter.SingleToInt32Bits(point.X));
                 hash.AppendData(bytes);
@@ -724,7 +724,7 @@ namespace ZoomTracks.CollisionDetection.Runner
 
         private readonly record struct AlgorithmSpec(
             string Name,
-            Func<FloatPoint[], FloatPoint[], IOutlineIntersectionIndex> Create);
+            Func<CoordinateXY[], CoordinateXY[], ICollisionDetector> Create);
 
         private readonly record struct BuildMeasurement(
             double MedianMilliseconds,

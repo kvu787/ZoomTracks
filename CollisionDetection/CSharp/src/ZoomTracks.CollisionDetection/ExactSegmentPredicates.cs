@@ -16,10 +16,10 @@ namespace ZoomTracks.CollisionDetection
         private const double OrientationErrorBound = 3.3306690738754716e-16;
 
         public static bool Intersects(
-            FloatPoint a,
-            FloatPoint b,
-            FloatPoint c,
-            FloatPoint d)
+            CoordinateXY a,
+            CoordinateXY b,
+            CoordinateXY c,
+            CoordinateXY d)
         {
             Aabb firstBounds = Aabb.FromSegment(a, b);
             Aabb secondBounds = Aabb.FromSegment(c, d);
@@ -27,11 +27,11 @@ namespace ZoomTracks.CollisionDetection
         }
 
         internal static bool IntersectsWithKnownBounds(
-            FloatPoint a,
-            FloatPoint b,
+            CoordinateXY a,
+            CoordinateXY b,
             Aabb firstBounds,
-            FloatPoint c,
-            FloatPoint d,
+            CoordinateXY c,
+            CoordinateXY d,
             Aabb secondBounds)
         {
             if (!firstBounds.Overlaps(secondBounds))
@@ -70,7 +70,7 @@ namespace ZoomTracks.CollisionDetection
         /// <summary>
         /// Returns -1, 0, or +1 for the exact orientation of (a,b,c).
         /// </summary>
-        public static int OrientationSign(FloatPoint a, FloatPoint b, FloatPoint c)
+        public static int OrientationSign(CoordinateXY a, CoordinateXY b, CoordinateXY c)
         {
             double acx = (double)a.X - c.X;
             double bcx = (double)b.X - c.X;
@@ -119,7 +119,7 @@ namespace ZoomTracks.CollisionDetection
             return ExactOrientationSign(a, b, c);
         }
 
-        private static bool OnClosedSegment(FloatPoint a, FloatPoint b, FloatPoint point)
+        private static bool OnClosedSegment(CoordinateXY a, CoordinateXY b, CoordinateXY point)
         {
             return Math.Min(a.X, b.X) <= point.X &&
                 point.X <= Math.Max(a.X, b.X) &&
@@ -139,7 +139,7 @@ namespace ZoomTracks.CollisionDetection
             return value > 0.0 ? 1 : value < 0.0 ? -1 : 0;
         }
 
-        private static int ExactOrientationSign(FloatPoint a, FloatPoint b, FloatPoint c)
+        private static int ExactOrientationSign(CoordinateXY a, CoordinateXY b, CoordinateXY c)
         {
             BigInteger ax = ToScaledInteger(a.X);
             BigInteger ay = ToScaledInteger(a.Y);

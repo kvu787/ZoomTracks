@@ -7,9 +7,9 @@ namespace ZoomTracks.CollisionDetection
     /// <summary>
     /// A dependency-free binary32 point. Unity callers can copy Vector2.x/y into this type.
     /// </summary>
-    public readonly struct FloatPoint
+    public readonly struct CoordinateXY
     {
-        public FloatPoint(float x, float y)
+        public CoordinateXY(float x, float y)
         {
             if (!IsFinite(x))
             {
@@ -48,9 +48,9 @@ namespace ZoomTracks.CollisionDetection
     /// Four authoritative binary32 vertices in cyclic perimeter order.
     /// No idealized rectangle is reconstructed.
     /// </summary>
-    public readonly struct QueryPerimeter
+    public readonly struct ConvexQuadrilateralOutline
     {
-        public QueryPerimeter(FloatPoint p0, FloatPoint p1, FloatPoint p2, FloatPoint p3)
+        public ConvexQuadrilateralOutline(CoordinateXY p0, CoordinateXY p1, CoordinateXY p2, CoordinateXY p3)
         {
             P0 = p0;
             P1 = p1;
@@ -58,15 +58,15 @@ namespace ZoomTracks.CollisionDetection
             P3 = p3;
         }
 
-        public FloatPoint P0 { get; }
+        public CoordinateXY P0 { get; }
 
-        public FloatPoint P1 { get; }
+        public CoordinateXY P1 { get; }
 
-        public FloatPoint P2 { get; }
+        public CoordinateXY P2 { get; }
 
-        public FloatPoint P3 { get; }
+        public CoordinateXY P3 { get; }
 
-        public FloatPoint GetVertex(int index)
+        public CoordinateXY GetVertex(int index)
         {
             switch (index)
             {
@@ -98,11 +98,9 @@ namespace ZoomTracks.CollisionDetection
     /// A preprocessed, immutable outline-edge query structure.
     /// Implementations are safe for concurrent queries after construction.
     /// </summary>
-    public interface IOutlineIntersectionIndex
+    public interface ICollisionDetector
     {
-        int SegmentCount { get; }
-
-        bool Intersects(QueryPerimeter perimeter);
+        bool IsColliding(ConvexQuadrilateralOutline outline);
     }
 
     internal readonly struct Aabb
@@ -133,7 +131,7 @@ namespace ZoomTracks.CollisionDetection
             get { return ((double)MinY + MaxY) * 0.5; }
         }
 
-        public static Aabb FromSegment(FloatPoint a, FloatPoint b)
+        public static Aabb FromSegment(CoordinateXY a, CoordinateXY b)
         {
             return new Aabb(
                 Math.Min(a.X, b.X),
@@ -162,16 +160,16 @@ namespace ZoomTracks.CollisionDetection
 
     internal readonly struct OutlineSegment
     {
-        public OutlineSegment(FloatPoint a, FloatPoint b)
+        public OutlineSegment(CoordinateXY a, CoordinateXY b)
         {
             A = a;
             B = b;
             Bounds = Aabb.FromSegment(a, b);
         }
 
-        public FloatPoint A { get; }
+        public CoordinateXY A { get; }
 
-        public FloatPoint B { get; }
+        public CoordinateXY B { get; }
 
         public Aabb Bounds { get; }
     }
@@ -179,8 +177,8 @@ namespace ZoomTracks.CollisionDetection
     internal static class OutlineData
     {
         public static OutlineSegment[] CopySegments(
-            IReadOnlyList<FloatPoint> outline1,
-            IReadOnlyList<FloatPoint> outline2)
+            IReadOnlyList<CoordinateXY> outline1,
+            IReadOnlyList<CoordinateXY> outline2)
         {
             if (outline1 == null)
             {
@@ -212,7 +210,7 @@ namespace ZoomTracks.CollisionDetection
             return bounds;
         }
 
-        private static void ValidateOutline(IReadOnlyList<FloatPoint> outline, string argumentName)
+        private static void ValidateOutline(IReadOnlyList<CoordinateXY> outline, string argumentName)
         {
             if (outline.Count < 3)
             {
@@ -221,8 +219,8 @@ namespace ZoomTracks.CollisionDetection
 
             for (int i = 0; i < outline.Count; ++i)
             {
-                FloatPoint a = outline[i];
-                FloatPoint b = outline[(i + 1) % outline.Count];
+                CoordinateXY a = outline[i];
+                CoordinateXY b = outline[(i + 1) % outline.Count];
                 if (a.X == b.X && a.Y == b.Y)
                 {
                     throw new ArgumentException("Every outline segment must have positive length.", argumentName);
@@ -231,7 +229,7 @@ namespace ZoomTracks.CollisionDetection
         }
 
         private static void CopyOneOutline(
-            IReadOnlyList<FloatPoint> outline,
+            IReadOnlyList<CoordinateXY> outline,
             OutlineSegment[] destination,
             int destinationOffset)
         {
@@ -244,11 +242,11 @@ namespace ZoomTracks.CollisionDetection
         }
     }
 
-    public abstract class OutlineIndexBase : IOutlineIntersectionIndex
+    public abstract class OutlineIndexBase : ICollisionDetector
     {
         protected OutlineIndexBase(
-            IReadOnlyList<FloatPoint> outline1,
-            IReadOnlyList<FloatPoint> outline2)
+            IReadOnlyList<CoordinateXY> outline1,
+            IReadOnlyList<CoordinateXY> outline2)
         {
             Segments = OutlineData.CopySegments(outline1, outline2);
             OutlineBounds = OutlineData.ComputeBounds(Segments);
@@ -258,11 +256,6 @@ namespace ZoomTracks.CollisionDetection
 
         private protected Aabb OutlineBounds { get; }
 
-        public int SegmentCount
-        {
-            get { return Segments.Length; }
-        }
-
-        public abstract bool Intersects(QueryPerimeter perimeter);
+        public abstract bool IsColliding(ConvexQuadrilateralOutline outline);
     }
 }

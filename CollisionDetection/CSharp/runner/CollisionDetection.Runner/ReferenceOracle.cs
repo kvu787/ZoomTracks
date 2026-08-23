@@ -10,7 +10,7 @@ namespace ZoomTracks.CollisionDetection.Runner
     /// </summary>
     internal static class ReferenceOracle
     {
-        public static int OrientationSign(FloatPoint a, FloatPoint b, FloatPoint c)
+        public static int OrientationSign(CoordinateXY a, CoordinateXY b, CoordinateXY c)
         {
             ExactPoint exactA = Decode(a);
             ExactPoint exactB = Decode(b);
@@ -19,19 +19,19 @@ namespace ZoomTracks.CollisionDetection.Runner
         }
 
         public static bool SegmentIntersects(
-            FloatPoint a,
-            FloatPoint b,
-            FloatPoint c,
-            FloatPoint d)
+            CoordinateXY a,
+            CoordinateXY b,
+            CoordinateXY c,
+            CoordinateXY d)
         {
             return SegmentIntersects(Decode(a), Decode(b), Decode(c), Decode(d));
         }
 
         public static bool ParametricSegmentIntersects(
-            FloatPoint a,
-            FloatPoint b,
-            FloatPoint c,
-            FloatPoint d)
+            CoordinateXY a,
+            CoordinateXY b,
+            CoordinateXY c,
+            CoordinateXY d)
         {
             ExactPoint exactA = Decode(a);
             ExactPoint exactB = Decode(b);
@@ -70,8 +70,8 @@ namespace ZoomTracks.CollisionDetection.Runner
         }
 
         public static PreparedOutlines Prepare(
-            IReadOnlyList<FloatPoint> outline1,
-            IReadOnlyList<FloatPoint> outline2)
+            IReadOnlyList<CoordinateXY> outline1,
+            IReadOnlyList<CoordinateXY> outline2)
         {
             return new PreparedOutlines(outline1, outline2);
         }
@@ -145,7 +145,7 @@ namespace ZoomTracks.CollisionDetection.Runner
             return (a.X * b.Y) - (a.Y * b.X);
         }
 
-        private static ExactPoint Decode(FloatPoint point)
+        private static ExactPoint Decode(CoordinateXY point)
         {
             return new ExactPoint(Decode(point.X), Decode(point.Y));
         }
@@ -166,20 +166,20 @@ namespace ZoomTracks.CollisionDetection.Runner
             private readonly ExactSegment[] _segments;
 
             public PreparedOutlines(
-                IReadOnlyList<FloatPoint> outline1,
-                IReadOnlyList<FloatPoint> outline2)
+                IReadOnlyList<CoordinateXY> outline1,
+                IReadOnlyList<CoordinateXY> outline2)
             {
                 _segments = new ExactSegment[outline1.Count + outline2.Count];
                 Copy(outline1, 0);
                 Copy(outline2, outline1.Count);
             }
 
-            public bool Intersects(QueryPerimeter perimeter)
+            public bool IsColliding(ConvexQuadrilateralOutline outline)
             {
-                ExactPoint q0 = Decode(perimeter.P0);
-                ExactPoint q1 = Decode(perimeter.P1);
-                ExactPoint q2 = Decode(perimeter.P2);
-                ExactPoint q3 = Decode(perimeter.P3);
+                ExactPoint q0 = Decode(outline.P0);
+                ExactPoint q1 = Decode(outline.P1);
+                ExactPoint q2 = Decode(outline.P2);
+                ExactPoint q3 = Decode(outline.P3);
 
                 for (int i = 0; i < _segments.Length; ++i)
                 {
@@ -196,7 +196,7 @@ namespace ZoomTracks.CollisionDetection.Runner
                 return false;
             }
 
-            private void Copy(IReadOnlyList<FloatPoint> outline, int offset)
+            private void Copy(IReadOnlyList<CoordinateXY> outline, int offset)
             {
                 for (int i = 0; i < outline.Count; ++i)
                 {

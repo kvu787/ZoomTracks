@@ -21,8 +21,8 @@ namespace ZoomTracks.CollisionDetection
         private readonly double _height;
 
         public SparseUniformGridIndex(
-            IReadOnlyList<FloatPoint> outline1,
-            IReadOnlyList<FloatPoint> outline2,
+            IReadOnlyList<CoordinateXY> outline1,
+            IReadOnlyList<CoordinateXY> outline2,
             int targetSegmentsPerCell = DefaultTargetSegmentsPerCell,
             int maxAxisCells = DefaultMaxAxisCells,
             int maxCellsPerSegment = DefaultMaxCellsPerSegment)
@@ -118,17 +118,17 @@ namespace ZoomTracks.CollisionDetection
             get { return _overflowSegments.Length; }
         }
 
-        public override bool Intersects(QueryPerimeter perimeter)
+        public override bool IsColliding(ConvexQuadrilateralOutline outline)
         {
-            if (!perimeter.Bounds.Overlaps(OutlineBounds))
+            if (!outline.Bounds.Overlaps(OutlineBounds))
             {
                 return false;
             }
 
             for (int edgeIndex = 0; edgeIndex < 4; ++edgeIndex)
             {
-                FloatPoint queryA = perimeter.GetVertex(edgeIndex);
-                FloatPoint queryB = perimeter.GetVertex((edgeIndex + 1) & 3);
+                CoordinateXY queryA = outline.GetVertex(edgeIndex);
+                CoordinateXY queryB = outline.GetVertex((edgeIndex + 1) & 3);
                 Aabb queryBounds = Aabb.FromSegment(queryA, queryB);
                 if (!queryBounds.Overlaps(OutlineBounds))
                 {
@@ -203,7 +203,7 @@ namespace ZoomTracks.CollisionDetection
             return false;
         }
 
-        private bool ScanAll(FloatPoint queryA, FloatPoint queryB)
+        private bool ScanAll(CoordinateXY queryA, CoordinateXY queryB)
         {
             Aabb queryBounds = Aabb.FromSegment(queryA, queryB);
             for (int i = 0; i < Segments.Length; ++i)

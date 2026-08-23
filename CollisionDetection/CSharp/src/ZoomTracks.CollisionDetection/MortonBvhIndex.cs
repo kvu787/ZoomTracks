@@ -16,8 +16,8 @@ namespace ZoomTracks.CollisionDetection
         private readonly int _leafSize;
 
         public MortonBvhIndex(
-            IReadOnlyList<FloatPoint> outline1,
-            IReadOnlyList<FloatPoint> outline2,
+            IReadOnlyList<CoordinateXY> outline1,
+            IReadOnlyList<CoordinateXY> outline2,
             int leafSize = DefaultLeafSize)
             : base(outline1, outline2)
         {
@@ -47,17 +47,17 @@ namespace ZoomTracks.CollisionDetection
             get { return _nodes.Length; }
         }
 
-        public override bool Intersects(QueryPerimeter perimeter)
+        public override bool IsColliding(ConvexQuadrilateralOutline outline)
         {
-            if (!perimeter.Bounds.Overlaps(OutlineBounds))
+            if (!outline.Bounds.Overlaps(OutlineBounds))
             {
                 return false;
             }
 
             for (int edgeIndex = 0; edgeIndex < 4; ++edgeIndex)
             {
-                FloatPoint queryA = perimeter.GetVertex(edgeIndex);
-                FloatPoint queryB = perimeter.GetVertex((edgeIndex + 1) & 3);
+                CoordinateXY queryA = outline.GetVertex(edgeIndex);
+                CoordinateXY queryB = outline.GetVertex((edgeIndex + 1) & 3);
                 Aabb queryBounds = Aabb.FromSegment(queryA, queryB);
                 if (queryBounds.Overlaps(OutlineBounds) &&
                     IntersectsNode(0, queryA, queryB, queryBounds))
@@ -71,8 +71,8 @@ namespace ZoomTracks.CollisionDetection
 
         private bool IntersectsNode(
             int nodeIndex,
-            FloatPoint queryA,
-            FloatPoint queryB,
+            CoordinateXY queryA,
+            CoordinateXY queryB,
             Aabb queryBounds)
         {
             BvhNode node = _nodes[nodeIndex];

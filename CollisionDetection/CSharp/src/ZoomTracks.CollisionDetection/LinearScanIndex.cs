@@ -9,23 +9,23 @@ namespace ZoomTracks.CollisionDetection
     public sealed class LinearScanIndex : OutlineIndexBase
     {
         public LinearScanIndex(
-            IReadOnlyList<FloatPoint> outline1,
-            IReadOnlyList<FloatPoint> outline2)
+            IReadOnlyList<CoordinateXY> outline1,
+            IReadOnlyList<CoordinateXY> outline2)
             : base(outline1, outline2)
         {
         }
 
-        public override bool Intersects(QueryPerimeter perimeter)
+        public override bool IsColliding(ConvexQuadrilateralOutline outline)
         {
-            if (!perimeter.Bounds.Overlaps(OutlineBounds))
+            if (!outline.Bounds.Overlaps(OutlineBounds))
             {
                 return false;
             }
 
             for (int edgeIndex = 0; edgeIndex < 4; ++edgeIndex)
             {
-                FloatPoint queryA = perimeter.GetVertex(edgeIndex);
-                FloatPoint queryB = perimeter.GetVertex((edgeIndex + 1) & 3);
+                CoordinateXY queryA = outline.GetVertex(edgeIndex);
+                CoordinateXY queryB = outline.GetVertex((edgeIndex + 1) & 3);
                 Aabb queryBounds = Aabb.FromSegment(queryA, queryB);
                 if (!queryBounds.Overlaps(OutlineBounds))
                 {
