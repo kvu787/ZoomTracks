@@ -119,10 +119,87 @@ throws `ArgumentOutOfRangeException` for `NaN` or positive/negative infinity.
 ```csharp
 public interface ICollisionDetector
 {
-    bool IsColliding(/* rectangle R */);
+    bool IsColliding(RectangleLocalBounds localBounds, RectanglePose pose);
 }
 ```
 
-## Constructor for ICollisionDetector
+`IsColliding` constructs the four world-space rectangle vertices from `localBounds`
+and `pose` according to the rectangle-representation rules above, then returns `true`
+if and only if one of the four resulting closed segments intersects an edge of either
+outline. The method must not treat the rectangle as filled. In particular, it returns
+`false` for containment without edge contact.
 
-must accept O1 and O2.
+Exact algorithms that implement this interface must satisfy the exact intersection
+semantics above. An approximate algorithm with possible false positives or false
+negatives does not satisfy this interface's contract; expose such an algorithm with a
+separately and clearly named public API.
+
+## `RectangleLocalBounds`
+
+```csharp
+public readonly struct RectangleLocalBounds
+{
+    public RectangleLocalBounds(float minX, float minY, float maxX, float maxY);
+    public float MinX { get; }
+    public float MinY { get; }
+    public float MaxX { get; }
+    public float MaxY { get; }
+}
+```
+
+Represents the immutable local-space bounds of a rectangle. All four arguments must be
+finite, `minX < maxX`, and `minY < maxY`. The constructor throws
+`ArgumentOutOfRangeException` when an argument is not finite and `ArgumentException`
+when either ordered pair does not define a positive extent. Because C# permits a
+`readonly struct` to be created without running its constructor,
+`default(RectangleLocalBounds)` is invalid; `IsColliding` throws `ArgumentException`
+when given invalid bounds.
+
+## `RectanglePose`
+
+```csharp
+public readonly struct RectanglePose
+{
+    public RectanglePose(float positionX, float positionY, float rotationDegrees);
+    public float PositionX { get; }
+    public float PositionY { get; }
+    public float RotationDegrees { get; }
+}
+```
+
+Represents a rectangle pose for one query. All three arguments must be finite; the
+constructor throws `ArgumentOutOfRangeException` for `NaN` or positive/negative
+infinity. `default(RectanglePose)` is the valid pose `(0, 0, 0)`.
+
+## Collision-detector construction
+
+C# interfaces do not declare constructors. Every public concrete implementation of
+`ICollisionDetector` must provide at least this constructor shape, where `DetectorName`
+is the implementation type:
+
+```csharp
+public DetectorName(
+    List<CoordinateXY> outline1,
+    List<CoordinateXY> outline2);
+```
+
+The lists contain the vertices in perimeter order and must not repeat the first vertex
+at the end; the closing segment is implicit. Each list must contain at least three
+vertices, and every pair of consecutive vertices, including the last and first, must
+be distinct. A null list throws `ArgumentNullException`; too few vertices or a
+zero-length segment throws `ArgumentException`. The remaining outline properties in
+the task description are caller preconditions and do not have to be revalidated by the
+constructor.
+
+Ownership of both lists transfers to the detector when the constructor completes
+successfully. The detector must retain and use the supplied lists without copying their
+vertices. It may mutate or reorder the lists as part of preprocessing. After ownership
+transfers, the caller must not read, mutate, or otherwise reuse either list. If the
+constructor throws, ownership does not transfer. Implementations may also provide
+overloads with algorithm-specific settings, but the two-list form above must select
+documented practical defaults.
+
+The measured per-query time must use `IsColliding` and include construction of the
+world-space rectangle geometry from the supplied bounds and pose. Creating the two
+small immutable argument values before the timed region is allowed; precomputing or
+supplying their transformed world-space corners is not.
