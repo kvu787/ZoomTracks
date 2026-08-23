@@ -46,11 +46,10 @@ def Main():
     assert len(sceneCollection.objects) == 0, "Scene collection cannot contain objects"
 
     ExpectedCollectionNames = (
-        "BigCones",
         "Camera",
         "Checkpoints",
+        "Decorations",
         "Templates",
-        "Uncategorized",
         "Vehicles",
         "TrackBuilder",
     )
