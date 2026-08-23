@@ -24,7 +24,7 @@ and the report remain temporary.
 | [`BenchmarkTrackBuilder.py`](../BenchmarkTrackBuilder.py) | Times repeated builds and reports geometry hashes and output counts |
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Generates and synchronizes committed input fixtures without importing or running TrackBuilder |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Runs integration, regression, adaptive-quality, and rollback tests |
-| [`TestInputs`](../TestInputs) | Ten committed `.blend` scenes containing `Input` but no generated `Output` |
+| [`TestInputs`](../TestInputs) | Ten committed `.blend` scenes containing `TrackBuilder/Input/Outlines` but no generated `TrackBuilder/Output` |
 | [`GenerateExamples.py`](../GenerateExamples.py) | Regenerates the committed adaptive-sampling output from its bundled input |
 | [`Examples`](../Examples) | Input-only curvature issue scene and its inspectable canonical output |
 
@@ -102,7 +102,8 @@ The suite covers:
   points.
 - Numeric-parameter minimums, material-list, minimum-turn-angle, and one-segment
   validation.
-- Existing-output editability and child-collection validation.
+- Required `TrackBuilder/Input/Outlines` discovery, generated output routing,
+  existing-output editability, and child-collection validation.
 - Transactional preservation of an existing output after rejected builds.
 - Bounds-assisted classification of many disjoint inner loops.
 - Early-exit distinct-point validation.
@@ -140,8 +141,9 @@ inspectable `.blend` file per committed fixture and overwrites
 `Blender\TrackBuilder\TestArtifacts\TestReport.txt` with the complete run and a
 per-fixture expected/actual summary.
 
-Successful artifacts contain the generated `Output`. Expected-failure artifacts
-retain input geometry without an `Output` collection. Every fixture artifact
+Successful artifacts contain generated `TrackBuilder/Output/Planes` and
+`TrackBuilder/Output/BarrierSegments`. Expected-failure artifacts retain input
+geometry without a `TrackBuilder/Output` collection. Every fixture artifact
 records `track_builder_actual_result` as a scene custom property.
 
 The entire `TestArtifacts` directory is gitignored. Never commit its contents.

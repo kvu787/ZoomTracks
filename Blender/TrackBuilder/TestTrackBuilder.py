@@ -108,6 +108,27 @@ def _ensure_material(name: str) -> bpy.types.Material:
     return bpy.data.materials.get(name) or bpy.data.materials.new(name)
 
 
+def _track_builder_collection() -> bpy.types.Collection | None:
+    return bpy.data.collections.get("TrackBuilder")
+
+
+def _outlines_collection() -> bpy.types.Collection | None:
+    track_builder = _track_builder_collection()
+    if track_builder is None:
+        return None
+    input_collection = TrackBuilder._direct_child(track_builder, "Input")
+    if input_collection is None:
+        return None
+    return TrackBuilder._direct_child(input_collection, "Outlines")
+
+
+def _output_collection() -> bpy.types.Collection | None:
+    track_builder = _track_builder_collection()
+    if track_builder is None:
+        return None
+    return TrackBuilder._direct_child(track_builder, "Output")
+
+
 def _legacy_cyclic_interpolate(points: list[Vector], station: Fraction) -> Vector:
     scaled = station * len(points)
     index = scaled.numerator // scaled.denominator
@@ -262,10 +283,12 @@ class TrackBuilderTests(unittest.TestCase):
         path = os.path.join(TEST_INPUT_DIRECTORY, filename)
         self.assertTrue(os.path.isfile(path), f"Missing committed test input: {path}")
         bpy.ops.wm.open_mainfile(filepath=path)
-        self.assertIsNotNone(bpy.data.collections.get("Input"))
+        track_builder = _track_builder_collection()
+        self.assertIsNotNone(track_builder)
+        self.assertIsNotNone(_outlines_collection())
         self.assertIsNone(
-            bpy.data.collections.get("Output"),
-            f"Committed test input contains generated Output: {filename}",
+            _output_collection(),
+            f"Committed test input contains generated TrackBuilder/Output: {filename}",
         )
         self.assertEqual(
             bpy.context.scene["track_builder_expected_result"],
@@ -284,13 +307,44 @@ class TrackBuilderTests(unittest.TestCase):
         output: bpy.types.Collection,
         expected_inner_count: int,
     ) -> None:
-        self.assertIs(output, bpy.data.collections.get("Output"))
+        track_builder = _track_builder_collection()
+        self.assertIsNotNone(track_builder)
+        self.assertIs(output, _output_collection())
+        self.assertIn(output, track_builder.children[:])
+        self.assertEqual(len(output.objects), 0)
+        planes = TrackBuilder._direct_child(output, "Planes")
+        barrier_segments = TrackBuilder._direct_child(output, "BarrierSegments")
+        self.assertIsNotNone(planes)
+        self.assertIsNotNone(barrier_segments)
+        self.assertEqual(
+            {child.name for child in output.children},
+            {"Planes", "BarrierSegments"},
+        )
         role_counts: dict[str, int] = {}
         for obj in output.all_objects:
             role = obj.get("track_builder_role")
             role_counts[role] = role_counts.get(role, 0) + 1
             self.assertEqual(obj.type, "MESH")
             self.assertGreater(len(obj.data.polygons), 0)
+            expected_collection = (
+                barrier_segments
+                if role in {"outer_barrier", "inner_barrier"}
+                else planes
+            )
+            self.assertEqual(obj.users_collection[:], (expected_collection,))
+
+        self.assertEqual(
+            {obj.get("track_builder_role") for obj in planes.objects},
+            {"ground", "track", "island"}
+            if expected_inner_count
+            else {"ground", "track"},
+        )
+        self.assertEqual(
+            {obj.get("track_builder_role") for obj in barrier_segments.objects},
+            {"outer_barrier", "inner_barrier"}
+            if expected_inner_count
+            else {"outer_barrier"},
+        )
 
         self.assertEqual(role_counts.get("ground"), 1)
         self.assertEqual(role_counts.get("track"), 1)
@@ -310,15 +364,15 @@ class TrackBuilderTests(unittest.TestCase):
     def load_example_input(self) -> tuple[float, float, float, list[str]]:
         self.assertTrue(os.path.isfile(EXAMPLE_INPUT_PATH), f"Missing example: {EXAMPLE_INPUT_PATH}")
         bpy.ops.wm.open_mainfile(filepath=EXAMPLE_INPUT_PATH)
-        self.assertIsNotNone(bpy.data.collections.get("Input"))
-        self.assertIsNone(bpy.data.collections.get("Output"))
+        self.assertIsNotNone(_outlines_collection())
+        self.assertIsNone(_output_collection())
         return (1.0, 0.1, 5.0, ["red", "white"])
 
     def prepared_example_outlines(
         self,
         width: float,
     ) -> tuple[float, list[TrackBuilder._Outline], TrackBuilder._Outline, list[TrackBuilder._Outline]]:
-        raw = TrackBuilder._read_raw_outlines(bpy.data.collections["Input"])
+        raw = TrackBuilder._read_raw_outlines(_outlines_collection())
         epsilon = TrackBuilder._world_epsilon(raw)
         base = TrackBuilder._validated_outlines(raw, epsilon)
         ground, outer, inner = TrackBuilder._classify_outlines(base)
@@ -328,6 +382,7 @@ class TrackBuilderTests(unittest.TestCase):
             inner,
             width,
             epsilon,
+            _track_builder_collection(),
         )
         return epsilon, base, outer, inner
 
@@ -564,7 +619,7 @@ class TrackBuilderTests(unittest.TestCase):
 
     def test_curve_refinement_does_not_revalidate_unchanged_contact_points(self) -> None:
         width, _, _, _ = self.load_example_input()
-        raw = TrackBuilder._read_raw_outlines(bpy.data.collections["Input"])
+        raw = TrackBuilder._read_raw_outlines(_outlines_collection())
         epsilon = TrackBuilder._world_epsilon(raw)
         base = TrackBuilder._validated_outlines(raw, epsilon)
         ground, outer, inner = TrackBuilder._classify_outlines(base)
@@ -588,6 +643,7 @@ class TrackBuilderTests(unittest.TestCase):
                 inner,
                 width,
                 epsilon,
+                _track_builder_collection(),
             )
 
         self.assertIs(refined_ground, ground)
@@ -606,7 +662,7 @@ class TrackBuilderTests(unittest.TestCase):
                 int(obj.data.splines[0].resolution_u),
                 tuple(tuple(float(value) for value in point.co) for point in obj.data.splines[0].points),
             )
-            for obj in bpy.data.collections["Input"].all_objects
+            for obj in _outlines_collection().all_objects
             if obj.type == "CURVE"
         }
         epsilon, base, outer, inner = self.prepared_example_outlines(width)
@@ -650,6 +706,7 @@ class TrackBuilderTests(unittest.TestCase):
                 outline.source_object,
                 resolution,
                 epsilon,
+                _track_builder_collection(),
             )
             dense_offset = TrackBuilder._stable_curve_offset_points(
                 dense_source,
@@ -751,7 +808,7 @@ class TrackBuilderTests(unittest.TestCase):
                 int(obj.data.splines[0].resolution_u),
                 tuple(tuple(float(value) for value in point.co) for point in obj.data.splines[0].points),
             )
-            for obj in bpy.data.collections["Input"].all_objects
+            for obj in _outlines_collection().all_objects
             if obj.type == "CURVE"
         }
         self.assertEqual(original_state, current_state)
@@ -761,7 +818,7 @@ class TrackBuilderTests(unittest.TestCase):
             with self.subTest(fixture=number):
                 parameters = self.load_test_input(number)
                 self.assertTrue(
-                    all(obj.type == "MESH" for obj in bpy.data.collections["Input"].all_objects)
+                    all(obj.type == "MESH" for obj in _outlines_collection().all_objects)
                 )
                 output = TrackBuilder.build_track(*parameters)
                 self.assertEqual(_output_geometry_hash(output), expected_hash)
@@ -789,7 +846,7 @@ class TrackBuilderTests(unittest.TestCase):
         parameters = self.load_test_input(7)
         input_counts = {
             obj.name: len(obj.data.splines[0].points)
-            for obj in bpy.data.collections["Input"].all_objects
+            for obj in _outlines_collection().all_objects
         }
         output = TrackBuilder.build_track(*parameters)
         for obj in output.all_objects:
@@ -841,7 +898,7 @@ class TrackBuilderTests(unittest.TestCase):
                     "uses unsupported feature",
                 ):
                     TrackBuilder.build_track(*parameters)
-                self.assertIsNone(bpy.data.collections.get("Output"))
+                self.assertIsNone(_output_collection())
 
     def test_unsupported_curve_feature_rejection_preserves_previous_output(self) -> None:
         parameters = self.load_test_input(7)
@@ -853,25 +910,29 @@ class TrackBuilderTests(unittest.TestCase):
             "uses unsupported feature",
         ):
             TrackBuilder.build_track(*parameters)
-        self.assertIs(output, bpy.data.collections.get("Output"))
+        self.assertIs(output, _output_collection())
         self.assertEqual(signature, _output_signature(output))
 
     def test_supported_bezier_curve_is_sampled_without_modifying_input(self) -> None:
         bpy.ops.wm.read_factory_settings(use_empty=True)
+        track_builder_collection = bpy.data.collections.new("TrackBuilder")
         input_collection = bpy.data.collections.new("Input")
-        bpy.context.scene.collection.children.link(input_collection)
+        outlines_collection = bpy.data.collections.new("Outlines")
+        bpy.context.scene.collection.children.link(track_builder_collection)
+        track_builder_collection.children.link(input_collection)
+        input_collection.children.link(outlines_collection)
         ground_material = _ensure_material("GroundMaterial")
         track_material = _ensure_material("TrackMaterial")
         _ensure_material("BarrierRed")
         _ensure_material("BarrierWhite")
         _create_mesh_loop(
-            input_collection,
+            outlines_collection,
             "GroundOutline",
             [(-15.0, -10.0), (15.0, -10.0), (15.0, 10.0), (-15.0, 10.0)],
             ground_material,
         )
         curve = _create_bezier_loop(
-            input_collection,
+            outlines_collection,
             "OuterBezier",
             10.0,
             6.0,
@@ -939,7 +1000,7 @@ class TrackBuilderTests(unittest.TestCase):
                         else:
                             actual_result = "unexpected_success"
                             self.fail(f"Expected {expected_exception.__name__}")
-                        self.assertIsNone(bpy.data.collections.get("Output"))
+                        self.assertIsNone(_output_collection())
                 finally:
                     _save_test_artifact(filename, expected_result, actual_result)
 
@@ -985,7 +1046,39 @@ class TrackBuilderTests(unittest.TestCase):
             "material_names must be a list containing at least two entries",
         ):
             TrackBuilder.build_track(width, height, target, material_names[:1])
-        self.assertIsNone(bpy.data.collections.get("Output"))
+        self.assertIsNone(_output_collection())
+
+    def test_track_builder_collection_and_nested_outlines_are_required(self) -> None:
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        legacy_input = bpy.data.collections.new("Input")
+        bpy.context.scene.collection.children.link(legacy_input)
+        _ensure_material("BarrierRed")
+        _ensure_material("BarrierWhite")
+
+        with self.assertRaisesRegex(
+            TrackBuilder.TrackBuilderValidationError,
+            "does not contain a collection named 'TrackBuilder'",
+        ):
+            TrackBuilder.build_track(
+                0.5,
+                0.5,
+                2.0,
+                ["BarrierRed", "BarrierWhite"],
+            )
+
+        track_builder = bpy.data.collections.new("TrackBuilder")
+        bpy.context.scene.collection.children.link(track_builder)
+        track_builder.children.link(legacy_input)
+        with self.assertRaisesRegex(
+            TrackBuilder.TrackBuilderValidationError,
+            "TrackBuilder/Input does not contain a direct child collection named 'Outlines'",
+        ):
+            TrackBuilder.build_track(
+                0.5,
+                0.5,
+                2.0,
+                ["BarrierRed", "BarrierWhite"],
+            )
 
     def test_numeric_parameters_accept_point_one_and_reject_smaller_values(self) -> None:
         _, _, _, material_names = self.load_test_input(2)
@@ -1005,7 +1098,7 @@ class TrackBuilderTests(unittest.TestCase):
                     rf"^{name} must be a finite number greater than or equal to 0\.1$",
                 ):
                     TrackBuilder.build_track(*parameters)
-                self.assertIs(output, bpy.data.collections.get("Output"))
+                self.assertIs(output, _output_collection())
                 self.assertEqual(signature, _output_signature(output))
 
     def test_small_turn_angle_sample_throws(self) -> None:
@@ -1015,7 +1108,7 @@ class TrackBuilderTests(unittest.TestCase):
             "has a turn angle of .* degrees.*minimum is 0.01 degrees",
         ):
             TrackBuilder.build_track(*parameters)
-        self.assertIsNone(bpy.data.collections.get("Output"))
+        self.assertIsNone(_output_collection())
 
     def test_single_segment_sample_throws(self) -> None:
         parameters = self.load_test_input(10)
@@ -1024,7 +1117,7 @@ class TrackBuilderTests(unittest.TestCase):
             "would produce only one barrier segment",
         ):
             TrackBuilder.build_track(*parameters)
-        self.assertIsNone(bpy.data.collections.get("Output"))
+        self.assertIsNone(_output_collection())
 
     def test_single_segment_failure_preserves_previous_output(self) -> None:
         width, height, target, material_names = self.load_test_input(3)
@@ -1034,28 +1127,28 @@ class TrackBuilderTests(unittest.TestCase):
         with self.assertRaises(TrackBuilder.TrackBuilderGeometryError):
             TrackBuilder.build_track(width, height, 1000.0, material_names)
 
-        self.assertIs(output, bpy.data.collections.get("Output"))
+        self.assertIs(output, _output_collection())
         self.assertEqual(signature, _output_signature(output))
 
-    def test_existing_output_with_child_collection_is_rejected(self) -> None:
+    def test_existing_output_with_extra_child_collection_is_rejected(self) -> None:
         width, height, target, material_names = self.load_test_input(3)
         output = TrackBuilder.build_track(width, height, target, material_names)
         signature = _output_signature(output)
         shared_child = bpy.data.collections.new("SharedOutputChild")
         output.children.link(shared_child)
-        bpy.data.collections["Input"].children.link(shared_child)
+        _outlines_collection().children.link(shared_child)
 
         with self.assertRaisesRegex(
             TrackBuilder.TrackBuilderValidationError,
-            "existing Output collection must not contain child collections",
+            "existing TrackBuilder/Output collection must contain exactly",
         ):
             TrackBuilder.build_track(width, height, target, material_names)
 
-        self.assertIs(output, bpy.data.collections.get("Output"))
+        self.assertIs(output, _output_collection())
         self.assertEqual(signature, _output_signature(output))
         self.assertIs(shared_child, bpy.data.collections.get("SharedOutputChild"))
         self.assertIn(shared_child, output.children[:])
-        self.assertIn(shared_child, bpy.data.collections["Input"].children[:])
+        self.assertIn(shared_child, _outlines_collection().children[:])
         self.assertFalse(
             any(
                 collection.name.startswith("__TrackBuilderPending_")
@@ -1116,23 +1209,25 @@ class TrackBuilderTests(unittest.TestCase):
         width, height, target, material_names = self.load_test_input(3)
         library_path = os.path.join(TEST_ARTIFACT_DIRECTORY, "LinkedOutput.blend")
         source_output = bpy.data.collections.new("Output")
+        source_output.children.link(bpy.data.collections.new("Planes"))
+        source_output.children.link(bpy.data.collections.new("BarrierSegments"))
         bpy.data.libraries.write(library_path, {source_output})
-        bpy.data.collections.remove(source_output)
+        TrackBuilder._remove_collection_tree(source_output)
 
         try:
             with bpy.data.libraries.load(library_path, link=True) as (_, library_data):
                 library_data.collections = ["Output"]
             linked_output = library_data.collections[0]
-            bpy.context.scene.collection.children.link(linked_output)
+            _track_builder_collection().children.link(linked_output)
             self.assertFalse(linked_output.is_editable)
 
             with self.assertRaisesRegex(
                 TrackBuilder.TrackBuilderValidationError,
-                "existing Output collection must be local and editable",
+                "existing TrackBuilder/Output collection must be local and editable",
             ):
                 TrackBuilder.build_track(width, height, target, material_names)
 
-            self.assertIs(linked_output, bpy.data.collections.get("Output"))
+            self.assertIs(linked_output, _output_collection())
             self.assertFalse(
                 any(
                     collection.name.startswith("__TrackBuilderPending_")
@@ -1140,7 +1235,7 @@ class TrackBuilderTests(unittest.TestCase):
                 )
             )
         finally:
-            linked_output = bpy.data.collections.get("Output")
+            linked_output = _output_collection()
             if linked_output is not None:
                 bpy.data.collections.remove(linked_output, do_unlink=True)
             if os.path.isfile(library_path):

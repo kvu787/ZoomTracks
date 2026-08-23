@@ -34,6 +34,13 @@ CURVE_MAXIMUM_EVALUATED_POINTS = 20_000
 
 ADAPTIVE_OFFSET_ERROR_FACTOR = 0.001
 
+TRACK_BUILDER_COLLECTION_NAME = "TrackBuilder"
+INPUT_COLLECTION_NAME = "Input"
+OUTLINES_COLLECTION_NAME = "Outlines"
+OUTPUT_COLLECTION_NAME = "Output"
+PLANES_COLLECTION_NAME = "Planes"
+BARRIER_SEGMENTS_COLLECTION_NAME = "BarrierSegments"
+
 
 class TrackBuilderError(RuntimeError):
     """Base class for track-builder errors."""
@@ -504,6 +511,7 @@ def _evaluated_curve_loop(
     obj: bpy.types.Object,
     resolution: int,
     epsilon: float,
+    temporary_collection: bpy.types.Collection,
 ) -> list[Vector]:
     """Evaluate an unmodified temporary curve copy without touching the input."""
 
@@ -517,7 +525,7 @@ def _evaluated_curve_loop(
     temporary_data.render_resolution_u = 0
     if temporary_data.splines[0].type != "POLY":
         temporary_data.splines[0].resolution_u = resolution
-    bpy.context.scene.collection.objects.link(temporary_object)
+    temporary_collection.objects.link(temporary_object)
     evaluated_object = None
     evaluated_mesh = None
     try:
@@ -755,12 +763,18 @@ def _adaptive_curve_outline(
     width: float,
     offset_left: bool,
     epsilon: float,
+    temporary_collection: bpy.types.Collection,
 ) -> _Outline:
     spline = outline.source_object.data.splines[0]
     if spline.type == "POLY":
         return outline
     resolution = _curve_reference_resolution(outline.source_object)
-    dense_source = _evaluated_curve_loop(outline.source_object, resolution, epsilon)
+    dense_source = _evaluated_curve_loop(
+        outline.source_object,
+        resolution,
+        epsilon,
+        temporary_collection,
+    )
     dense_offset = _stable_curve_offset_points(dense_source, width, offset_left)
     contact_reference, offset_reference, forced_indices = _contact_and_offset_reference(
         outline.points,
@@ -802,14 +816,19 @@ def _refine_classified_outlines(
     inner: list[_Outline],
     width: float,
     epsilon: float,
+    temporary_collection: bpy.types.Collection,
 ) -> tuple[_Outline, _Outline, list[_Outline]]:
     """Adapt barrier offsets while preserving contact points and classification."""
 
     refined_outer = (
-        _adaptive_curve_outline(outer, width, False, epsilon) if outer.is_curve else outer
+        _adaptive_curve_outline(outer, width, False, epsilon, temporary_collection)
+        if outer.is_curve
+        else outer
     )
     refined_inner = [
-        _adaptive_curve_outline(outline, width, True, epsilon) if outline.is_curve else outline
+        _adaptive_curve_outline(outline, width, True, epsilon, temporary_collection)
+        if outline.is_curve
+        else outline
         for outline in inner
     ]
     return ground, refined_outer, refined_inner
@@ -824,6 +843,55 @@ def _collection_contains(
     return any(_collection_contains(child, target) for child in root.children)
 
 
+def _direct_child(
+    parent: bpy.types.Collection,
+    name: str,
+) -> bpy.types.Collection | None:
+    return next((child for child in parent.children if child.name == name), None)
+
+
+def _required_collection_structure(
+) -> tuple[bpy.types.Collection, bpy.types.Collection, bpy.types.Collection | None]:
+    track_builder = bpy.data.collections.get(TRACK_BUILDER_COLLECTION_NAME)
+    if track_builder is None:
+        raise TrackBuilderValidationError(
+            "The file does not contain a collection named 'TrackBuilder'"
+        )
+    if not track_builder.is_editable:
+        raise TrackBuilderValidationError(
+            "The TrackBuilder collection must be local and editable"
+        )
+
+    input_collection = _direct_child(track_builder, INPUT_COLLECTION_NAME)
+    if input_collection is None:
+        raise TrackBuilderValidationError(
+            "TrackBuilder does not contain a direct child collection named 'Input'"
+        )
+    outlines_collection = _direct_child(input_collection, OUTLINES_COLLECTION_NAME)
+    if outlines_collection is None:
+        raise TrackBuilderValidationError(
+            "TrackBuilder/Input does not contain a direct child collection named 'Outlines'"
+        )
+
+    output_collection = _direct_child(track_builder, OUTPUT_COLLECTION_NAME)
+    existing_output_tree = (
+        set(_collection_tree(output_collection))
+        if output_collection is not None
+        else set()
+    )
+    for generated_name in (
+        OUTPUT_COLLECTION_NAME,
+        PLANES_COLLECTION_NAME,
+        BARRIER_SEGMENTS_COLLECTION_NAME,
+    ):
+        existing = bpy.data.collections.get(generated_name)
+        if existing is not None and existing not in existing_output_tree:
+            raise TrackBuilderValidationError(
+                f"A collection named {generated_name!r} exists outside TrackBuilder/Output"
+            )
+    return track_builder, outlines_collection, output_collection
+
+
 def _validate_collection_separation(
     input_collection: bpy.types.Collection,
     output_collection: bpy.types.Collection | None,
@@ -832,20 +900,40 @@ def _validate_collection_separation(
         return
     if not output_collection.is_editable:
         raise TrackBuilderValidationError(
-            "The existing Output collection must be local and editable"
+            "The existing TrackBuilder/Output collection must be local and editable"
         )
-    if output_collection.children:
+    if output_collection.objects:
         raise TrackBuilderValidationError(
-            "The existing Output collection must not contain child collections"
+            "The existing TrackBuilder/Output collection must not contain objects directly"
         )
+    expected_children = {PLANES_COLLECTION_NAME, BARRIER_SEGMENTS_COLLECTION_NAME}
+    actual_children = {child.name for child in output_collection.children}
+    if actual_children != expected_children:
+        raise TrackBuilderValidationError(
+            "The existing TrackBuilder/Output collection must contain exactly the child "
+            "collections 'Planes' and 'BarrierSegments'"
+        )
+    for child in output_collection.children:
+        if not child.is_editable:
+            raise TrackBuilderValidationError(
+                f"The existing TrackBuilder/Output/{child.name} collection must be local and editable"
+            )
+        if child.children:
+            raise TrackBuilderValidationError(
+                f"The existing TrackBuilder/Output/{child.name} collection must not contain child collections"
+            )
     if _collection_contains(input_collection, output_collection) or _collection_contains(
         output_collection, input_collection
     ):
-        raise TrackBuilderValidationError("Input and Output collections must not be nested")
+        raise TrackBuilderValidationError(
+            "TrackBuilder/Input/Outlines and TrackBuilder/Output must not be nested"
+        )
     input_pointers = {obj.as_pointer() for obj in input_collection.all_objects}
     output_pointers = {obj.as_pointer() for obj in output_collection.all_objects}
     if input_pointers & output_pointers:
-        raise TrackBuilderValidationError("Input and Output collections must not share objects")
+        raise TrackBuilderValidationError(
+            "TrackBuilder/Input/Outlines and TrackBuilder/Output must not share objects"
+        )
 
 
 def _triangulate_region(
@@ -1287,10 +1375,20 @@ def _remove_collection_tree(root: bpy.types.Collection) -> None:
 
 def _instantiate_plans(
     plans: list[_MeshPlan],
-) -> tuple[bpy.types.Collection, list[tuple[bpy.types.Object, str]]]:
+    track_builder_collection: bpy.types.Collection,
+) -> tuple[
+    bpy.types.Collection,
+    bpy.types.Collection,
+    bpy.types.Collection,
+    list[tuple[bpy.types.Object, str]],
+]:
     pending_name = f"__TrackBuilderPending_{uuid.uuid4().hex}"
     pending = bpy.data.collections.new(pending_name)
-    bpy.context.scene.collection.children.link(pending)
+    planes = bpy.data.collections.new(f"{pending_name}_Planes")
+    barrier_segments = bpy.data.collections.new(f"{pending_name}_BarrierSegments")
+    track_builder_collection.children.link(pending)
+    pending.children.link(planes)
+    pending.children.link(barrier_segments)
     created: list[tuple[bpy.types.Object, str]] = []
     try:
         for index, plan in enumerate(plans):
@@ -1301,30 +1399,48 @@ def _instantiate_plans(
             mesh.validate(clean_customdata=False)
             mesh.update()
             obj = bpy.data.objects.new(temporary_name, mesh)
-            pending.objects.link(obj)
+            role = plan.properties.get("track_builder_role")
+            destination = (
+                barrier_segments
+                if role in {"outer_barrier", "inner_barrier"}
+                else planes
+            )
+            destination.objects.link(obj)
             for key, value in plan.properties.items():
                 obj[key] = value
             created.append((obj, plan.name))
     except Exception:
         _remove_collection_tree(pending)
         raise
-    return pending, created
+    return pending, planes, barrier_segments, created
 
 
 def _commit_output(
     pending: bpy.types.Collection,
+    planes: bpy.types.Collection,
+    barrier_segments: bpy.types.Collection,
     created: list[tuple[bpy.types.Object, str]],
     previous: bpy.types.Collection | None,
 ) -> bpy.types.Collection:
-    previous_temporary_name = None
+    previous_names: list[tuple[bpy.types.Collection, str]] = []
     if previous is not None:
-        previous_temporary_name = f"__TrackBuilderPrevious_{uuid.uuid4().hex}"
-        previous.name = previous_temporary_name
+        previous_prefix = f"__TrackBuilderPrevious_{uuid.uuid4().hex}"
+        previous_names = [
+            (collection, collection.name)
+            for collection in _collection_tree(previous)
+        ]
+        for index, (collection, _) in enumerate(previous_names):
+            collection.name = f"{previous_prefix}_{index:02d}"
     try:
-        pending.name = "Output"
+        planes.name = PLANES_COLLECTION_NAME
+        barrier_segments.name = BARRIER_SEGMENTS_COLLECTION_NAME
+        pending.name = OUTPUT_COLLECTION_NAME
     except Exception:
-        if previous is not None:
-            previous.name = "Output"
+        rollback_prefix = f"__TrackBuilderRollback_{uuid.uuid4().hex}"
+        for index, collection in enumerate((pending, planes, barrier_segments)):
+            collection.name = f"{rollback_prefix}_{index:02d}"
+        for collection, name in previous_names:
+            collection.name = name
         _remove_collection_tree(pending)
         raise
 
@@ -1343,15 +1459,16 @@ def build_track(
     segment_length: float,
     material_names: list[str],
 ) -> bpy.types.Collection:
-    """Validate the current file and transactionally rebuild its Output collection.
+    """Validate the current file and transactionally rebuild TrackBuilder/Output.
 
     ``W``, ``H``, and ``segment_length`` must be finite and at least 0.1.
     ``material_names`` must be a list of at least two existing Blender materials.
     The current file must satisfy the checked and trusted input preconditions
     documented in ``Documentation/README.md``.
 
-    Returns the newly committed ``Output`` collection. Validation or geometry
-    failures preserve the existing output and raise a ``TrackBuilderError``.
+    Returns the newly committed ``TrackBuilder/Output`` collection. Validation
+    or geometry failures preserve the existing output and raise a
+    ``TrackBuilderError``.
     """
 
     width = _validated_barrier_segment_dimension("W", W)
@@ -1359,13 +1476,12 @@ def build_track(
     target_length = _validated_barrier_segment_dimension("segment_length", segment_length)
     barrier_materials = _validated_materials(material_names)
 
-    input_collection = bpy.data.collections.get("Input")
-    if input_collection is None:
-        raise TrackBuilderValidationError("The file does not contain a collection named 'Input'")
-    previous_output = bpy.data.collections.get("Output")
-    _validate_collection_separation(input_collection, previous_output)
+    track_builder_collection, outlines_collection, previous_output = (
+        _required_collection_structure()
+    )
+    _validate_collection_separation(outlines_collection, previous_output)
 
-    raw_outlines = _read_raw_outlines(input_collection)
+    raw_outlines = _read_raw_outlines(outlines_collection)
     epsilon = _world_epsilon(raw_outlines)
     outlines = _validated_outlines(raw_outlines, epsilon)
     ground, outer, inner = _classify_outlines(outlines)
@@ -1375,6 +1491,7 @@ def build_track(
         inner,
         width,
         epsilon,
+        track_builder_collection,
     )
     plans = _build_plans(
         ground,
@@ -1386,5 +1503,14 @@ def build_track(
         barrier_materials,
         epsilon,
     )
-    pending, created = _instantiate_plans(plans)
-    return _commit_output(pending, created, previous_output)
+    pending, planes, barrier_segments, created = _instantiate_plans(
+        plans,
+        track_builder_collection,
+    )
+    return _commit_output(
+        pending,
+        planes,
+        barrier_segments,
+        created,
+        previous_output,
+    )

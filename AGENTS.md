@@ -24,8 +24,9 @@ Testing architecture and commands are documented in
 `Blender\TrackBuilder\Documentation\TEST.md`.
 
 TrackBuilder test inputs in `Blender\TrackBuilder\TestInputs` are committed and
-must contain only an `Input` collection. Regenerate and commit them only after a
-deliberate test-fixture change:
+must contain `TrackBuilder/Input/Outlines` without a generated
+`TrackBuilder/Output`. Regenerate and commit them only after a deliberate
+test-fixture change:
 
 ```powershell
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\GenerateTrackBuilderSamples.py"

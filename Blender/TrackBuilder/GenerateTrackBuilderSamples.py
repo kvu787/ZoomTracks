@@ -1,8 +1,8 @@
 """Generate committed, input-only TrackBuilder test fixtures.
 
 This module owns test-fixture geometry only. It deliberately does not import or
-run TrackBuilder. Existing generated Output is stripped from the original sample,
-and synthetic samples contain only their Input collection.
+run TrackBuilder. Existing generated TrackBuilder/Output is stripped from the
+original sample, and every fixture uses TrackBuilder/Input/Outlines.
 """
 
 from __future__ import annotations
@@ -139,8 +139,12 @@ def _new_synthetic_input(
     number: int,
 ) -> tuple[bpy.types.Collection, dict[str, bpy.types.Material]]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    track_builder_collection = bpy.data.collections.new("TrackBuilder")
     input_collection = bpy.data.collections.new("Input")
-    bpy.context.scene.collection.children.link(input_collection)
+    outlines_collection = bpy.data.collections.new("Outlines")
+    bpy.context.scene.collection.children.link(track_builder_collection)
+    track_builder_collection.children.link(input_collection)
+    input_collection.children.link(outlines_collection)
     materials = {
         "ground": _ensure_material("GroundMaterial", (0.12, 0.45, 0.12, 1.0)),
         "track": _ensure_material("TrackMaterial", (0.12, 0.14, 0.18, 1.0)),
@@ -150,7 +154,7 @@ def _new_synthetic_input(
     for material_name in SAMPLE_MATERIAL_NAMES[number]:
         material = _ensure_material(material_name, BARRIER_MATERIAL_COLORS[material_name])
         material.use_fake_user = True
-    return input_collection, materials
+    return outlines_collection, materials
 
 
 def create_synthetic_sample(number: int) -> BuildParameters:
@@ -271,7 +275,9 @@ def _remove_output_collection() -> None:
     shared_objects = input_objects & output_objects
     if shared_objects:
         names = ", ".join(sorted(obj.name for obj in shared_objects))
-        raise ValueError(f"Input and Output share objects: {names}")
+        raise ValueError(
+            f"TrackBuilder/Input/Outlines and TrackBuilder/Output share objects: {names}"
+        )
 
     output_collections: list[bpy.types.Collection] = []
 
@@ -289,6 +295,52 @@ def _remove_output_collection() -> None:
             bpy.data.meshes.remove(data)
     for collection in reversed(output_collections):
         bpy.data.collections.remove(collection, do_unlink=True)
+
+
+def _direct_child(
+    parent: bpy.types.Collection,
+    name: str,
+) -> bpy.types.Collection | None:
+    return next((child for child in parent.children if child.name == name), None)
+
+
+def _unlink_collection_from_other_parents(
+    collection: bpy.types.Collection,
+    expected_parent: bpy.types.Collection,
+) -> None:
+    for scene in bpy.data.scenes:
+        if collection in scene.collection.children[:]:
+            scene.collection.children.unlink(collection)
+    for parent in bpy.data.collections:
+        if parent != expected_parent and collection in parent.children[:]:
+            parent.children.unlink(collection)
+
+
+def _ensure_input_collection_structure() -> bpy.types.Collection:
+    """Return Outlines, migrating the legacy top-level Input fixture if needed."""
+
+    track_builder = bpy.data.collections.get("TrackBuilder")
+    if track_builder is None:
+        legacy_input = bpy.data.collections.get("Input")
+        if legacy_input is None:
+            raise ValueError("Original sample has neither TrackBuilder nor legacy Input")
+        if bpy.data.collections.get("Outlines") is not None:
+            raise ValueError("Cannot migrate original sample because Outlines already exists")
+        legacy_input.name = "Outlines"
+        track_builder = bpy.data.collections.new("TrackBuilder")
+        input_collection = bpy.data.collections.new("Input")
+        bpy.context.scene.collection.children.link(track_builder)
+        track_builder.children.link(input_collection)
+        input_collection.children.link(legacy_input)
+        _unlink_collection_from_other_parents(legacy_input, input_collection)
+
+    input_collection = _direct_child(track_builder, "Input")
+    if input_collection is None:
+        raise ValueError("TrackBuilder is missing its direct Input child")
+    outlines_collection = _direct_child(input_collection, "Outlines")
+    if outlines_collection is None:
+        raise ValueError("TrackBuilder/Input is missing its direct Outlines child")
+    return outlines_collection
 
 
 def _prune_obsolete_sample_inputs(output_directory: str) -> list[str]:
@@ -316,6 +368,7 @@ def load_sample_input(number: int, original_sample_path: str) -> BuildParameters
             raise FileNotFoundError(f"Original sample input does not exist: {sample_path}")
         bpy.ops.wm.open_mainfile(filepath=sample_path)
         parameters = ORIGINAL_SAMPLE_PARAMETERS
+        _ensure_input_collection_structure()
         for material_name in parameters[3]:
             material = bpy.data.materials.get(material_name)
             if material is None:
@@ -327,8 +380,11 @@ def load_sample_input(number: int, original_sample_path: str) -> BuildParameters
     else:
         parameters = create_synthetic_sample(number)
 
+    _ensure_input_collection_structure()
     if bpy.data.collections.get("Output") is not None:
-        raise ValueError(f"Sample input {number} unexpectedly contains an Output collection")
+        raise ValueError(
+            f"Sample input {number} unexpectedly contains TrackBuilder/Output"
+        )
     return parameters
 
 

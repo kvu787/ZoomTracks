@@ -18,19 +18,37 @@ Blender 4.5 and uses only Blender's bundled Python libraries.
 | [`TEST.md`](TEST.md) | Test commands, fixtures, coverage, and artifacts |
 | [`PERFORMANCE_OPTIMIZATION.md`](PERFORMANCE_OPTIMIZATION.md) | Implemented algorithms, measurements, compatibility notes, and remaining limits |
 
+## Collection structure
+
+TrackBuilder requires this collection hierarchy:
+
+```text
+TrackBuilder/
+  Input/
+    Outlines/
+  Output/
+    Planes/
+    BarrierSegments/
+```
+
+`TrackBuilder`, `Input`, and `Outlines` must exist before a build. `Output` and
+its children are generated and transactionally replaced by TrackBuilder. Every
+temporary and generated object is linked somewhere beneath `TrackBuilder`.
+
 ## Input
 
 ### Description
 
-- Input is a collection of outline objects with materials assigned to them.
-- `build_track` treats every unique object found recursively in the Blender collection named
-  `Input` as an outline
+- Input consists of outline objects with materials assigned beneath
+  `TrackBuilder/Input/Outlines`.
+- `build_track` treats every unique object found recursively in `Outlines` as
+  an outline.
 - TrackBuilder classifies outlines from their containment depths
 
 ### Input preconditions validated by the script
 
-TrackBuilder rejects the build before replacing `Output` when any of these
-checked preconditions fails:
+TrackBuilder rejects the build before replacing `TrackBuilder/Output` when any
+of these checked preconditions fails:
 
 - **Build arguments:**
   - `W`, `H`, and `segment_length` are Python `int` or
@@ -39,12 +57,16 @@ checked preconditions fails:
     non-empty string naming an existing Blender material. Repeated names are
     allowed.
 - **Collections:**
-  - a collection named `Input` exists and recursively contains
-    at least two unique objects. If a collection named `Output` already exists,
-    it is local, editable, has no child collections, is not nested with `Input`,
-    and shares no objects with `Input`.
+  - a local, editable collection named `TrackBuilder` exists. It directly
+    contains `Input`, which directly contains `Outlines`; `Outlines` recursively
+    contains at least two unique objects. If `TrackBuilder/Output` already
+    exists, it is local and editable, contains no objects directly, contains
+    exactly the local editable leaf collections `Planes` and
+    `BarrierSegments`, is not nested with `Outlines`, and shares no objects with
+    `Outlines`. The generated collection names must not be occupied outside
+    `TrackBuilder/Output`.
 - **Object types and materials:**
-  - every object found recursively in `Input` is
+  - every object found recursively in `TrackBuilder/Input/Outlines` is
     a Mesh or Curve, can be converted to normally evaluated mesh geometry, and
     has exactly one non-empty material slot.
 - **Normally evaluated coordinates and topology:**
@@ -94,10 +116,11 @@ checked preconditions fails:
 
 The final two groups are construction checks and can raise
 `TrackBuilderGeometryError` rather than `TrackBuilderValidationError`; either
-failure occurs before a new `Output` is committed. Mesh objects are checked from
+failure occurs before a new `TrackBuilder/Output` is committed. Mesh objects are checked from
 dependency-graph-evaluated geometry, including modifiers, at the current scene
 state. All evaluated objects are transformed to world space before validation.
-The `Input` collection, its objects, and their datablocks are never modified.
+The `TrackBuilder/Input` hierarchy, its objects, and their datablocks are never
+modified.
 
 ### Input preconditions not validated by the script; user must ensure these
 
@@ -131,16 +154,18 @@ edges. The user must ensure all of the following:
     polygon. The normally evaluated path must remain simple and separated; for
     outer and inner barrier outlines, the denser reference path must do so as
     well.
-- **Every valid object in `Input` is intentional.**
+- **Every valid object in `TrackBuilder/Input/Outlines` is intentional.**
   - TrackBuilder cannot
     distinguish an accidental but structurally valid outline from a desired one;
     it will classify such an object by containment and may generate another island.
-- **`Input` participates in the current evaluation context.**
-  - TrackBuilder finds the collection in file-wide `bpy.data.collections`.
-  - It does not verify that the collection and its objects are linked and enabled in the current scene and view layer.
+- **`TrackBuilder/Input/Outlines` participates in the current evaluation context.**
+  - TrackBuilder finds `TrackBuilder` in file-wide `bpy.data.collections` and
+    resolves `Input` and `Outlines` through direct child links.
+  - It does not verify that the hierarchy and its objects are linked and enabled
+    in the current scene and view layer.
   - A detached or view-layer-excluded Mesh can be read without dependency-graph effects such as its modifiers.
   - Ensure the current scene, view layer, frame, and modifier state are the ones intended for the build.
-- **An existing `Output` is disposable.**
+- **An existing `TrackBuilder/Output` is disposable.**
   - TrackBuilder verifies its collection
     structure and editability, but not that it was produced by TrackBuilder or is
     safe to replace. After a successful build, the old collection is removed;
@@ -207,7 +232,8 @@ from TrackBuilder import build_track
 output = build_track(W=1, H=0.1, segment_length=5, material_names=["red", "white"])
 ```
 
-The function returns the newly committed Blender `Output` collection.
+The function returns the newly committed Blender `TrackBuilder/Output`
+collection.
 
 ## Command-line build
 
@@ -228,9 +254,11 @@ TrackBuilder accepts either input winding. Normally evaluated working loops are
 normalized to CCW as viewed from global +Z, rotated to a deterministic starting
 vertex, and never simplified by removing vertices.
 
-All generated objects are meshes placed in the `Output` collection. Fill meshes
-are triangulated, face global +Z, and retain the material from their source
-outline. Every object has a `track_builder_role` custom property:
+All generated objects are meshes. Flat ground, track, and island meshes are
+placed directly in `TrackBuilder/Output/Planes`; barrier segment objects are
+placed directly in `TrackBuilder/Output/BarrierSegments`. Fill meshes are
+triangulated, face global +Z, and retain the material from their source outline.
+Every object has a `track_builder_role` custom property:
 
 | Role | Purpose |
 | --- | --- |
@@ -321,12 +349,13 @@ resolution.
 ## Failure and rollback behavior
 
 TrackBuilder validates the checked input contract and plans the complete result
-before replacing an existing `Output` collection. New datablocks are created in
-a temporary collection. If validation or construction fails, temporary data is
-removed and the previous output remains unchanged. A successful build commits
-the new collection as `Output` and removes the previous `Output` data described
-above. An unchecked self-intersection, self-touch, or cross-outline intersection
-may not fail and can therefore produce a committed unexpected result.
+before replacing an existing `TrackBuilder/Output` collection. New datablocks
+are created in a temporary hierarchy beneath `TrackBuilder`. If validation or
+construction fails, temporary data is removed and the previous output remains
+unchanged. A successful build commits the new hierarchy as
+`TrackBuilder/Output` and removes the previous output data described above. An
+unchecked self-intersection, self-touch, or cross-outline intersection may not
+fail and can therefore produce a committed unexpected result.
 
 The public exception hierarchy is:
 
