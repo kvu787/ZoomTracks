@@ -1,0 +1,6 @@
+Command:
+dotnet run --project .\runner\CollisionDetection.Runner\CollisionDetection.Runner.csproj -c Release --no-build -- test
+
+Result (2026-08-23, final source):
+CORRECTNESS START
+CORRECTNESS PASS assertions=1792702 orientations=250001 segment_pairs=1507988 outline_queries=34677 generator_rejections=0 elapsed_s=2.369
