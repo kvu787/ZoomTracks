@@ -46,15 +46,13 @@ def Main():
     assert len(sceneCollection.objects) == 0, "Scene collection cannot contain objects"
 
     ExpectedCollectionNames = (
-        "Barriers",
         "BigCones",
         "Camera",
         "Checkpoints",
-        "Cones",
         "Templates",
-        "Track",
         "Uncategorized",
         "Vehicles",
+        "TrackBuilder",
     )
 
     # Verify root collection properties
@@ -117,31 +115,17 @@ def Main():
         if obj.name != "CameraPivot":
             assert obj.rotation_euler.x == 0 and obj.rotation_euler.y == 0, f"{obj.name}: Has a non-zero x (pitch) or y (roll) rotation"
 
-    # Check for invalid Z-heights for unparented objects
-    ValidZHeights = (
-        0,
-        0.015625,
-        0.03125,
-        0.046875,
-        0.0625,
-        0.078125,
-        0.09375,
-    )
+    # Ensure unparented objects have Z-height == 0
     for obj in unparentedObjects:
-        assert obj.location.z in ValidZHeights, f"{obj.name}: Has invalid Z-height"
+        assert obj.location.z == 0, f"{obj.name}: Has non-zero Z-height"
 
-    # Check for non-zero vertex Z-coordinates for certain objects
+    # Ensure vertex Z-coordinates are zero for certain objects
     CheckVertexZCoordinatePrefixes = (
-        "Grass",
-        "Road",
-        "Gravel",
-        "Barrier",
         "CheckeredLine",
+        "Checkered",
     )
     filteredObjects = sorted([obj for obj in bpy.data.objects if obj.name.startswith(CheckVertexZCoordinatePrefixes)], key=lambda obj: obj.name)
     for obj in filteredObjects:
-        if obj.users_collection[0].name in ("Templates",):
-            continue
         for vertex in obj.data.vertices:
             assert vertex.co.z == 0, f"{obj.name}: Has vertex with non-zero Z-coordinate: Vertex {vertex.index}: x={repr(vertex.co.x)}, y={repr(vertex.co.y)}, z={repr(vertex.co.z)}"
 
