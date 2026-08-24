@@ -12,8 +12,8 @@ namespace ZoomTracks {
         private const string RefreshRateFlag = "-refreshRate";
         private const string StutterLogFilePathFlag = "-stutterLogFilePath";
         private const string UiSceneName = "Ui";
-        private const int InitialTrackSceneIndex = 15;
-        private static IReadOnlyList<string> TrackSceneNames { get; } = Array.AsReadOnly(new[] {
+        private const int InitialTrackIndex = 15;
+        private static IReadOnlyList<string> TrackNames { get; } = Array.AsReadOnly(new[] {
             "Track001",
             "Track002",
             "Track003",
@@ -75,8 +75,8 @@ namespace ZoomTracks {
                 throw new Exception($"Expected: Start with 1 loaded scene. Actual: Started with {SceneManager.loadedSceneCount} loaded scenes.");
             }
 
-            if (InitialTrackSceneIndex < 0 || InitialTrackSceneIndex > (TrackSceneNames.Count - 1)) {
-                throw new Exception($"Invalid InitialTrackSceneIndex={InitialTrackSceneIndex}. TrackSceneNames.Count={TrackSceneNames.Count}.");
+            if (InitialTrackIndex < 0 || InitialTrackIndex > (TrackNames.Count - 1)) {
+                throw new Exception($"Invalid InitialTrackIndex={InitialTrackIndex}. TrackNames.Count={TrackNames.Count}.");
             }
 
             this.CarControlTimeoutStart = DateTime.MinValue;
@@ -88,10 +88,10 @@ namespace ZoomTracks {
             Debug.Log($"...done");
 
             Debug.Log($"Load initial track scene...");
-            await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(TrackSceneNames[InitialTrackSceneIndex], LoadSceneMode.Additive));
+            await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(TrackNames[InitialTrackIndex], LoadSceneMode.Additive));
             Debug.Log($"...done");
 
-            this.TrackSwitcher = new TrackSwitcher(this.InputManager, TrackSceneNames, InitialTrackSceneIndex);
+            this.TrackSwitcher = new TrackSwitcher(this.InputManager, TrackNames, InitialTrackIndex);
             this.InitializeTrack();
 
             Debug.Log($"END: Main.Start on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");

@@ -6,15 +6,15 @@ using UnityEngine.SceneManagement;
 namespace ZoomTracks {
     public class TrackSwitcher {
         private InputManager InputManager { get; }
-        private IReadOnlyList<string> TrackSceneNames { get; }
-        private string CurrentTrackSceneName => this.TrackSceneNames[this.CurrentTrackSceneIndex];
-        private int CurrentTrackSceneIndex { get; set; }
+        private IReadOnlyList<string> TrackNames { get; }
+        private string CurrentTrackName => this.TrackNames[this.CurrentTrackIndex];
+        private int CurrentTrackIndex { get; set; }
 
-        public TrackSwitcher(InputManager inputManager, IReadOnlyList<string> trackSceneNames, int currentTrackSceneIndex) {
+        public TrackSwitcher(InputManager inputManager, IReadOnlyList<string> trackNames, int currentTrackIndex) {
             this.InputManager = inputManager;
-            this.TrackSceneNames = trackSceneNames;
-            this.CurrentTrackSceneIndex = currentTrackSceneIndex;
-            this.CurrentTrackScene = SceneManager.GetSceneByName(this.CurrentTrackSceneName);
+            this.TrackNames = trackNames;
+            this.CurrentTrackIndex = currentTrackIndex;
+            this.CurrentTrackScene = SceneManager.GetSceneByName(this.CurrentTrackName);
             Assert.IsTrue(this.CurrentTrackScene.IsValid());
             this.CurrentTrackJson = this.ReadCurrentTrackJson();
         }
@@ -28,26 +28,26 @@ namespace ZoomTracks {
             } else {
                 int newTrackIndex;
                 if (this.InputManager.PreviousTrack) {
-                    newTrackIndex = this.CurrentTrackSceneIndex.CyclePrev(this.TrackSceneNames.Count);
+                    newTrackIndex = this.CurrentTrackIndex.CyclePrev(this.TrackNames.Count);
                 } else /* if (isNextTrack) */ {
-                    newTrackIndex = this.CurrentTrackSceneIndex.CycleNext(this.TrackSceneNames.Count);
+                    newTrackIndex = this.CurrentTrackIndex.CycleNext(this.TrackNames.Count);
                 }
 
-                int oldTrackIndex = this.CurrentTrackSceneIndex;
+                int oldTrackIndex = this.CurrentTrackIndex;
 
-                this.CurrentTrackSceneIndex = -1;
+                this.CurrentTrackIndex = -1;
                 this.CurrentTrackScene = default;
 
                 Debug.Log($"Unload old track scene...");
-                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.UnloadSceneAsync(this.TrackSceneNames[oldTrackIndex]));
+                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.UnloadSceneAsync(this.TrackNames[oldTrackIndex]));
                 Debug.Log($"...done");
 
                 Debug.Log($"Load new track scene...");
-                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(this.TrackSceneNames[newTrackIndex], LoadSceneMode.Additive));
+                await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await SceneManager.LoadSceneAsync(this.TrackNames[newTrackIndex], LoadSceneMode.Additive));
                 Debug.Log($"...done");
 
-                this.CurrentTrackSceneIndex = newTrackIndex;
-                this.CurrentTrackScene = SceneManager.GetSceneByName(this.CurrentTrackSceneName);
+                this.CurrentTrackIndex = newTrackIndex;
+                this.CurrentTrackScene = SceneManager.GetSceneByName(this.CurrentTrackName);
                 this.CurrentTrackJson = this.ReadCurrentTrackJson();
 
                 return true;
@@ -55,7 +55,7 @@ namespace ZoomTracks {
         }
 
         private TrackJson ReadCurrentTrackJson() {
-            string relativePath = $"{this.CurrentTrackSceneName}.json";
+            string relativePath = $"{this.CurrentTrackName}.json";
             return JsonUtility.Deserialize<TrackJson>(relativePath);
         }
     }
