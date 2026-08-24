@@ -339,8 +339,8 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertFalse(input_layer_collection.hide_viewport)
         self.assertTrue(outlines_layer_collection.exclude)
         self.assertFalse(outlines_layer_collection.hide_viewport)
-        self.assertFalse(outline_meshes_layer_collection.exclude)
-        self.assertTrue(outline_meshes_layer_collection.hide_viewport)
+        self.assertTrue(outline_meshes_layer_collection.exclude)
+        self.assertFalse(outline_meshes_layer_collection.hide_viewport)
         role_counts: dict[str, int] = {}
         for obj in output.all_objects:
             role = obj.get("track_builder_role")
@@ -778,12 +778,42 @@ class TrackBuilderTests(unittest.TestCase):
             )
         )
         self.assertTrue(outlines_layer_collection.exclude)
-        initial_outline_meshes_layer_collection.hide_viewport = False
+        initial_outline_meshes_layer_collection.exclude = False
 
         rebuilt_output = TrackBuilder.build_track(*parameters)
 
         self.assert_valid_output(rebuilt_output, expected_inner_count=1)
         self.assertEqual(_output_geometry_hash(rebuilt_output), expected_hash)
+
+    def test_successful_build_changes_only_active_view_layer_visibility(self) -> None:
+        parameters = self.load_test_input(3)
+        active_view_layer = bpy.context.view_layer
+        other_view_layer = bpy.context.scene.view_layers.new("OtherViewLayer")
+
+        output = TrackBuilder.build_track(*parameters)
+
+        outlines = _outlines_collection()
+        outline_meshes = TrackBuilder._direct_child(output, "OutlineMeshes")
+        active_outlines = TrackBuilder._layer_collection_for_collection(
+            active_view_layer.layer_collection,
+            outlines,
+        )
+        active_outline_meshes = TrackBuilder._layer_collection_for_collection(
+            active_view_layer.layer_collection,
+            outline_meshes,
+        )
+        other_outlines = TrackBuilder._layer_collection_for_collection(
+            other_view_layer.layer_collection,
+            outlines,
+        )
+        other_outline_meshes = TrackBuilder._layer_collection_for_collection(
+            other_view_layer.layer_collection,
+            outline_meshes,
+        )
+        self.assertTrue(active_outlines.exclude)
+        self.assertTrue(active_outline_meshes.exclude)
+        self.assertFalse(other_outlines.exclude)
+        self.assertFalse(other_outline_meshes.exclude)
 
     def test_representative_curve_adapts_only_offset_and_preserves_contact_topology(self) -> None:
         width, height, target, material_names = self.load_representative_curve_input()
@@ -1263,7 +1293,7 @@ class TrackBuilderTests(unittest.TestCase):
             outline_meshes,
         )
         outlines_layer_collection.exclude = False
-        outline_meshes_layer_collection.hide_viewport = False
+        outline_meshes_layer_collection.exclude = False
 
         with self.assertRaises(TrackBuilder.TrackBuilderGeometryError):
             TrackBuilder.build_track(width, height, 1000.0, material_names)
@@ -1271,7 +1301,7 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertIs(output, _output_collection())
         self.assertEqual(signature, _output_signature(output))
         self.assertFalse(outlines_layer_collection.exclude)
-        self.assertFalse(outline_meshes_layer_collection.hide_viewport)
+        self.assertFalse(outline_meshes_layer_collection.exclude)
 
     def test_existing_output_with_extra_child_collection_is_rejected(self) -> None:
         width, height, target, material_names = self.load_test_input(3)

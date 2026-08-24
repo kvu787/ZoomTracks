@@ -231,10 +231,10 @@ output = build_track(W=1, H=0.1, segment_length=5, material_names=["red", "white
 
 The function returns the newly committed Blender `TrackBuilder/Output`
 collection. After a successful commit, TrackBuilder excludes
-`TrackBuilder/Input/Outlines` with its Outliner checkbox and hides
-`TrackBuilder/Output/OutlineMeshes` with its Outliner eye in the active view
-layer. These visibility states do not prevent a later build from reading every
-object recursively beneath `Input/Outlines`.
+`TrackBuilder/Input/Outlines` and `TrackBuilder/Output/OutlineMeshes` in the
+active view layer using their Outliner checkboxes. These exclusions do not
+prevent a later build from reading every object recursively beneath
+`Input/Outlines`.
 
 ## Command-line build
 
@@ -359,9 +359,9 @@ are created in a temporary hierarchy beneath `TrackBuilder`. If validation or
 construction fails, temporary data is removed and the previous output remains
 unchanged. A successful build commits the new hierarchy as
 `TrackBuilder/Output`, removes the previous output data described above, excludes
-`TrackBuilder/Input/Outlines`, and viewport-hides
-`TrackBuilder/Output/OutlineMeshes` in the active view layer. A failed build does
-not change those Outliner visibility states. An unchecked self-intersection,
+`TrackBuilder/Input/Outlines` and `TrackBuilder/Output/OutlineMeshes` in the
+active view layer. A failed build does not change those Outliner exclusion
+states. An unchecked self-intersection,
 self-touch, or cross-outline intersection may not fail and can therefore produce
 a committed unexpected result.
 

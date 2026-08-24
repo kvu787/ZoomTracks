@@ -883,7 +883,7 @@ def _set_successful_build_visibility(
         outline_meshes,
     )
     if outline_meshes_layer_collection is not None:
-        outline_meshes_layer_collection.hide_viewport = True
+        outline_meshes_layer_collection.exclude = True
     if outlines_layer_collection is not None:
         outlines_layer_collection.exclude = True
 
