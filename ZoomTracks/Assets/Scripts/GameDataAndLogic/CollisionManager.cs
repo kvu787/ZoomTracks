@@ -11,11 +11,11 @@ namespace ZoomTracks {
         }
 
         public bool IsCarColliding() {
-            foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
-                if (IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
-                    return true;
-                }
-            }
+            //foreach (BoxCollider obstacle in this.TrackObjects.Obstacles) {
+            //    if (IsColliding(this.CarSwitcher.CurrentCarCollider, obstacle)) {
+            //        return true;
+            //    }
+            //}
             return false;
         }
 
