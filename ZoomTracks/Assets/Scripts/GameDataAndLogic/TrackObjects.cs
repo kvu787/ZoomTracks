@@ -1,18 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     public class TrackObjects {
-        private static IReadOnlyList<string> ObstaclePrefixes { get; } = Array.AsReadOnly(new[] {
-            "Barrier",
-            "BigConeBase",
-            "Cone",
-            "VehicleRoad",
-        });
-
         private static IReadOnlyList<float> ValidZHeights { get; } = Array.AsReadOnly(new[] {
             0f,
             0.015625f,
@@ -36,27 +28,22 @@ namespace ZoomTracks {
                 placeholderCar.transform.Find("CarRL"),
                 placeholderCar.transform.Find("CarRR"),
             };
-
-            IReadOnlyCollection<BoxCollider> obstacles =
-                UnityEngine.Object
-                    .FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
-                    .Where(obj => ObstaclePrefixes.Any(prefix => obj.name.StartsWith(prefix)))
-                    .Select(obj => obj.GetComponent<BoxCollider>())
-                    .ToList()
-                    .AsReadOnly();
-            Assert.IsFalse(obstacles.Any(x => x == null), "One or more null colliders found. You probably need to run 'Tools > Setup new track scene'.");
-            this.Obstacles = obstacles;
         }
 
         public Transform PlaceholderCarTransform { get; }
         public Transform[] TireGroundContactPoints { get; }
-        public IReadOnlyCollection<BoxCollider> Obstacles { get; }
 
         private static void ValidatePlaceholderCar(GameObject placeholderCar) {
-            Assert.IsTrue(ValidZHeights.Contains(placeholderCar.transform.position.y));
-            Assert.IsTrue(placeholderCar.transform.rotation.eulerAngles.x == 0f);
-            Assert.IsTrue(placeholderCar.transform.rotation.eulerAngles.z == 0f);
-            Assert.IsTrue(placeholderCar.transform.localScale == Vector3.one);
+            float tolerance = 0.00001f;
+
+            Assert.IsTrue(placeholderCar.transform.position.y == 0f);
+
+            Assert.IsTrue(Mathf.Abs(Mathf.DeltaAngle(placeholderCar.transform.rotation.eulerAngles.x, 0f)) < tolerance);
+            Assert.IsTrue(Mathf.Abs(Mathf.DeltaAngle(placeholderCar.transform.rotation.eulerAngles.z, 0f)) < tolerance);
+
+            Assert.IsTrue(Mathf.Abs(placeholderCar.transform.localScale.x - 1f) < tolerance);
+            Assert.IsTrue(Mathf.Abs(placeholderCar.transform.localScale.x - 1f) < tolerance);
+            Assert.IsTrue(Mathf.Abs(placeholderCar.transform.localScale.x - 1f) < tolerance);
         }
     }
 }
