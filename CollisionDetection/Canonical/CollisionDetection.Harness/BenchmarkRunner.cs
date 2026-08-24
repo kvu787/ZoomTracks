@@ -9,16 +9,13 @@ using System.Security.Cryptography;
 using System.Text;
 using ZoomTracks.CollisionDetection;
 
-namespace CollisionDetection.Harness
-{
-    internal static class BenchmarkRunner
-    {
+namespace CollisionDetection.Harness {
+    internal static class BenchmarkRunner {
         private const int BuildSampleCount = 9;
         private const int QuerySampleCount = 11;
         private const double TargetSampleSeconds = 0.15;
 
-        internal static void Run(string outputDirectory)
-        {
+        internal static void Run(string outputDirectory) {
             DateTimeOffset runStarted = DateTimeOffset.UtcNow;
             Console.WriteLine("Benchmark environment:");
             Console.WriteLine("  Runtime: " + RuntimeInformation.FrameworkDescription);
@@ -34,22 +31,20 @@ namespace CollisionDetection.Harness
 
             List<BenchmarkScenario> scenarios = BuildScenarios();
             AlgorithmSpec[] algorithms = Algorithms();
-            List<RawRow> rawRows = new List<RawRow>();
+            List<RawRow> rawRows = new();
 
             Console.WriteLine("Preprocessing (median +/- MAD; allocations exclude transferred input lists):");
             Console.WriteLine("| Scenario | N | Algorithm | Build ms | MAD ms | Alloc KiB | Index details |");
             Console.WriteLine("|---|---:|---|---:|---:|---:|---|");
 
-            List<ScenarioMeasurements> allMeasurements = new List<ScenarioMeasurements>();
-            for (int scenarioIndex = 0; scenarioIndex < scenarios.Count; ++scenarioIndex)
-            {
+            List<ScenarioMeasurements> allMeasurements = new();
+            for (int scenarioIndex = 0; scenarioIndex < scenarios.Count; ++scenarioIndex) {
                 BenchmarkScenario scenario = scenarios[scenarioIndex];
                 scenario.PrepareExpected();
-                ScenarioMeasurements measurements = new ScenarioMeasurements(scenario);
+                ScenarioMeasurements measurements = new(scenario);
 
                 // Rotate order to spread tiering/thermal effects across algorithms.
-                for (int offset = 0; offset < algorithms.Length; ++offset)
-                {
+                for (int offset = 0; offset < algorithms.Length; ++offset) {
                     AlgorithmSpec algorithm = algorithms[(scenarioIndex + offset) % algorithms.Length];
                     BuildMeasurement build = MeasureBuild(algorithm, scenario);
                     measurements.Builds.Add(build);
@@ -73,11 +68,9 @@ namespace CollisionDetection.Harness
             Console.WriteLine("| Scenario | N | Q | Hits | Algorithm | us/query | MAD | B/query | Repeats/sample |");
             Console.WriteLine("|---|---:|---:|---:|---|---:|---:|---:|---:|");
 
-            foreach (ScenarioMeasurements scenarioMeasurements in allMeasurements)
-            {
+            foreach (ScenarioMeasurements scenarioMeasurements in allMeasurements) {
                 BenchmarkScenario scenario = scenarioMeasurements.Scenario;
-                foreach (BuildMeasurement build in scenarioMeasurements.Builds)
-                {
+                foreach (BuildMeasurement build in scenarioMeasurements.Builds) {
                     QueryMeasurement query = MeasureQueries(build.Detector, scenario);
                     scenarioMeasurements.Queries.Add(
                         new AlgorithmQueryMeasurement(build.Algorithm, query));
@@ -99,12 +92,10 @@ namespace CollisionDetection.Harness
             Console.WriteLine();
             Console.WriteLine("Checksums and all exact-oracle comparisons passed.");
 
-            if (!string.IsNullOrEmpty(outputDirectory))
-            {
-                Directory.CreateDirectory(outputDirectory);
+            if (!string.IsNullOrEmpty(outputDirectory)) {
+                _ = Directory.CreateDirectory(outputDirectory);
                 string csvPath = Path.Combine(outputDirectory, "benchmark-results.csv");
-                List<string> lines = new List<string>
-                {
+                List<string> lines = new() {
                     "scenario,N,queries,hits,algorithm,metric,median,mad,unit,allocated_bytes,index_details"
                 };
                 lines.AddRange(rawRows.Select(row => row.ToCsv()));
@@ -123,12 +114,11 @@ namespace CollisionDetection.Harness
 
         private static BuildMeasurement MeasureBuild(
             AlgorithmSpec algorithm,
-            BenchmarkScenario scenario)
-        {
+            BenchmarkScenario scenario) {
             ICollisionDetector warm = algorithm.Create(
                 scenario.Outlines.CloneOutline1(),
                 scenario.Outlines.CloneOutline2());
-            warm.IsColliding(scenario.Queries[0].Bounds, scenario.Queries[0].Pose);
+            _ = warm.IsColliding(scenario.Queries[0].Bounds, scenario.Queries[0].Pose);
             GC.KeepAlive(warm);
 
             double[] elapsedMilliseconds = new double[BuildSampleCount];
@@ -137,13 +127,11 @@ namespace CollisionDetection.Harness
             int batchSize = Math.Max(
                 8,
                 Math.Min(4_096, 262_144 / scenario.Outlines.EdgeCount));
-            for (int sample = 0; sample < BuildSampleCount; ++sample)
-            {
+            for (int sample = 0; sample < BuildSampleCount; ++sample) {
                 List<CoordinateXY>[] firstLists = new List<CoordinateXY>[batchSize];
                 List<CoordinateXY>[] secondLists = new List<CoordinateXY>[batchSize];
                 ICollisionDetector[] detectors = new ICollisionDetector[batchSize];
-                for (int i = 0; i < batchSize; ++i)
-                {
+                for (int i = 0; i < batchSize; ++i) {
                     firstLists[i] = scenario.Outlines.CloneOutline1();
                     secondLists[i] = scenario.Outlines.CloneOutline2();
                 }
@@ -152,8 +140,7 @@ namespace CollisionDetection.Harness
                 GC.WaitForPendingFinalizers();
                 long allocatedBefore = GC.GetAllocatedBytesForCurrentThread();
                 long started = Stopwatch.GetTimestamp();
-                for (int i = 0; i < batchSize; ++i)
-                {
+                for (int i = 0; i < batchSize; ++i) {
                     detectors[i] = algorithm.Create(firstLists[i], secondLists[i]);
                 }
 
@@ -162,7 +149,7 @@ namespace CollisionDetection.Harness
                 elapsedMilliseconds[sample] = (stopped - started) * 1000.0
                     / (Stopwatch.Frequency * (double)batchSize);
                 allocatedBytes[sample] = (allocatedAfter - allocatedBefore) / (double)batchSize;
-                retained = detectors[detectors.Length - 1];
+                retained = detectors[^1];
                 GC.KeepAlive(detectors);
             }
 
@@ -177,13 +164,11 @@ namespace CollisionDetection.Harness
 
         private static QueryMeasurement MeasureQueries(
             ICollisionDetector detector,
-            BenchmarkScenario scenario)
-        {
+            BenchmarkScenario scenario) {
             VerifyDetector(detector, scenario);
 
-            for (int i = 0; i < 4; ++i)
-            {
-                RunQueryBatch(detector, scenario.Queries, 1);
+            for (int i = 0; i < 4; ++i) {
+                _ = RunQueryBatch(detector, scenario.Queries, 1);
             }
 
             long pilotStart = Stopwatch.GetTimestamp();
@@ -202,8 +187,7 @@ namespace CollisionDetection.Harness
 
             double[] nanosecondsPerQuery = new double[QuerySampleCount];
             int combinedChecksum = pilotChecksum ^ allocationChecksum;
-            for (int sample = 0; sample < QuerySampleCount; ++sample)
-            {
+            for (int sample = 0; sample < QuerySampleCount; ++sample) {
                 long started = Stopwatch.GetTimestamp();
                 int checksum = RunQueryBatch(detector, scenario.Queries, repeats);
                 long stopped = Stopwatch.GetTimestamp();
@@ -212,8 +196,7 @@ namespace CollisionDetection.Harness
                 nanosecondsPerQuery[sample] = nanoseconds / (repeats * (double)scenario.Queries.Length);
             }
 
-            if (combinedChecksum == int.MinValue)
-            {
+            if (combinedChecksum == int.MinValue) {
                 throw new InvalidOperationException("Unreachable checksum sentinel.");
             }
 
@@ -227,14 +210,11 @@ namespace CollisionDetection.Harness
 
         private static void VerifyDetector(
             ICollisionDetector detector,
-            BenchmarkScenario scenario)
-        {
-            for (int i = 0; i < scenario.Queries.Length; ++i)
-            {
+            BenchmarkScenario scenario) {
+            for (int i = 0; i < scenario.Queries.Length; ++i) {
                 QueryInput query = scenario.Queries[i];
                 bool actual = detector.IsColliding(query.Bounds, query.Pose);
-                if (actual != scenario.Expected[i])
-                {
+                if (actual != scenario.Expected[i]) {
                     throw new InvalidOperationException(
                         "Benchmark verification failed in " + scenario.Name + " at query " + i + ".");
                 }
@@ -244,13 +224,10 @@ namespace CollisionDetection.Harness
         private static int RunQueryBatch(
             ICollisionDetector detector,
             QueryInput[] queries,
-            int repeats)
-        {
+            int repeats) {
             int checksum = unchecked((int)2166136261U);
-            for (int repeat = 0; repeat < repeats; ++repeat)
-            {
-                for (int i = 0; i < queries.Length; ++i)
-                {
+            for (int repeat = 0; repeat < repeats; ++repeat) {
+                for (int i = 0; i < queries.Length; ++i) {
                     QueryInput query = queries[i];
                     bool result = detector.IsColliding(query.Bounds, query.Pose);
                     checksum = unchecked((checksum ^ (result ? i + 1 : ~i)) * 16777619);
@@ -260,13 +237,13 @@ namespace CollisionDetection.Harness
             return checksum;
         }
 
-        private static List<BenchmarkScenario> BuildScenarios()
-        {
+        private static List<BenchmarkScenario> BuildScenarios() {
             const double edgeLength = 12.0;
-            List<BenchmarkScenario> scenarios = new List<BenchmarkScenario>();
-            scenarios.Add(CreateLocalizedScenario("small mixed", 32, 16, edgeLength, 8_192, 0x1101));
-            scenarios.Add(CreateLocalizedScenario("medium localized", 256, 128, edgeLength, 4_096, 0x2202));
-            scenarios.Add(CreateLocalizedScenario("large localized", 2_048, 1_024, edgeLength, 2_048, 0x3303));
+            List<BenchmarkScenario> scenarios = new() {
+                CreateLocalizedScenario("small mixed", 32, 16, edgeLength, 8_192, 0x1101),
+                CreateLocalizedScenario("medium localized", 256, 128, edgeLength, 4_096, 0x2202),
+                CreateLocalizedScenario("large localized", 2_048, 1_024, edgeLength, 2_048, 0x3303)
+            };
 
             float veryLargeRadius = RadiusForEdgeLength(8_192, edgeLength);
             OutlinePair veryLarge = TestData.SmoothNestedLoops(
@@ -313,8 +290,7 @@ namespace CollisionDetection.Harness
             int innerCount,
             double edgeLength,
             int queryCount,
-            int seed)
-        {
+            int seed) {
             float radius = RadiusForEdgeLength(outerCount, edgeLength);
             OutlinePair outlines = TestData.SmoothNestedLoops(
                 outerCount, innerCount, radius, 1.0, false);
@@ -324,8 +300,7 @@ namespace CollisionDetection.Harness
                 LocalizedQueries(outlines, queryCount, radius, 1.0, seed));
         }
 
-        private static float RadiusForEdgeLength(int vertexCount, double edgeLength)
-        {
+        private static float RadiusForEdgeLength(int vertexCount, double edgeLength) {
             return (float)(vertexCount * edgeLength / (Math.PI * 2.0));
         }
 
@@ -334,51 +309,47 @@ namespace CollisionDetection.Harness
             int count,
             float outerRadius,
             double aspect,
-            int seed)
-        {
-            Random random = new Random(seed);
+            int seed) {
+            Random random = new(seed);
             QueryInput[] queries = new QueryInput[count];
             RectangleLocalBounds[] boundsChoices =
             {
-                new RectangleLocalBounds(-6.0f, -3.0f, 6.0f, 3.0f),
-                new RectangleLocalBounds(-9.0f, -2.0f, 4.0f, 5.0f),
-                new RectangleLocalBounds(-2.0f, -8.0f, 5.0f, 7.0f),
+                new(-6.0f, -3.0f, 6.0f, 3.0f),
+                new(-9.0f, -2.0f, 4.0f, 5.0f),
+                new(-2.0f, -8.0f, 5.0f, 7.0f),
             };
-            for (int i = 0; i < count; ++i)
-            {
+            for (int i = 0; i < count; ++i) {
                 double angle = random.NextDouble() * Math.PI * 2.0;
                 int category = i & 3;
                 double radius = 0.0;
                 float positionX;
                 float positionY;
                 RectangleLocalBounds bounds;
-                switch (category)
-                {
-                    case 0:
-                        int edgeIndex = random.Next(outlines.Outline1.Length);
-                        CoordinateXY edgeStart = outlines.Outline1[edgeIndex];
-                        CoordinateXY edgeEnd = outlines.Outline1[
-                            edgeIndex + 1 == outlines.Outline1.Length ? 0 : edgeIndex + 1];
-                        positionX = (edgeStart.X + edgeEnd.X) * 0.5f;
-                        positionY = (edgeStart.Y + edgeEnd.Y) * 0.5f;
-                        bounds = new RectangleLocalBounds(-2.0f, -2.0f, 2.0f, 2.0f);
-                        break;
-                    case 1:
-                        radius = outerRadius * (0.05 + random.NextDouble() * 0.18);
-                        goto default;
-                    case 2:
-                        radius = outerRadius * (0.50 + random.NextDouble() * 0.18);
-                        goto default;
-                    default:
-                        if (category == 3)
-                        {
-                            radius = outerRadius * (1.30 + random.NextDouble() * 0.25);
-                        }
+                switch (category) {
+                case 0:
+                    int edgeIndex = random.Next(outlines.Outline1.Length);
+                    CoordinateXY edgeStart = outlines.Outline1[edgeIndex];
+                    CoordinateXY edgeEnd = outlines.Outline1[
+                        edgeIndex + 1 == outlines.Outline1.Length ? 0 : edgeIndex + 1];
+                    positionX = (edgeStart.X + edgeEnd.X) * 0.5f;
+                    positionY = (edgeStart.Y + edgeEnd.Y) * 0.5f;
+                    bounds = new RectangleLocalBounds(-2.0f, -2.0f, 2.0f, 2.0f);
+                    break;
+                case 1:
+                    radius = outerRadius * (0.05 + random.NextDouble() * 0.18);
+                    goto default;
+                case 2:
+                    radius = outerRadius * (0.50 + random.NextDouble() * 0.18);
+                    goto default;
+                default:
+                    if (category == 3) {
+                        radius = outerRadius * (1.30 + random.NextDouble() * 0.25);
+                    }
 
-                        positionX = (float)(radius * aspect * Math.Cos(angle));
-                        positionY = (float)(radius * Math.Sin(angle));
-                        bounds = boundsChoices[i % boundsChoices.Length];
-                        break;
+                    positionX = (float)(radius * aspect * Math.Cos(angle));
+                    positionY = (float)(radius * Math.Sin(angle));
+                    bounds = boundsChoices[i % boundsChoices.Length];
+                    break;
                 }
 
                 queries[i] = new QueryInput(
@@ -397,17 +368,15 @@ namespace CollisionDetection.Harness
             int count,
             float outerRadius,
             double aspect,
-            int seed)
-        {
-            Random random = new Random(seed);
+            int seed) {
+            Random random = new(seed);
             QueryInput[] queries = new QueryInput[count];
-            RectangleLocalBounds bounds = new RectangleLocalBounds(
+            RectangleLocalBounds bounds = new(
                 (float)(-1.25 * outerRadius * aspect),
                 -1.25f * outerRadius,
                 (float)(1.25 * outerRadius * aspect),
                 1.25f * outerRadius);
-            for (int i = 0; i < count; ++i)
-            {
+            for (int i = 0; i < count; ++i) {
                 queries[i] = new QueryInput(
                     bounds,
                     new RectanglePose(
@@ -422,17 +391,15 @@ namespace CollisionDetection.Harness
         private static QueryInput[] EarlyEdgeHitQueries(
             OutlinePair outlines,
             int count,
-            int seed)
-        {
-            Random random = new Random(seed);
+            int seed) {
+            Random random = new(seed);
             CoordinateXY a = outlines.Outline1[0];
             CoordinateXY b = outlines.Outline1[1];
             float centerX = (a.X + b.X) * 0.5f;
             float centerY = (a.Y + b.Y) * 0.5f;
             QueryInput[] queries = new QueryInput[count];
-            RectangleLocalBounds bounds = new RectangleLocalBounds(-10, -10, 10, 10);
-            for (int i = 0; i < count; ++i)
-            {
+            RectangleLocalBounds bounds = new(-10, -10, 10, 10);
+            for (int i = 0; i < count; ++i) {
                 queries[i] = new QueryInput(
                     bounds,
                     new RectanglePose(
@@ -444,22 +411,17 @@ namespace CollisionDetection.Harness
             return queries;
         }
 
-        private static QueryInput[] CollinearQueries(int count, int seed)
-        {
-            Random random = new Random(seed);
+        private static QueryInput[] CollinearQueries(int count, int seed) {
+            Random random = new(seed);
             QueryInput[] queries = new QueryInput[count];
             float below = NextDown(-1_000.0f);
-            for (int i = 0; i < count; ++i)
-            {
+            for (int i = 0; i < count; ++i) {
                 float x = (float)(-950.0 + random.NextDouble() * 1_900.0);
-                if ((i & 1) == 0)
-                {
+                if ((i & 1) == 0) {
                     queries[i] = new QueryInput(
                         new RectangleLocalBounds(-10, 0, 10, 10),
                         new RectanglePose(x, -1_000.0f, 0.0f));
-                }
-                else
-                {
+                } else {
                     queries[i] = new QueryInput(
                         new RectangleLocalBounds(-10, -10, 10, 0),
                         new RectanglePose(x, below, 0.0f));
@@ -470,13 +432,11 @@ namespace CollisionDetection.Harness
             return queries;
         }
 
-        private static QueryInput[] InteriorQueries(int count, int seed)
-        {
-            Random random = new Random(seed);
+        private static QueryInput[] InteriorQueries(int count, int seed) {
+            Random random = new(seed);
             QueryInput[] queries = new QueryInput[count];
-            RectangleLocalBounds bounds = new RectangleLocalBounds(-1, -1, 1, 1);
-            for (int i = 0; i < count; ++i)
-            {
+            RectangleLocalBounds bounds = new(-1, -1, 1, 1);
+            for (int i = 0; i < count; ++i) {
                 double angle = random.NextDouble() * Math.PI * 2.0;
                 double radius = random.NextDouble() * 15.0;
                 queries[i] = new QueryInput(
@@ -490,25 +450,19 @@ namespace CollisionDetection.Harness
             return queries;
         }
 
-        private static float NextDown(float value)
-        {
+        private static float NextDown(float value) {
             int bits = BitConverter.SingleToInt32Bits(value);
             return BitConverter.Int32BitsToSingle(value > 0.0f ? bits - 1 : bits + 1);
         }
 
-        private static void Shuffle(QueryInput[] values, Random random)
-        {
-            for (int i = values.Length - 1; i > 0; --i)
-            {
+        private static void Shuffle(QueryInput[] values, Random random) {
+            for (int i = values.Length - 1; i > 0; --i) {
                 int other = random.Next(i + 1);
-                QueryInput temporary = values[i];
-                values[i] = values[other];
-                values[other] = temporary;
+                (values[other], values[i]) = (values[i], values[other]);
             }
         }
 
-        private static AlgorithmSpec[] Algorithms()
-        {
+        private static AlgorithmSpec[] Algorithms() {
             return new[]
             {
                 new AlgorithmSpec(
@@ -523,17 +477,12 @@ namespace CollisionDetection.Harness
             };
         }
 
-        private static string DescribeIndex(ICollisionDetector detector)
-        {
-            BvhCollisionDetector bvh = detector as BvhCollisionDetector;
-            if (bvh != null)
-            {
+        private static string DescribeIndex(ICollisionDetector detector) {
+            if (detector is BvhCollisionDetector bvh) {
                 return "nodes=" + bvh.NodeCount + "; leaf=" + bvh.LeafSize;
             }
 
-            UniformGridCollisionDetector grid = detector as UniformGridCollisionDetector;
-            if (grid != null)
-            {
+            if (detector is UniformGridCollisionDetector grid) {
                 return grid.ColumnCount + "x" + grid.RowCount
                     + "; refs=" + grid.StoredEdgeReferenceCount
                     + "; overflow=" + grid.OverflowEdgeCount;
@@ -542,8 +491,7 @@ namespace CollisionDetection.Harness
             return "none";
         }
 
-        private static double Median(double[] values)
-        {
+        private static double Median(double[] values) {
             double[] copy = (double[])values.Clone();
             Array.Sort(copy);
             int middle = copy.Length / 2;
@@ -552,46 +500,42 @@ namespace CollisionDetection.Harness
                 : (copy[middle - 1] + copy[middle]) * 0.5;
         }
 
-        private static double MedianAbsoluteDeviation(double[] values)
-        {
+        private static double MedianAbsoluteDeviation(double[] values) {
             double median = Median(values);
             double[] deviations = new double[values.Length];
-            for (int i = 0; i < values.Length; ++i)
-            {
+            for (int i = 0; i < values.Length; ++i) {
                 deviations[i] = Math.Abs(values[i] - median);
             }
 
             return Median(deviations);
         }
 
-        private static bool GCSettingsIsServer()
-        {
+        private static bool GCSettingsIsServer() {
             return System.Runtime.GCSettings.IsServerGC;
         }
 
         private static string CreateEnvironmentAndSourceManifest(
             DateTimeOffset started,
-            DateTimeOffset completed)
-        {
-            StringBuilder text = new StringBuilder();
-            text.AppendLine("CollisionDetection canonical benchmark manifest");
-            text.AppendLine("started_utc=" + started.ToString("O", CultureInfo.InvariantCulture));
-            text.AppendLine("completed_utc=" + completed.ToString("O", CultureInfo.InvariantCulture));
-            text.AppendLine("runtime=" + RuntimeInformation.FrameworkDescription);
-            text.AppendLine("os=" + RuntimeInformation.OSDescription);
-            text.AppendLine("architecture=" + RuntimeInformation.ProcessArchitecture);
-            text.AppendLine("logical_processors=" + Environment.ProcessorCount);
-            text.AppendLine("processor_identifier="
+            DateTimeOffset completed) {
+            StringBuilder text = new();
+            _ = text.AppendLine("CollisionDetection canonical benchmark manifest");
+            _ = text.AppendLine("started_utc=" + started.ToString("O", CultureInfo.InvariantCulture));
+            _ = text.AppendLine("completed_utc=" + completed.ToString("O", CultureInfo.InvariantCulture));
+            _ = text.AppendLine("runtime=" + RuntimeInformation.FrameworkDescription);
+            _ = text.AppendLine("os=" + RuntimeInformation.OSDescription);
+            _ = text.AppendLine("architecture=" + RuntimeInformation.ProcessArchitecture);
+            _ = text.AppendLine("logical_processors=" + Environment.ProcessorCount);
+            _ = text.AppendLine("processor_identifier="
                 + (Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "<unavailable>"));
-            text.AppendLine("gc=" + (GCSettingsIsServer() ? "server" : "workstation"));
-            text.AppendLine("stopwatch_frequency=" + Stopwatch.Frequency);
-            text.AppendLine("debugger_attached=" + Debugger.IsAttached);
-            text.AppendLine("DOTNET_TieredCompilation="
+            _ = text.AppendLine("gc=" + (GCSettingsIsServer() ? "server" : "workstation"));
+            _ = text.AppendLine("stopwatch_frequency=" + Stopwatch.Frequency);
+            _ = text.AppendLine("debugger_attached=" + Debugger.IsAttached);
+            _ = text.AppendLine("DOTNET_TieredCompilation="
                 + (Environment.GetEnvironmentVariable("DOTNET_TieredCompilation") ?? "<unset>"));
-            text.AppendLine("DOTNET_TieredPGO="
+            _ = text.AppendLine("DOTNET_TieredPGO="
                 + (Environment.GetEnvironmentVariable("DOTNET_TieredPGO") ?? "<unset>"));
-            text.AppendLine();
-            text.AppendLine("SHA256 executable-source manifest:");
+            _ = text.AppendLine();
+            _ = text.AppendLine("SHA256 executable-source manifest:");
 
             string root = Directory.GetCurrentDirectory();
             string[] sourceRoots =
@@ -599,9 +543,8 @@ namespace CollisionDetection.Harness
                 Path.Combine(root, "ZoomTracks.CollisionDetection"),
                 Path.Combine(root, "CollisionDetection.Harness"),
             };
-            List<string> files = new List<string>();
-            foreach (string sourceRoot in sourceRoots)
-            {
+            List<string> files = new();
+            foreach (string sourceRoot in sourceRoots) {
                 files.AddRange(Directory.EnumerateFiles(sourceRoot, "*.cs", SearchOption.AllDirectories)
                     .Where(path => !IsBuildArtifactPath(path)));
                 files.AddRange(Directory.EnumerateFiles(sourceRoot, "*.csproj", SearchOption.AllDirectories)
@@ -609,44 +552,38 @@ namespace CollisionDetection.Harness
             }
 
             files.Sort(StringComparer.OrdinalIgnoreCase);
-            foreach (string file in files)
-            {
+            foreach (string file in files) {
                 byte[] hash = SHA256.HashData(File.ReadAllBytes(file));
                 string relative = Path.GetRelativePath(root, file).Replace('\\', '/');
-                text.AppendLine(Convert.ToHexString(hash) + "  " + relative);
+                _ = text.AppendLine(Convert.ToHexString(hash) + "  " + relative);
             }
 
             return text.ToString();
         }
 
-        private static bool IsBuildArtifactPath(string path)
-        {
+        private static bool IsBuildArtifactPath(string path) {
             string marker = Path.DirectorySeparatorChar.ToString();
             return path.IndexOf(marker + "bin" + marker, StringComparison.OrdinalIgnoreCase) >= 0
                 || path.IndexOf(marker + "obj" + marker, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        private sealed class AlgorithmSpec
-        {
+        private sealed class AlgorithmSpec {
             internal AlgorithmSpec(
                 string name,
-                Func<List<CoordinateXY>, List<CoordinateXY>, ICollisionDetector> create)
-            {
-                Name = name;
-                Create = create;
+                Func<List<CoordinateXY>, List<CoordinateXY>, ICollisionDetector> create) {
+                this.Name = name;
+                this.Create = create;
             }
 
             internal string Name { get; }
             internal Func<List<CoordinateXY>, List<CoordinateXY>, ICollisionDetector> Create { get; }
         }
 
-        private sealed class BenchmarkScenario
-        {
-            internal BenchmarkScenario(string name, OutlinePair outlines, QueryInput[] queries)
-            {
-                Name = name;
-                Outlines = outlines;
-                Queries = queries;
+        private sealed class BenchmarkScenario {
+            internal BenchmarkScenario(string name, OutlinePair outlines, QueryInput[] queries) {
+                this.Name = name;
+                this.Outlines = outlines;
+                this.Queries = queries;
             }
 
             internal string Name { get; }
@@ -655,41 +592,36 @@ namespace CollisionDetection.Harness
             internal bool[] Expected { get; private set; }
             internal int HitCount { get; private set; }
 
-            internal void PrepareExpected()
-            {
+            internal void PrepareExpected() {
                 IndependentOracle.PreparedOutlines oracle = IndependentOracle.Prepare(
-                    Outlines.Outline1, Outlines.Outline2);
-                Expected = new bool[Queries.Length];
+                    this.Outlines.Outline1, this.Outlines.Outline2);
+                this.Expected = new bool[this.Queries.Length];
                 int hits = 0;
-                for (int i = 0; i < Queries.Length; ++i)
-                {
-                    Expected[i] = oracle.IsColliding(Queries[i].Bounds, Queries[i].Pose);
-                    if (Expected[i])
-                    {
+                for (int i = 0; i < this.Queries.Length; ++i) {
+                    this.Expected[i] = oracle.IsColliding(this.Queries[i].Bounds, this.Queries[i].Pose);
+                    if (this.Expected[i]) {
                         ++hits;
                     }
                 }
 
-                HitCount = hits;
+                this.HitCount = hits;
             }
         }
 
-        private sealed class BuildMeasurement
-        {
+        private sealed class BuildMeasurement {
             internal BuildMeasurement(
                 AlgorithmSpec algorithm,
                 ICollisionDetector detector,
                 double medianMilliseconds,
                 double madMilliseconds,
                 double medianAllocatedBytes,
-                string indexDetails)
-            {
-                Algorithm = algorithm;
-                Detector = detector;
-                MedianMilliseconds = medianMilliseconds;
-                MadMilliseconds = madMilliseconds;
-                MedianAllocatedBytes = medianAllocatedBytes;
-                IndexDetails = indexDetails;
+                string indexDetails) {
+                this.Algorithm = algorithm;
+                this.Detector = detector;
+                this.MedianMilliseconds = medianMilliseconds;
+                this.MadMilliseconds = madMilliseconds;
+                this.MedianAllocatedBytes = medianAllocatedBytes;
+                this.IndexDetails = indexDetails;
             }
 
             internal AlgorithmSpec Algorithm { get; }
@@ -700,20 +632,18 @@ namespace CollisionDetection.Harness
             internal string IndexDetails { get; }
         }
 
-        private readonly struct QueryMeasurement
-        {
+        private readonly struct QueryMeasurement {
             internal QueryMeasurement(
                 double medianNanosecondsPerQuery,
                 double madNanosecondsPerQuery,
                 double bytesPerQuery,
                 int repeatsPerSample,
-                int checksum)
-            {
-                MedianNanosecondsPerQuery = medianNanosecondsPerQuery;
-                MadNanosecondsPerQuery = madNanosecondsPerQuery;
-                BytesPerQuery = bytesPerQuery;
-                RepeatsPerSample = repeatsPerSample;
-                Checksum = checksum;
+                int checksum) {
+                this.MedianNanosecondsPerQuery = medianNanosecondsPerQuery;
+                this.MadNanosecondsPerQuery = madNanosecondsPerQuery;
+                this.BytesPerQuery = bytesPerQuery;
+                this.RepeatsPerSample = repeatsPerSample;
+                this.Checksum = checksum;
             }
 
             internal double MedianNanosecondsPerQuery { get; }
@@ -723,13 +653,11 @@ namespace CollisionDetection.Harness
             internal int Checksum { get; }
         }
 
-        private sealed class ScenarioMeasurements
-        {
-            internal ScenarioMeasurements(BenchmarkScenario scenario)
-            {
-                Scenario = scenario;
-                Builds = new List<BuildMeasurement>();
-                Queries = new List<AlgorithmQueryMeasurement>();
+        private sealed class ScenarioMeasurements {
+            internal ScenarioMeasurements(BenchmarkScenario scenario) {
+                this.Scenario = scenario;
+                this.Builds = new List<BuildMeasurement>();
+                this.Queries = new List<AlgorithmQueryMeasurement>();
             }
 
             internal BenchmarkScenario Scenario { get; }
@@ -737,20 +665,17 @@ namespace CollisionDetection.Harness
             internal List<AlgorithmQueryMeasurement> Queries { get; }
         }
 
-        private readonly struct AlgorithmQueryMeasurement
-        {
-            internal AlgorithmQueryMeasurement(AlgorithmSpec algorithm, QueryMeasurement query)
-            {
-                Algorithm = algorithm;
-                Query = query;
+        private readonly struct AlgorithmQueryMeasurement {
+            internal AlgorithmQueryMeasurement(AlgorithmSpec algorithm, QueryMeasurement query) {
+                this.Algorithm = algorithm;
+                this.Query = query;
             }
 
             internal AlgorithmSpec Algorithm { get; }
             internal QueryMeasurement Query { get; }
         }
 
-        private readonly struct RawRow
-        {
+        private readonly struct RawRow {
             private RawRow(
                 BenchmarkScenario scenario,
                 AlgorithmSpec algorithm,
@@ -759,16 +684,15 @@ namespace CollisionDetection.Harness
                 double mad,
                 string unit,
                 double allocatedBytes,
-                string details)
-            {
-                Scenario = scenario;
-                Algorithm = algorithm;
-                Metric = metric;
-                Median = median;
-                Mad = mad;
-                Unit = unit;
-                AllocatedBytes = allocatedBytes;
-                Details = details;
+                string details) {
+                this.Scenario = scenario;
+                this.Algorithm = algorithm;
+                this.Metric = metric;
+                this.Median = median;
+                this.Mad = mad;
+                this.Unit = unit;
+                this.AllocatedBytes = allocatedBytes;
+                this.Details = details;
             }
 
             private BenchmarkScenario Scenario { get; }
@@ -783,8 +707,7 @@ namespace CollisionDetection.Harness
             internal static RawRow Build(
                 BenchmarkScenario scenario,
                 AlgorithmSpec algorithm,
-                BuildMeasurement measurement)
-            {
+                BuildMeasurement measurement) {
                 return new RawRow(
                     scenario,
                     algorithm,
@@ -799,8 +722,7 @@ namespace CollisionDetection.Harness
             internal static RawRow Query(
                 BenchmarkScenario scenario,
                 AlgorithmSpec algorithm,
-                QueryMeasurement measurement)
-            {
+                QueryMeasurement measurement) {
                 return new RawRow(
                     scenario,
                     algorithm,
@@ -812,26 +734,24 @@ namespace CollisionDetection.Harness
                     "repeats=" + measurement.RepeatsPerSample + "; checksum=" + measurement.Checksum);
             }
 
-            internal string ToCsv()
-            {
+            internal string ToCsv() {
                 return string.Join(",", new[]
                 {
-                    Escape(Scenario.Name),
-                    Scenario.Outlines.EdgeCount.ToString(CultureInfo.InvariantCulture),
-                    Scenario.Queries.Length.ToString(CultureInfo.InvariantCulture),
-                    Scenario.HitCount.ToString(CultureInfo.InvariantCulture),
-                    Escape(Algorithm.Name),
-                    Metric,
-                    Median.ToString("R", CultureInfo.InvariantCulture),
-                    Mad.ToString("R", CultureInfo.InvariantCulture),
-                    Unit,
-                    AllocatedBytes.ToString("R", CultureInfo.InvariantCulture),
-                    Escape(Details),
+                    Escape(this.Scenario.Name),
+                    this.Scenario.Outlines.EdgeCount.ToString(CultureInfo.InvariantCulture),
+                    this.Scenario.Queries.Length.ToString(CultureInfo.InvariantCulture),
+                    this.Scenario.HitCount.ToString(CultureInfo.InvariantCulture),
+                    Escape(this.Algorithm.Name),
+                    this.Metric,
+                    this.Median.ToString("R", CultureInfo.InvariantCulture),
+                    this.Mad.ToString("R", CultureInfo.InvariantCulture),
+                    this.Unit,
+                    this.AllocatedBytes.ToString("R", CultureInfo.InvariantCulture),
+                    Escape(this.Details),
                 });
             }
 
-            private static string Escape(string value)
-            {
+            private static string Escape(string value) {
                 return "\"" + value.Replace("\"", "\"\"") + "\"";
             }
         }

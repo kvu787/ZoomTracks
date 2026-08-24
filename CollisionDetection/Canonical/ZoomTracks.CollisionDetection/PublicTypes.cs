@@ -1,49 +1,41 @@
 using System;
 
-namespace ZoomTracks.CollisionDetection
-{
-    public readonly struct CoordinateXY
-    {
-        public CoordinateXY(float x, float y)
-        {
+namespace ZoomTracks.CollisionDetection {
+    public readonly struct CoordinateXY {
+        public CoordinateXY(float x, float y) {
             Guard.ThrowIfNotFinite(x, nameof(x));
             Guard.ThrowIfNotFinite(y, nameof(y));
-            X = x;
-            Y = y;
+            this.X = x;
+            this.Y = y;
         }
 
         public float X { get; }
         public float Y { get; }
     }
 
-    public interface ICollisionDetector
-    {
+    public interface ICollisionDetector {
         bool IsColliding(RectangleLocalBounds localBounds, RectanglePose pose);
     }
 
-    public readonly struct RectangleLocalBounds
-    {
-        public RectangleLocalBounds(float minX, float minY, float maxX, float maxY)
-        {
+    public readonly struct RectangleLocalBounds {
+        public RectangleLocalBounds(float minX, float minY, float maxX, float maxY) {
             Guard.ThrowIfNotFinite(minX, nameof(minX));
             Guard.ThrowIfNotFinite(minY, nameof(minY));
             Guard.ThrowIfNotFinite(maxX, nameof(maxX));
             Guard.ThrowIfNotFinite(maxY, nameof(maxY));
 
-            if (!(minX < maxX))
-            {
+            if (!(minX < maxX)) {
                 throw new ArgumentException("minX must be less than maxX.");
             }
 
-            if (!(minY < maxY))
-            {
+            if (!(minY < maxY)) {
                 throw new ArgumentException("minY must be less than maxY.");
             }
 
-            MinX = minX;
-            MinY = minY;
-            MaxX = maxX;
-            MaxY = maxY;
+            this.MinX = minX;
+            this.MinY = minY;
+            this.MaxX = maxX;
+            this.MaxY = maxY;
         }
 
         public float MinX { get; }
@@ -51,30 +43,22 @@ namespace ZoomTracks.CollisionDetection
         public float MaxX { get; }
         public float MaxY { get; }
 
-        internal bool IsValid
-        {
-            get
-            {
-                return Guard.IsFinite(MinX)
-                    && Guard.IsFinite(MinY)
-                    && Guard.IsFinite(MaxX)
-                    && Guard.IsFinite(MaxY)
-                    && MinX < MaxX
-                    && MinY < MaxY;
-            }
-        }
+        internal bool IsValid => Guard.IsFinite(this.MinX)
+                    && Guard.IsFinite(this.MinY)
+                    && Guard.IsFinite(this.MaxX)
+                    && Guard.IsFinite(this.MaxY)
+                    && this.MinX < this.MaxX
+                    && this.MinY < this.MaxY;
     }
 
-    public readonly struct RectanglePose
-    {
-        public RectanglePose(float positionX, float positionY, float rotationDegrees)
-        {
+    public readonly struct RectanglePose {
+        public RectanglePose(float positionX, float positionY, float rotationDegrees) {
             Guard.ThrowIfNotFinite(positionX, nameof(positionX));
             Guard.ThrowIfNotFinite(positionY, nameof(positionY));
             Guard.ThrowIfNotFinite(rotationDegrees, nameof(rotationDegrees));
-            PositionX = positionX;
-            PositionY = positionY;
-            RotationDegrees = rotationDegrees;
+            this.PositionX = positionX;
+            this.PositionY = positionY;
+            this.RotationDegrees = rotationDegrees;
         }
 
         public float PositionX { get; }
@@ -82,17 +66,13 @@ namespace ZoomTracks.CollisionDetection
         public float RotationDegrees { get; }
     }
 
-    internal static class Guard
-    {
-        internal static bool IsFinite(float value)
-        {
+    internal static class Guard {
+        internal static bool IsFinite(float value) {
             return !float.IsNaN(value) && !float.IsInfinity(value);
         }
 
-        internal static void ThrowIfNotFinite(float value, string parameterName)
-        {
-            if (!IsFinite(value))
-            {
+        internal static void ThrowIfNotFinite(float value, string parameterName) {
+            if (!IsFinite(value)) {
                 throw new ArgumentOutOfRangeException(parameterName, "The value must be finite.");
             }
         }
