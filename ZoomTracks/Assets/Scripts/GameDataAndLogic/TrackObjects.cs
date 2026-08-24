@@ -1,20 +1,8 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ZoomTracks {
     public class TrackObjects {
-        private static IReadOnlyList<float> ValidZHeights { get; } = Array.AsReadOnly(new[] {
-            0f,
-            0.015625f,
-            0.03125f,
-            0.046875f,
-            0.0625f,
-            0.078125f,
-            0.09375f,
-        });
-
         public TrackObjects() {
             GameObject placeholderCar = GameObject.Find("SlopeCarPlaceholder");
             Assert.IsNotNull(placeholderCar);
