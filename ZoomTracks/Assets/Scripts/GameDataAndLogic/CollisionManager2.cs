@@ -8,7 +8,7 @@ namespace ZoomTracks {
     /// </summary>
     public sealed class CollisionManager2 {
         private const float ShortenColliderFront = 0.75f;
-        private const float ShortenColliderRear = 1f;
+        private const float ShortenColliderRear = 1.3f;
 
         private readonly CarSwitcher _carSwitcher;
         private readonly ColliderJson _colliderJson;
