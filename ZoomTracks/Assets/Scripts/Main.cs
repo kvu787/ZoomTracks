@@ -153,7 +153,7 @@ namespace ZoomTracks {
                 if (wasTrackSwitched) {
                     this.InitializeTrack();
                 } else {
-                    if (this.InputManager.ResetCar || this.CollisionManager.IsCarColliding()) {
+                    if (this.InputManager.ResetCar || this.CollisionManager2.IsCarColliding_SuperOptimalImplementation()) {
                         /*
                         Explanation for collision behavior:
                         Let frame N be the update iteration that results in the car colliding an obstacle.
