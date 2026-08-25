@@ -7,7 +7,6 @@ namespace ZoomTracks {
     public class TrackSwitcher {
         private InputManager InputManager { get; }
         private IReadOnlyList<string> TrackNames { get; }
-        private string CurrentTrackName => this.TrackNames[this.CurrentTrackIndex];
         private int CurrentTrackIndex { get; set; }
 
         public TrackSwitcher(InputManager inputManager, IReadOnlyList<string> trackNames, int currentTrackIndex) {
@@ -19,6 +18,7 @@ namespace ZoomTracks {
             this.CurrentTrackJson = this.ReadCurrentTrackJson();
         }
 
+        public string CurrentTrackName => this.TrackNames[this.CurrentTrackIndex];
         public Scene CurrentTrackScene { get; private set; }
         public TrackJson CurrentTrackJson { get; private set; }
 

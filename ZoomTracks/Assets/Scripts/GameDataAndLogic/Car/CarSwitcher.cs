@@ -33,7 +33,6 @@ namespace ZoomTracks {
             this.CurrentCarGameObject.SetActive(true);
         }
 
-        public BoxCollider CurrentCarCollider => this.CurrentCarGameObject.GetComponent<BoxCollider>();
         public Transform CurrentCarTransform => this.CurrentCarGameObject.transform;
         public CarDynamic CurrentCarDynamic => this.CurrentCar.Dynamic;
 
