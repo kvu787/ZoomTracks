@@ -32,7 +32,15 @@ COMMITTED_JSON_PATH = (
     / "Track001_ColliderData.json"
 )
 ARTIFACT_DIRECTORY = SCRIPT_PATH.parent / "TestArtifacts"
-GENERATED_JSON_PATH = ARTIFACT_DIRECTORY / "Track001_ColliderData.json"
+GENERATED_ASSETS_DIRECTORY = (
+    ARTIFACT_DIRECTORY / "FullExport" / "ZoomTracks" / "Assets"
+)
+GENERATED_FBX_PATH = GENERATED_ASSETS_DIRECTORY / "FBX" / "Track001.fbx"
+GENERATED_JSON_PATH = (
+    GENERATED_ASSETS_DIRECTORY
+    / "StreamingAssets"
+    / "Track001_ColliderData.json"
+)
 
 
 def _require(condition: bool, message: str) -> None:
@@ -203,8 +211,12 @@ def main() -> None:
     _validate_track001_outlines(exporter)
     _validate_car_footprints_and_scales()
 
-    ARTIFACT_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    exporter.export_collider_data(GENERATED_JSON_PATH)
+    exporter.ZOOMTRACKS_ASSETS_PATH = GENERATED_ASSETS_DIRECTORY
+    exporter.main()
+    _require(
+        GENERATED_FBX_PATH.is_file() and GENERATED_FBX_PATH.stat().st_size > 0,
+        f"Full production export did not create '{GENERATED_FBX_PATH}'",
+    )
 
     generated = _load_json(GENERATED_JSON_PATH)
     committed = _load_json(COMMITTED_JSON_PATH)

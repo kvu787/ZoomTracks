@@ -9,7 +9,32 @@ import bpy
 
 FORMAT_VERSION = 1
 COORDINATE_SYSTEM = "BlenderWorldXY"
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _find_repository_root() -> Path:
+    source_paths = []
+    script_path = globals().get("__file__")
+    if script_path:
+        source_paths.append(Path(script_path).resolve())
+    if bpy.data.filepath:
+        source_paths.append(Path(bpy.data.filepath).resolve())
+
+    for source_path in source_paths:
+        for candidate in source_path.parents:
+            if (
+                (candidate / "Blender").is_dir()
+                and (candidate / "ZoomTracks" / "Assets").is_dir()
+            ):
+                return candidate
+
+    searched_paths = ", ".join(str(path) for path in source_paths)
+    raise RuntimeError(
+        "Could not locate the ZoomTracks repository root from the script or "
+        f"loaded .blend paths. Searched from: {searched_paths or '<none>'}"
+    )
+
+
+REPOSITORY_ROOT = _find_repository_root()
 ZOOMTRACKS_ASSETS_PATH = REPOSITORY_ROOT / "ZoomTracks" / "Assets"
 
 
@@ -138,6 +163,7 @@ def export_collider_data(filepath: Path) -> None:
 def main() -> None:
     track_name = Path(bpy.data.filepath).stem
     filepath = ZOOMTRACKS_ASSETS_PATH / "FBX" / f"{track_name}.fbx"
+    filepath.parent.mkdir(parents=True, exist_ok=True)
     result = bpy.ops.export_scene.fbx(
         filepath=str(filepath),
         check_existing=False,

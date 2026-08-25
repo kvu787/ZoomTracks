@@ -13,9 +13,9 @@ repository root with Blender 4.5.12:
     --python "CollisionDetection\ZoomTracksProductionTests\ValidateTrack001ColliderExport.py"
 ```
 
-The script invokes `Blender/Scripts/ExportToZoomTracks.py` directly, writes the
-generated JSON to the gitignored `TestArtifacts` directory, and compares it
-semantically with
+The script invokes the complete `Blender/Scripts/ExportToZoomTracks.py` entry
+point, writes the generated FBX and JSON to the gitignored `TestArtifacts`
+directory, and compares the JSON semantically with
 `ZoomTracks/Assets/StreamingAssets/Track001_ColliderData.json`. It also checks
 the expected Track001 outline topology and the vehicle footprint and scale
 assumptions used by production collision detection.
