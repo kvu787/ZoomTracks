@@ -7,6 +7,9 @@ namespace ZoomTracks {
     /// bounds are refreshed only when the active car changes.
     /// </summary>
     public sealed class CollisionManager2 {
+        private const float ShortenColliderFront = 0.75f;
+        private const float ShortenColliderRear = 1f;
+
         private readonly CarSwitcher _carSwitcher;
         private readonly ColliderJson _colliderJson;
 
@@ -29,8 +32,7 @@ namespace ZoomTracks {
         public bool IsCarColliding() {
             this.RefreshCurrentVehicleIfNeeded();
 
-            RectangleLocalBounds bounds =
-                this._currentFootprint.GetScaledLocalBounds(this._currentVehicle);
+            RectangleLocalBounds bounds = this.GetCurrentVehicleBounds();
             Vector3 position = this._currentVehicle.position;
             RectanglePose pose = new(
                 position.x,
@@ -47,8 +49,7 @@ namespace ZoomTracks {
 
             this._currentVehicle = currentVehicle;
             this._currentFootprint = VehicleCollisionFootprint.FromMeshGeometry(currentVehicle);
-            RectangleLocalBounds representativeBounds =
-                this._currentFootprint.GetScaledLocalBounds(currentVehicle);
+            RectangleLocalBounds representativeBounds = this.GetCurrentVehicleBounds();
 
             // Rebuild only when the active vehicle changes scale materially. The
             // index remains correct for any query size; this keeps its cell scale
@@ -71,6 +72,16 @@ namespace ZoomTracks {
                     + $"oversizedEdges={this._detector.OversizedEdgeCount}, "
                     + $"denseGrid={this._detector.UsesDenseGrid}");
             }
+        }
+
+        private RectangleLocalBounds GetCurrentVehicleBounds() {
+            RectangleLocalBounds bounds =
+                this._currentFootprint.GetScaledLocalBounds(this._currentVehicle);
+            return new RectangleLocalBounds(
+                bounds.MinX,
+                bounds.MinY + ShortenColliderRear,
+                bounds.MaxX,
+                bounds.MaxY - ShortenColliderFront);
         }
     }
 }
