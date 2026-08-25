@@ -31,7 +31,6 @@ namespace ZoomTracks {
         private CameraController CameraController { get; set; }
         private GraphicsSettingsManager GraphicsSettingsManager { get; set; }
         private CarState CarState { get; set; }
-        private CollisionManager CollisionManager { get; set; }
         private CollisionManager2 CollisionManager2 { get; set; }
         private CameraPivotManager CameraPivotManager { get; set; }
         private UiManager UiManager { get; set; }
@@ -91,8 +90,8 @@ namespace ZoomTracks {
             this.GraphicsSettingsManager = new GraphicsSettingsManager(this.CameraController, this.InputManager);
             this.CarSwitcher = new CarSwitcher(this.TrackSwitcher.CurrentTrackScene, this.TrackSwitcher.CurrentTrackJson, this.InputManager);
             this.CarState = new CarState(this.TrackObjects.PlaceholderCarTransform, this.CarSwitcher, this.CameraController, this.InputManager, this.TimeManager);
+            this.CarState.ApplyStateToGameObject();
             this.CameraPivotManager = new CameraPivotManager(this.CameraFollowSettings, this.CameraController, this.CarState, this.InputManager);
-            this.CollisionManager = new CollisionManager(this.TrackObjects, this.CarSwitcher);
             this.CollisionManager2 = new CollisionManager2(this.TrackSwitcher.CurrentTrackName, this.CarSwitcher);
             this.UiManager = new UiManager(this.CameraController);
             Debug.Log("...done");
@@ -153,7 +152,7 @@ namespace ZoomTracks {
                 if (wasTrackSwitched) {
                     this.InitializeTrack();
                 } else {
-                    if (this.InputManager.ResetCar || this.CollisionManager2.IsCarColliding_SuperOptimalImplementation()) {
+                    if (this.InputManager.ResetCar || this.CollisionManager2.IsCarColliding()) {
                         /*
                         Explanation for collision behavior:
                         Let frame N be the update iteration that results in the car colliding an obstacle.

@@ -1,14 +1,16 @@
 # This is meant to be run from a script panel from Blender opened on the .blend file you want to export.
 
 import json
+import math
 from pathlib import Path
 
 import bpy
 
 
-ZOOMTRACKS_ASSETS_PATH = Path(
-    r"C:\Users\k\Repository\Unity\ZoomTracks\ZoomTracks\Assets"
-)
+FORMAT_VERSION = 1
+COORDINATE_SYSTEM = "BlenderWorldXY"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+ZOOMTRACKS_ASSETS_PATH = REPOSITORY_ROOT / "ZoomTracks" / "Assets"
 
 
 def _direct_child_collection(
@@ -21,6 +23,70 @@ def _direct_child_collection(
             f"Required collection '{parent.name}/{name}' does not exist"
         )
     return collection
+
+
+def _validated_world_xy_vertices(obj: bpy.types.Object) -> list[dict[str, float]]:
+    if obj.type != "MESH":
+        raise RuntimeError(f"Outline object '{obj.name}' is not a mesh")
+
+    mesh = obj.data
+    vertex_count = len(mesh.vertices)
+    if vertex_count < 3:
+        raise RuntimeError(
+            f"Outline mesh '{obj.name}' must contain at least three vertices"
+        )
+    if len(mesh.polygons) != 0:
+        raise RuntimeError(
+            f"Outline mesh '{obj.name}' must be an edge-only mesh with no faces"
+        )
+
+    expected_edges = {
+        tuple(sorted((vertex_index, (vertex_index + 1) % vertex_count)))
+        for vertex_index in range(vertex_count)
+    }
+    actual_edge_list = [
+        tuple(sorted((int(edge.vertices[0]), int(edge.vertices[1]))))
+        for edge in mesh.edges
+    ]
+    actual_edges = set(actual_edge_list)
+    if len(actual_edge_list) != vertex_count or actual_edges != expected_edges:
+        raise RuntimeError(
+            f"Outline mesh '{obj.name}' must be one closed loop whose edges follow "
+            "the mesh vertex order"
+        )
+
+    world_positions = [obj.matrix_world @ vertex.co for vertex in mesh.vertices]
+    for vertex_index, position in enumerate(world_positions):
+        if not all(math.isfinite(float(component)) for component in position):
+            raise RuntimeError(
+                f"Outline mesh '{obj.name}' vertex {vertex_index} has a non-finite "
+                "world-space coordinate"
+            )
+
+    plane_z = float(world_positions[0].z)
+    for vertex_index, position in enumerate(world_positions[1:], start=1):
+        if float(position.z) != plane_z:
+            raise RuntimeError(
+                f"Outline mesh '{obj.name}' is not planar in Blender world XY; "
+                f"vertex 0 has Z={plane_z!r} and vertex {vertex_index} has "
+                f"Z={float(position.z)!r}"
+            )
+
+    vertices = []
+    for vertex_index, position in enumerate(world_positions):
+        next_position = world_positions[(vertex_index + 1) % vertex_count]
+        x = float(position.x)
+        y = float(position.y)
+        next_x = float(next_position.x)
+        next_y = float(next_position.y)
+        if x == next_x and y == next_y:
+            raise RuntimeError(
+                f"Outline mesh '{obj.name}' edge {vertex_index} has zero length "
+                "in Blender world XY"
+            )
+        vertices.append({"X": x, "Y": y})
+
+    return vertices
 
 
 def export_collider_data(filepath: Path) -> None:
@@ -54,25 +120,13 @@ def export_collider_data(filepath: Path) -> None:
     outline_objects = outer_outlines + sorted(inner_outlines, key=lambda obj: obj.name)
     outlines = []
     for obj in outline_objects:
-        if obj.type != "MESH":
-            raise RuntimeError(f"Outline object '{obj.name}' is not a mesh")
-        if len(obj.data.vertices) < 3:
-            raise RuntimeError(
-                f"Outline mesh '{obj.name}' must contain at least three vertices"
-            )
+        outlines.append({"Vertices": _validated_world_xy_vertices(obj)})
 
-        vertices = []
-        for vertex in obj.data.vertices:
-            world_position = obj.matrix_world @ vertex.co
-            vertices.append(
-                {
-                    "X": float(world_position.x),
-                    "Y": float(world_position.y),
-                }
-            )
-        outlines.append({"Vertices": vertices})
-
-    collider_data = {"Outlines": outlines}
+    collider_data = {
+        "FormatVersion": FORMAT_VERSION,
+        "CoordinateSystem": COORDINATE_SYSTEM,
+        "Outlines": outlines,
+    }
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with filepath.open("w", encoding="utf-8", newline="\n") as output_file:
         json.dump(collider_data, output_file, indent=4, allow_nan=False)

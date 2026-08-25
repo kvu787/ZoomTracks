@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\ZoomTracks\Assets\Scripts\GameDataAndLogic\CollisionDetection\ColliderJson.cs" Link="Production\ColliderJson.cs" />
+    <Compile Include="..\..\ZoomTracks\Assets\Scripts\GameDataAndLogic\CollisionDetection\CoordinateXY.cs" Link="Production\CoordinateXY.cs" />
+    <Compile Include="..\..\ZoomTracks\Assets\Scripts\GameDataAndLogic\CollisionDetection\Guard.cs" Link="Production\Guard.cs" />
+    <Compile Include="..\..\ZoomTracks\Assets\Scripts\GameDataAndLogic\CollisionDetection\Outline.cs" Link="Production\Outline.cs" />
+    <Compile Include="..\..\ZoomTracks\Assets\Scripts\GameDataAndLogic\CollisionDetection\TrackCollisionDetector.cs" Link="Production\TrackCollisionDetector.cs" />
+  </ItemGroup>
+</Project>

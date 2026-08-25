@@ -1,4 +1,6 @@
 {
+    "FormatVersion": 1,
+    "CoordinateSystem": "BlenderWorldXY",
     "Outlines": [
         {
             "Vertices": [

@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace ZoomTracks {
     [Serializable]
@@ -11,10 +10,8 @@ namespace ZoomTracks {
             this.Y = y;
         }
 
-        [SerializeField]
         public float X;
 
-        [SerializeField]
         public float Y;
     }
 }
