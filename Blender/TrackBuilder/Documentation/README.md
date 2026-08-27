@@ -63,6 +63,10 @@ of these checked preconditions fails:
     and `OutlineMeshes`, is not nested with `Outlines`, and shares no objects
     with `Outlines`. The generated collection names must not be occupied outside
     `TrackBuilder/Output`.
+- **Current view layer:**
+  - if `TrackBuilder/Input/Outlines` is present in the current view layer, its
+    layer collection is not excluded. TrackBuilder rejects an explicitly
+    excluded `Outlines` collection before reading its objects.
 - **Object types and materials:**
   - every object found recursively in `TrackBuilder/Input/Outlines` is
     a Mesh or Curve, can be converted to normally evaluated mesh geometry, and
@@ -163,9 +167,11 @@ edges. The user must ensure all of the following:
 - **`TrackBuilder/Input/Outlines` participates in the current evaluation context.**
   - TrackBuilder finds `TrackBuilder` in file-wide `bpy.data.collections` and
     resolves `Input` and `Outlines` through direct child links.
-  - It does not verify that the hierarchy and its objects are linked and enabled
-    in the current scene and view layer.
-  - A detached or view-layer-excluded Mesh can be read without dependency-graph effects such as its modifiers.
+  - It rejects `Outlines` when that collection's own layer-collection entry is
+    excluded, but does not otherwise verify that the hierarchy and its objects
+    are linked and enabled in the current scene and view layer.
+  - A detached Mesh, or one disabled elsewhere in the hierarchy, can be read
+    without dependency-graph effects such as its modifiers.
   - Ensure the current scene, view layer, frame, and modifier state are the ones intended for the build.
 - **An existing `TrackBuilder/Output` is disposable.**
   - TrackBuilder verifies its collection
@@ -234,11 +240,10 @@ output = build_track(W=1, H=0.1, segment_length=5, material_names=["red", "white
 ```
 
 The function returns the newly committed Blender `TrackBuilder/Output`
-collection. After a successful commit, TrackBuilder excludes
-`TrackBuilder/Input/Outlines` and `TrackBuilder/Output/OutlineMeshes` in the
-active view layer using their Outliner checkboxes. These exclusions do not
-prevent a later build from reading every object recursively beneath
-`Input/Outlines`.
+collection. After a successful commit, TrackBuilder leaves
+`TrackBuilder/Input/Outlines` enabled and excludes only
+`TrackBuilder/Output/OutlineMeshes` in the active view layer using its Outliner
+checkbox.
 
 ## Command-line build
 
@@ -361,10 +366,10 @@ before replacing an existing `TrackBuilder/Output` collection. New datablocks
 are created in a temporary hierarchy beneath `TrackBuilder`. If validation or
 construction fails, temporary data is removed and the previous output remains
 unchanged. A successful build commits the new hierarchy as
-`TrackBuilder/Output`, removes the previous output data described above, excludes
-`TrackBuilder/Input/Outlines` and `TrackBuilder/Output/OutlineMeshes` in the
-active view layer. A failed build does not change those Outliner exclusion
-states. An unchecked self-intersection,
+`TrackBuilder/Output`, removes the previous output data described above, leaves
+`TrackBuilder/Input/Outlines` enabled, and excludes
+`TrackBuilder/Output/OutlineMeshes` in the active view layer. A failed build does
+not change those Outliner exclusion states. An unchecked self-intersection,
 self-touch, or cross-outline intersection may not fail and can therefore produce
 a committed unexpected result.
 

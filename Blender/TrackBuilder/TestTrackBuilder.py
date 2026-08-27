@@ -347,7 +347,7 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertIsNotNone(outline_meshes_layer_collection)
         self.assertFalse(input_layer_collection.exclude)
         self.assertFalse(input_layer_collection.hide_viewport)
-        self.assertTrue(outlines_layer_collection.exclude)
+        self.assertFalse(outlines_layer_collection.exclude)
         self.assertFalse(outlines_layer_collection.hide_viewport)
         self.assertTrue(outline_meshes_layer_collection.exclude)
         self.assertFalse(outline_meshes_layer_collection.hide_viewport)
@@ -796,10 +796,10 @@ class TrackBuilderTests(unittest.TestCase):
             )
             self.assertEqual(len(obj.data.polygons), 0)
 
-    def test_successful_rebuild_reads_excluded_outlines_and_reapplies_visibility(self) -> None:
+    def test_excluded_outlines_are_rejected_and_previous_output_is_preserved(self) -> None:
         parameters = self.load_test_input(3)
         initial_output = TrackBuilder.build_track(*parameters)
-        expected_hash = _output_geometry_hash(initial_output)
+        expected_signature = _output_signature(initial_output)
         outlines_collection = _outlines_collection()
         initial_outline_meshes = TrackBuilder._direct_child(
             initial_output,
@@ -816,13 +816,20 @@ class TrackBuilderTests(unittest.TestCase):
                 initial_outline_meshes,
             )
         )
-        self.assertTrue(outlines_layer_collection.exclude)
+        self.assertFalse(outlines_layer_collection.exclude)
+        outlines_layer_collection.exclude = True
         initial_outline_meshes_layer_collection.exclude = False
 
-        rebuilt_output = TrackBuilder.build_track(*parameters)
+        with self.assertRaisesRegex(
+            TrackBuilder.TrackBuilderValidationError,
+            "TrackBuilder/Input/Outlines must not be excluded from the current view layer",
+        ):
+            TrackBuilder.build_track(*parameters)
 
-        self.assert_valid_output(rebuilt_output, expected_inner_count=1)
-        self.assertEqual(_output_geometry_hash(rebuilt_output), expected_hash)
+        self.assertIs(initial_output, _output_collection())
+        self.assertEqual(_output_signature(initial_output), expected_signature)
+        self.assertTrue(outlines_layer_collection.exclude)
+        self.assertFalse(initial_outline_meshes_layer_collection.exclude)
 
     def test_successful_build_changes_only_active_view_layer_visibility(self) -> None:
         parameters = self.load_test_input(3)
@@ -849,7 +856,7 @@ class TrackBuilderTests(unittest.TestCase):
             other_view_layer.layer_collection,
             outline_meshes,
         )
-        self.assertTrue(active_outlines.exclude)
+        self.assertFalse(active_outlines.exclude)
         self.assertTrue(active_outline_meshes.exclude)
         self.assertFalse(other_outlines.exclude)
         self.assertFalse(other_outline_meshes.exclude)

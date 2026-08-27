@@ -859,8 +859,18 @@ def _layer_collection_for_collection(
     return None
 
 
+def _validate_outlines_not_excluded(outlines: bpy.types.Collection) -> None:
+    outlines_layer_collection = _layer_collection_for_collection(
+        bpy.context.view_layer.layer_collection,
+        outlines,
+    )
+    if outlines_layer_collection is not None and outlines_layer_collection.exclude:
+        raise TrackBuilderValidationError(
+            "TrackBuilder/Input/Outlines must not be excluded from the current view layer"
+        )
+
+
 def _set_successful_build_visibility(
-    outlines: bpy.types.Collection,
     output: bpy.types.Collection,
 ) -> None:
     outline_meshes = _direct_child(output, OUTLINE_MESHES_COLLECTION_NAME)
@@ -868,18 +878,12 @@ def _set_successful_build_visibility(
         return
 
     view_layer_root = bpy.context.view_layer.layer_collection
-    outlines_layer_collection = _layer_collection_for_collection(
-        view_layer_root,
-        outlines,
-    )
     outline_meshes_layer_collection = _layer_collection_for_collection(
         view_layer_root,
         outline_meshes,
     )
     if outline_meshes_layer_collection is not None:
         outline_meshes_layer_collection.exclude = True
-    if outlines_layer_collection is not None:
-        outlines_layer_collection.exclude = True
 
 
 def _required_collection_structure(
@@ -1552,6 +1556,7 @@ def build_track(
     track_builder_collection, outlines_collection, previous_output = (
         _required_collection_structure()
     )
+    _validate_outlines_not_excluded(outlines_collection)
     _validate_collection_separation(outlines_collection, previous_output)
 
     raw_outlines = _read_raw_outlines(outlines_collection)
@@ -1588,5 +1593,5 @@ def build_track(
         created,
         previous_output,
     )
-    _set_successful_build_visibility(outlines_collection, output)
+    _set_successful_build_visibility(output)
     return output

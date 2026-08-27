@@ -95,9 +95,9 @@ The suite covers:
   validation.
 - Required `TrackBuilder/Input/Outlines` discovery, generated output routing,
   existing-output editability, and child-collection validation.
-- Successful-build active-view-layer Outliner exclusions, preservation of other
-  view layers, rebuilding from excluded outlines, and failed-build preservation
-  of existing exclusion states.
+- Successful-build active-view-layer `OutlineMeshes` exclusion, preservation of
+  enabled input outlines and other view layers, rejection of excluded outlines,
+  and failed-build preservation of existing exclusion states.
 - Transactional preservation of an existing output after rejected builds.
 - Bounds-assisted classification of many disjoint inner loops.
 - Early-exit distinct-point validation.
