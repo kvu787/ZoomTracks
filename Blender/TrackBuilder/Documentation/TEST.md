@@ -5,6 +5,8 @@ TrackBuilder tests keep committed inputs separate from generated test artifacts:
 ```text
 Blender/TrackBuilder/
   TestInputs/                 committed, input-only regression fixtures
+    TrackBuilderSampleInput*.blend
+    TrackBuilderRepresentativeCurve.blend
   TestArtifacts/              gitignored and replaced on each test run
     Outputs/                  inspectable fixture results
     TestReport.txt            overall run report
@@ -22,7 +24,7 @@ and the report remain temporary.
 | [`BenchmarkTrackBuilder.py`](../BenchmarkTrackBuilder.py) | Times repeated builds and reports geometry hashes and output counts |
 | [`GenerateTrackBuilderSamples.py`](../GenerateTrackBuilderSamples.py) | Generates and synchronizes committed input fixtures without importing or running TrackBuilder |
 | [`TestTrackBuilder.py`](../TestTrackBuilder.py) | Runs integration, regression, adaptive-quality, and rollback tests |
-| [`TestInputs`](../TestInputs) | Ten committed `.blend` scenes containing `TrackBuilder/Input/Outlines` but no generated `TrackBuilder/Output` |
+| [`TestInputs`](../TestInputs) | Ten generated samples and one representative curve scene, all containing `TrackBuilder/Input/Outlines` without generated `TrackBuilder/Output` |
 
 ## Generate committed test inputs
 
@@ -44,6 +46,10 @@ override those paths:
 The generator synchronizes fixture filenames and removes obsolete generated
 fixtures and Blender backup files. Each scene records its build parameters and
 expected result in `track_builder_*` scene custom properties.
+
+`TrackBuilderRepresentativeCurve.blend` is a separately maintained, input-only
+fixture used by the curve regression tests and performance benchmark. The sample
+generator leaves it unchanged.
 
 Samples 1 through 8 are successful build cases. Sample 9 contains a deliberate
 0.005-degree mesh turn and must be rejected. Sample 10 uses a segment length that
@@ -108,7 +114,7 @@ opened file.
 From the repository root:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\BenchmarkTrackBuilder.py" -- --blend "Blender\TrackBuilderSandbox\TrackBuilder -- test -- perf issue.blend" --runs 9 --expected-hash ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\BenchmarkTrackBuilder.py" -- --blend "Blender\TrackBuilder\TestInputs\TrackBuilderRepresentativeCurve.blend" --runs 9 --expected-hash ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649
 ```
 
 The defaults match that representative scene: `W=1`, `H=0.1`,
@@ -125,7 +131,8 @@ sample and report the median and dispersion.
 ## Inspect test artifacts
 
 Every run replaces `Blender\TrackBuilder\TestArtifacts\Outputs` with one
-inspectable `.blend` file per committed fixture and overwrites
+inspectable `.blend` file per numbered `TrackBuilderSampleInput` fixture and
+overwrites
 `Blender\TrackBuilder\TestArtifacts\TestReport.txt` with the complete run and a
 per-fixture expected/actual summary.
 

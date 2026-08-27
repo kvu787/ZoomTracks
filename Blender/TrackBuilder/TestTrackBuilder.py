@@ -37,13 +37,9 @@ TEST_INPUT_DIRECTORY = os.path.join(SCRIPT_DIRECTORY, "TestInputs")
 TEST_ARTIFACT_DIRECTORY = os.path.join(SCRIPT_DIRECTORY, "TestArtifacts")
 TEST_OUTPUT_DIRECTORY = os.path.join(TEST_ARTIFACT_DIRECTORY, "Outputs")
 TEST_REPORT_PATH = os.path.join(TEST_ARTIFACT_DIRECTORY, "TestReport.txt")
-PERFORMANCE_INPUT_PATH = os.path.abspath(
-    os.path.join(
-        SCRIPT_DIRECTORY,
-        "..",
-        "TrackBuilderSandbox",
-        "TrackBuilder -- test -- perf issue.blend",
-    )
+PERFORMANCE_INPUT_PATH = os.path.join(
+    TEST_INPUT_DIRECTORY,
+    "TrackBuilderRepresentativeCurve.blend",
 )
 PERFORMANCE_GEOMETRY_HASH = "ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649"
 TEST_ARTIFACT_RESULTS: list[tuple[str, str, str, str]] = []
@@ -273,6 +269,20 @@ class _TeeStream:
 
 
 class TrackBuilderTests(unittest.TestCase):
+    def test_fixed_test_resources_stay_within_track_builder_directory(self) -> None:
+        script_directory = os.path.realpath(SCRIPT_DIRECTORY)
+        fixed_paths = {
+            "test inputs": TEST_INPUT_DIRECTORY,
+            "test artifacts": TEST_ARTIFACT_DIRECTORY,
+            "representative curve input": PERFORMANCE_INPUT_PATH,
+        }
+        for description, path in fixed_paths.items():
+            with self.subTest(resource=description):
+                self.assertEqual(
+                    os.path.commonpath([script_directory, os.path.realpath(path)]),
+                    script_directory,
+                )
+
     def load_test_input(self, number: int) -> samples.BuildParameters:
         filename = samples.SAMPLE_FILENAMES[number]
         path = os.path.join(TEST_INPUT_DIRECTORY, filename)
@@ -411,10 +421,10 @@ class TrackBuilderTests(unittest.TestCase):
         )
         bpy.ops.wm.open_mainfile(filepath=PERFORMANCE_INPUT_PATH)
         self.assertIsNotNone(_outlines_collection())
-        previous_output = _output_collection()
-        if previous_output is not None:
-            TrackBuilder._remove_collection_tree(previous_output)
-        self.assertIsNone(_output_collection())
+        self.assertIsNone(
+            _output_collection(),
+            "Representative curve input contains generated TrackBuilder/Output",
+        )
         return (1.0, 0.1, 5.0, ["BarrierRed", "BarrierWhite"])
 
     def prepared_curve_outlines(
