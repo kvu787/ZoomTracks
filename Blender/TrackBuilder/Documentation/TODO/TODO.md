@@ -26,12 +26,12 @@ independently sampled offset boundary when it has higher resolution, rather than
 distance along the normally evaluated contact boundary. Define the desired
 visual behavior before changing the segmentation contract.
 
-## Simplify or justify the curve-sampling limits
+## Simplify or justify the curve reference-resolution settings
 
-Investigate whether the fixed reference-resolution multiplier, minimum and
-maximum reference resolutions, and maximum evaluated-point count can be derived
-more directly from the offset-error contract and curve characteristics. If the
-fixed limits remain preferable, document their rationale and supported range.
+Investigate whether the fixed reference-resolution multiplier and minimum and
+maximum reference resolutions can be derived more directly from the offset-error
+contract and curve characteristics. If the fixed settings remain preferable,
+document their rationale and supported range.
 
 ## Simplify segment-count failure handling
 

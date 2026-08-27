@@ -24,13 +24,11 @@ ABSOLUTE_TOLERANCE_FACTOR = 1.0e-7
 INTEGER_RATIO_TOLERANCE = 1.0e-10
 MINIMUM_TURN_ANGLE_DEGREES = 0.01
 MINIMUM_BARRIER_SEGMENT_DIMENSION = 0.1
-MAX_SEGMENTS_PER_OUTLINE = 10_000
 
 # TODO: I need to better understand these constants or simplify the approach
 CURVE_REFERENCE_RESOLUTION_MULTIPLIER = 32
 CURVE_REFERENCE_MINIMUM_RESOLUTION = 256
 CURVE_MAXIMUM_RESOLUTION = 1024
-CURVE_MAXIMUM_EVALUATED_POINTS = 20_000
 
 ADAPTIVE_OFFSET_ERROR_FACTOR = 0.001
 
@@ -542,11 +540,6 @@ def _evaluated_curve_loop(
         if evaluated_mesh.polygons:
             raise TrackBuilderValidationError(
                 f"Curve {obj.name!r} unexpectedly evaluated to faces"
-            )
-        if len(evaluated_mesh.vertices) > CURVE_MAXIMUM_EVALUATED_POINTS:
-            raise TrackBuilderGeometryError(
-                f"Curve {obj.name!r} evaluated to {len(evaluated_mesh.vertices)} points; "
-                f"the maximum supported by TrackBuilder is {CURVE_MAXIMUM_EVALUATED_POINTS}"
             )
 
         matrix = evaluated_object.matrix_world.copy()
@@ -1105,7 +1098,7 @@ def _segment_count(
     material_count: int,
     object_name: str,
 ) -> int:
-    """Choose an adjusted segment count, rejecting unusable extremes."""
+    """Choose an adjusted segment count compatible with the material sequence."""
 
     ratio = perimeter / target
     nearest = round(ratio)
@@ -1126,11 +1119,6 @@ def _segment_count(
             f"Outline {object_name!r} cannot produce a complete sequence of "
             f"{material_count} barrier materials without making segments shorter than "
             "segment_length; decrease segment_length"
-        )
-    if count > MAX_SEGMENTS_PER_OUTLINE:
-        raise TrackBuilderGeometryError(
-            f"Outline {object_name!r} requires {count} barrier segments; "
-            f"the maximum is {MAX_SEGMENTS_PER_OUTLINE}"
         )
     return count
 

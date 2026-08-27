@@ -70,6 +70,8 @@ The suite covers:
 - Blender CDT input-face provenance for concave regions and multiple holes,
   without Python centroid-containment filtering.
 - Complete barrier-material sequences and adjusted segment lengths.
+- Acceptance of segment counts and dense curve evaluations above the former
+  fixed maximums.
 - `POLY` curve behavior.
 - A generated cyclic Bézier outline.
 - The representative NURBS curvature scene.

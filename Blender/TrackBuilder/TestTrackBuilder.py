@@ -502,6 +502,35 @@ class TrackBuilderTests(unittest.TestCase):
                     [tuple(float(value) for value in point) for point in expected[1]],
                 )
 
+    def test_dense_curve_evaluation_has_no_fixed_point_maximum(self) -> None:
+        curve = bpy.data.curves.new("DenseEvaluationCurve", type="CURVE")
+        curve.dimensions = "2D"
+        curve.fill_mode = "NONE"
+        spline = curve.splines.new(type="BEZIER")
+        control_point_count = 20
+        spline.bezier_points.add(control_point_count - 1)
+        spline.use_cyclic_u = True
+        for index, point in enumerate(spline.bezier_points):
+            angle = math.tau * index / control_point_count
+            point.co = (100.0 * math.cos(angle), 100.0 * math.sin(angle), 0.0)
+            point.handle_left_type = "AUTO"
+            point.handle_right_type = "AUTO"
+
+        obj = bpy.data.objects.new("DenseEvaluation", curve)
+        bpy.context.scene.collection.objects.link(obj)
+        try:
+            points = TrackBuilder._evaluated_curve_loop(
+                obj,
+                1024,
+                1.0e-7,
+                bpy.context.scene.collection,
+            )
+            self.assertGreater(len(points), 20_000)
+        finally:
+            bpy.data.objects.remove(obj, do_unlink=True)
+            if curve.users == 0:
+                bpy.data.curves.remove(curve)
+
     def test_triangulation_uses_cdt_face_provenance(self) -> None:
         material = _ensure_material("TriangulationTestMaterial")
 
@@ -1196,6 +1225,12 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertEqual(TrackBuilder._segment_count(90.0, 10.0, 3, "TestOutline"), 9)
         count = TrackBuilder._segment_count(89.999999999, 10.0, 3, "TestOutline")
         self.assertGreaterEqual(89.999999999 / count, 10.0)
+
+    def test_segment_count_has_no_fixed_maximum(self) -> None:
+        self.assertEqual(
+            TrackBuilder._segment_count(10_002.0, 1.0, 2, "TestOutline"),
+            10_002,
+        )
 
     def test_single_material_throws(self) -> None:
         width, height, target, material_names = self.load_test_input(2)

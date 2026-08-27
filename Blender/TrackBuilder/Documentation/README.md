@@ -102,15 +102,13 @@ of these checked preconditions fails:
   - A Bézier or NURBS outer or inner outline's
     denser temporary evaluation still has no faces, forms one closed degree-two
     loop, is planar, has no edge at or below `epsilon`, has non-negligible signed
-    area, and contains no more than 20,000 evaluated points. Barrier miters must
-    also be defined and finite.
+    area, and has defined, finite barrier miters.
 - **Requested output feasibility:**
   - Triangulation must return only triangles and
     retain at least one triangle for the ground, track, and every island. Every
     outer and inner loop must support at least one complete sequence of barrier
-    materials without making adjusted segments shorter than `segment_length`,
-    must require no more than 10,000 segments, and must give every segment at
-    least three `epsilon`-distinct polygon vertices.
+    materials without making adjusted segments shorter than `segment_length` and
+    must give every segment at least three `epsilon`-distinct polygon vertices.
 
 The final two groups are construction checks and can raise
 `TrackBuilderGeometryError` rather than `TrackBuilderValidationError`; either
@@ -156,6 +154,12 @@ edges. The user must ensure all of the following:
   - TrackBuilder cannot
     distinguish an accidental but structurally valid outline from a desired one;
     it will classify such an object by containment and may generate another island.
+- **Input and requested output sizes are practical.**
+  - TrackBuilder does not impose a fixed maximum on dense evaluated curve points
+    or generated barrier segments. Smooth curves create temporary dense geometry,
+    and every barrier segment becomes a separate mesh object. The user must choose
+    outline complexity, curve resolution, scale, and `segment_length` appropriate
+    for the available processing time and memory.
 - **`TrackBuilder/Input/Outlines` participates in the current evaluation context.**
   - TrackBuilder finds `TrackBuilder` in file-wide `bpy.data.collections` and
     resolves `Input` and `Outlines` through direct child links.
@@ -326,9 +330,6 @@ shape, curvature, or resolution. Apparent local ribbon thickness can therefore
 differ by the normally evaluated curve's chord error. The input curve's
 datablock, control points, and authored resolutions remain unchanged.
 
-TrackBuilder caps a dense curve evaluation at 20,000 points. A curve that exceeds
-the cap is rejected with `TrackBuilderGeometryError`.
-
 ### Barrier segmentation and materials
 
 For each barrier outline, TrackBuilder divides its contact perimeter by
@@ -339,8 +340,8 @@ materials and the adjusted segment length is at least `segment_length`.
 
 Every segment in a loop has equal contact-boundary length, and segments remain
 gapless across outline corners. A build is rejected if a loop cannot produce one
-complete material sequence, would produce more than 10,000 segments, or has a
-segment with fewer than three distinct vertices.
+complete material sequence or has a segment with fewer than three distinct
+vertices.
 
 Barrier materials repeat in the supplied order, restarting from the first
 material independently for every outer or inner barrier loop. Every loop
