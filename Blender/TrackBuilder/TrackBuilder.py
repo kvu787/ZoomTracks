@@ -20,7 +20,6 @@ from mathutils import Vector
 from mathutils.geometry import delaunay_2d_cdt
 
 
-ABSOLUTE_TOLERANCE_FACTOR = 1.0e-7
 MINIMUM_TURN_ANGLE_DEGREES = 0.01
 MINIMUM_BARRIER_SEGMENT_DIMENSION = 0.1
 
@@ -30,6 +29,9 @@ CURVE_REFERENCE_MINIMUM_RESOLUTION = 256
 CURVE_MAXIMUM_RESOLUTION = 1024
 
 ADAPTIVE_OFFSET_ERROR_FACTOR = 0.001
+
+# Don't change this unless you really know what you're doing.
+ABSOLUTE_TOLERANCE_FACTOR = 1.0e-7
 
 TRACK_BUILDER_COLLECTION_NAME = "TrackBuilder"
 INPUT_COLLECTION_NAME = "Input"
