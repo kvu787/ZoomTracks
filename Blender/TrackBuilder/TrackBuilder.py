@@ -21,7 +21,6 @@ from mathutils.geometry import delaunay_2d_cdt
 
 
 ABSOLUTE_TOLERANCE_FACTOR = 1.0e-7
-INTEGER_RATIO_TOLERANCE = 1.0e-10
 MINIMUM_TURN_ANGLE_DEGREES = 0.01
 MINIMUM_BARRIER_SEGMENT_DIMENSION = 0.1
 
@@ -1100,12 +1099,10 @@ def _segment_count(
 ) -> int:
     """Choose an adjusted segment count compatible with the material sequence."""
 
-    ratio = perimeter / target
-    nearest = round(ratio)
-    if nearest >= 1 and abs(ratio - nearest) <= INTEGER_RATIO_TOLERANCE * max(1.0, ratio):
-        count = nearest
-    else:
-        count = max(1, math.floor(ratio))
+    count = max(1, math.floor(perimeter / target))
+    # Recover when division rounds below an integer whose segment length is feasible.
+    if perimeter / (count + 1) >= target:
+        count += 1
     if count == 1:
         raise TrackBuilderGeometryError(
             f"Outline {object_name!r} would produce only one barrier segment; "

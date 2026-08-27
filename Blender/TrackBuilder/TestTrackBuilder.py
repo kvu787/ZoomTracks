@@ -1226,6 +1226,16 @@ class TrackBuilderTests(unittest.TestCase):
         count = TrackBuilder._segment_count(89.999999999, 10.0, 3, "TestOutline")
         self.assertGreaterEqual(89.999999999 / count, 10.0)
 
+    def test_segment_count_accepts_feasible_count_after_division_rounds_down(self) -> None:
+        target = 0.3
+        perimeter = 57 * target
+        self.assertLess(perimeter / target, 57)
+        self.assertEqual(perimeter / 57, target)
+        self.assertEqual(
+            TrackBuilder._segment_count(perimeter, target, 3, "TestOutline"),
+            57,
+        )
+
     def test_segment_count_has_no_fixed_maximum(self) -> None:
         self.assertEqual(
             TrackBuilder._segment_count(10_002.0, 1.0, 2, "TestOutline"),

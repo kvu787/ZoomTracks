@@ -70,6 +70,7 @@ The suite covers:
 - Blender CDT input-face provenance for concave regions and multiple holes,
   without Python centroid-containment filtering.
 - Complete barrier-material sequences and adjusted segment lengths.
+- Recovery when perimeter division rounds just below a feasible integer count.
 - Acceptance of segment counts and dense curve evaluations above the former
   fixed maximums.
 - `POLY` curve behavior.

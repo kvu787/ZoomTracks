@@ -333,10 +333,12 @@ datablock, control points, and authored resolutions remain unchanged.
 ### Barrier segmentation and materials
 
 For each barrier outline, TrackBuilder divides its contact perimeter by
-`segment_length`, snaps ratios within a relative tolerance of `1e-10` to an
-integer, and otherwise uses the floored count. It then reduces that count by
-whole material sequences until the count is a multiple of the number of barrier
-materials and the adjusted segment length is at least `segment_length`.
+`segment_length` and initially uses the floored count. If one additional segment
+still has an adjusted length of at least `segment_length`, it uses that count to
+recover from a division result rounded just below an integer. It then reduces
+the count by whole material sequences until the count is a multiple of the
+number of barrier materials and the adjusted segment length is at least
+`segment_length`.
 
 Every segment in a loop has equal contact-boundary length, and segments remain
 gapless across outline corners. A build is rejected if a loop cannot produce one
