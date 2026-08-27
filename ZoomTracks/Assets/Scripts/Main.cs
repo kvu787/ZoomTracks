@@ -100,96 +100,96 @@ namespace ZoomTracks {
         private async Awaitable UpdateLoopAsync() {
             Debug.Log($"BEGIN: Main.UpdateLoopAsync");
             while (true) {
-                this.StutterLogger.Update();
-                this.TimeManager.Update();
-                this.InputManager.UpdateInputs();
+                //this.StutterLogger.Update();
+                //this.TimeManager.Update();
+                //this.InputManager.UpdateInputs();
 
-                if (this.InputManager.QuitGame) {
-                    Application.Quit();
-                }
+                //if (this.InputManager.QuitGame) {
+                //    Application.Quit();
+                //}
 
-                if (this.InputManager.InsertStutterLogSpacer) {
-                    this.StutterLogger.InsertSpacer();
-                }
+                //if (this.InputManager.InsertStutterLogSpacer) {
+                //    this.StutterLogger.InsertSpacer();
+                //}
 
-                if (this.InputManager.ToggleBetweenBorderlessAndExclusiveFullScreen) {
-                    if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) {
-                        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
-                    } else if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen) {
-                        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
-                    } else {
-                        throw new Exception($"Tried to toggle borderless/fullscreen with an invalid Screen.fullScreenMode of {Screen.fullScreenMode}");
-                    }
-                    Debug.Log($"Fullscreen mode changed to {Screen.fullScreenMode}");
-                }
+                //if (this.InputManager.ToggleBetweenBorderlessAndExclusiveFullScreen) {
+                //    if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) {
+                //        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+                //    } else if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen) {
+                //        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                //    } else {
+                //        throw new Exception($"Tried to toggle borderless/fullscreen with an invalid Screen.fullScreenMode of {Screen.fullScreenMode}");
+                //    }
+                //    Debug.Log($"Fullscreen mode changed to {Screen.fullScreenMode}");
+                //}
 
-                //
-                // Update lap time
-                //
-                // If car intersects with next checkpoint:
-                //   If next checkpoint is checkered line:
-                //     Set previous lap time to current lap time
-                //     Check if lap time beats best lap time
-                //     Reset current lap time
-                //     Update next checkpoint
-                //   Else:
-                //     Update next checkpoint
-                //
-                // Keep the current track's lap times in memory
-                // Non-current track's lap times are guaranteed to be on disk
-                //
-                // One JSON file for each track
-                //
-                // Save to file for these events:
-                // - Switch track
-                // - Switch car
-                // - Reset car
-                // - OnApplicationQuit
-                // - OnApplicationPause
-                //
+                ////
+                //// Update lap time
+                ////
+                //// If car intersects with next checkpoint:
+                ////   If next checkpoint is checkered line:
+                ////     Set previous lap time to current lap time
+                ////     Check if lap time beats best lap time
+                ////     Reset current lap time
+                ////     Update next checkpoint
+                ////   Else:
+                ////     Update next checkpoint
+                ////
+                //// Keep the current track's lap times in memory
+                //// Non-current track's lap times are guaranteed to be on disk
+                ////
+                //// One JSON file for each track
+                ////
+                //// Save to file for these events:
+                //// - Switch track
+                //// - Switch car
+                //// - Reset car
+                //// - OnApplicationQuit
+                //// - OnApplicationPause
+                ////
 
-                bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
-                if (wasTrackSwitched) {
-                    this.InitializeTrack();
-                } else {
-                    if (this.InputManager.ResetCar || this.CollisionManager2.IsCarColliding()) {
-                        /*
-                        Explanation for collision behavior:
-                        Let frame N be the update iteration that results in the car colliding an obstacle.
-                        This means that the current execution is in frame N+1.
-                        We want frame N to show that car overlapping the obstacle.
-                        We want frame N+1 to reset the car position and skip execution of `this.CarState.ReadInputAndUpdateState()` for at least one frame.
-                        */
-                        this.CarState.Reset_PositionRotationVelocity();
-                        this.CarControlTimeoutStart = DateTime.Now;
-                        this.SkipOneIterationOfCarControlInput = true;
-                    }
+                //bool wasTrackSwitched = await this.TrackSwitcher.ReadInputAndSwitchTracksAsync();
+                //if (wasTrackSwitched) {
+                //    this.InitializeTrack();
+                //} else {
+                //    if (this.InputManager.ResetCar || this.CollisionManager2.IsCarColliding()) {
+                //        /*
+                //        Explanation for collision behavior:
+                //        Let frame N be the update iteration that results in the car colliding an obstacle.
+                //        This means that the current execution is in frame N+1.
+                //        We want frame N to show that car overlapping the obstacle.
+                //        We want frame N+1 to reset the car position and skip execution of `this.CarState.ReadInputAndUpdateState()` for at least one frame.
+                //        */
+                //        this.CarState.Reset_PositionRotationVelocity();
+                //        this.CarControlTimeoutStart = DateTime.Now;
+                //        this.SkipOneIterationOfCarControlInput = true;
+                //    }
 
-                    this.CameraController.ReadInputAndChangeCameraSettings();
-                    this.CameraPivotManager.ReadInputAndToggle();
-                    this.GraphicsSettingsManager.ReadInputAndUpdate();
-                    if (this.CarSwitcher.ReadInputAndSwitchCar()) {
-                        this.CarState.Reset_PositionRotationVelocity();
-                        this.CarControlTimeoutStart = DateTime.Now;
-                    } else if (!this.SkipOneIterationOfCarControlInput && !this.InCarControlTimeout()) {
-                        this.CarState.ReadInputAndUpdateState();
-                    }
-                }
+                //    this.CameraController.ReadInputAndChangeCameraSettings();
+                //    this.CameraPivotManager.ReadInputAndToggle();
+                //    this.GraphicsSettingsManager.ReadInputAndUpdate();
+                //    if (this.CarSwitcher.ReadInputAndSwitchCar()) {
+                //        this.CarState.Reset_PositionRotationVelocity();
+                //        this.CarControlTimeoutStart = DateTime.Now;
+                //    } else if (!this.SkipOneIterationOfCarControlInput && !this.InCarControlTimeout()) {
+                //        this.CarState.ReadInputAndUpdateState();
+                //    }
+                //}
 
-                this.SkipOneIterationOfCarControlInput = false;
+                //this.SkipOneIterationOfCarControlInput = false;
 
-                this.CarState.ApplyStateToGameObject();
-                this.CameraController.Update();
-                this.CameraPivotManager.UpdateCameraPivot();
-                this.UiManager.UpdateUi();
+                //this.CarState.ApplyStateToGameObject();
+                //this.CameraController.Update();
+                //this.CameraPivotManager.UpdateCameraPivot();
+                //this.UiManager.UpdateUi();
 
-                if (wasTrackSwitched) {
-                    GarbageCollectionUtility.ForceGarbageCollection();
-                    Debug.Log($"Unload unused assets...");
-                    await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await Resources.UnloadUnusedAssets());
-                    Debug.Log($"...done");
-                    GarbageCollectionUtility.ForceGarbageCollection();
-                }
+                //if (wasTrackSwitched) {
+                //    GarbageCollectionUtility.ForceGarbageCollection();
+                //    Debug.Log($"Unload unused assets...");
+                //    await AwaitableUtility.RunWithPrintBusyEachFrameAsync(async () => await Resources.UnloadUnusedAssets());
+                //    Debug.Log($"...done");
+                //    GarbageCollectionUtility.ForceGarbageCollection();
+                //}
 
                 await Awaitable.NextFrameAsync();
             }

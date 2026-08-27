@@ -69,7 +69,7 @@ namespace ZoomTracks {
             // maxQueuedFrames = 1 runs at ~1200 fps
             // maxQueuedFrames = 2 runs at ~2400 fps
             // maxQueuedFrames = 3+ runs at ~2900 fps
-            QualitySettings.maxQueuedFrames = 1;
+            QualitySettings.maxQueuedFrames = 3;
 
             Application.targetFrameRate = -1;
         }
@@ -81,11 +81,12 @@ namespace ZoomTracks {
             this.CameraData.taaSettings = TemporalAA.Settings.Create();
 
             // Combine this with MFAA=On in Nvidia Control Panel
-            this.MsaaMode = MsaaModeEnum.Msaa8x;
+            //this.MsaaMode = MsaaModeEnum.Msaa8x;
+            this.MsaaMode = MsaaModeEnum.Off;
 
             this.TaaMode = TaaModeEnum.Off;
             this.VsyncMode = VsyncModeEnum.Off;
-            this.RenderScale = RenderScaleEnum.Scale1;
+            this.RenderScale = RenderScaleEnum.Scale0_125;
 
             this.ApplyGraphicsSettings();
         }
