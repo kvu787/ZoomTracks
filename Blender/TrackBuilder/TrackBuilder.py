@@ -1,6 +1,7 @@
 """Build triangulated tracks with offset-aware adaptive curve sampling.
 
-The public API is ``build_track(W, H, segment_length, material_names)``.
+The public API is
+``build_track(barrier_width, barrier_height, segment_length, material_names)``.
 Mesh outlines use their dependency-graph-evaluated geometry. Smooth curve
 outlines use a high-resolution Blender evaluation simplified independently
 inside each normally evaluated contact interval. The away-facing barrier stays
@@ -1531,14 +1532,15 @@ def _commit_output(
 
 
 def build_track(
-    W: float,
-    H: float,
+    barrier_width: float,
+    barrier_height: float,
     segment_length: float,
     material_names: list[str],
 ) -> bpy.types.Collection:
     """Validate the current file and transactionally rebuild TrackBuilder/Output.
 
-    ``W``, ``H``, and ``segment_length`` must be finite and at least 0.1.
+    ``barrier_width``, ``barrier_height``, and ``segment_length`` must be finite
+    and at least 0.1.
     ``material_names`` must be a list of at least two existing Blender materials.
     The current file must satisfy the checked and trusted input preconditions
     documented in ``Documentation/README.md``.
@@ -1548,8 +1550,8 @@ def build_track(
     ``TrackBuilderError``.
     """
 
-    width = _validated_barrier_segment_dimension("W", W)
-    height = _validated_barrier_segment_dimension("H", H)
+    width = _validated_barrier_segment_dimension("barrier_width", barrier_width)
+    height = _validated_barrier_segment_dimension("barrier_height", barrier_height)
     target_length = _validated_barrier_segment_dimension("segment_length", segment_length)
     barrier_materials = _validated_materials(material_names)
 

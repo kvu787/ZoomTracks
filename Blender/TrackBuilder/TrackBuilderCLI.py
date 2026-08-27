@@ -25,8 +25,8 @@ def _script_arguments() -> list[str]:
 def _main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build", action="store_true", help="Build the current file")
-    parser.add_argument("--w", type=float)
-    parser.add_argument("--height", type=float)
+    parser.add_argument("--barrier-width", type=float)
+    parser.add_argument("--barrier-height", type=float)
     parser.add_argument("--segment-length", type=float)
     parser.add_argument("--materials", nargs="+")
     parser.add_argument("--save", help="Save the built current file to this path")
@@ -38,8 +38,8 @@ def _main() -> None:
     missing = [
         name
         for name, value in (
-            ("--w", arguments.w),
-            ("--height", arguments.height),
+            ("--barrier-width", arguments.barrier_width),
+            ("--barrier-height", arguments.barrier_height),
             ("--segment-length", arguments.segment_length),
             ("--materials", arguments.materials),
         )
@@ -47,7 +47,12 @@ def _main() -> None:
     ]
     if missing:
         parser.error(f"--build requires {', '.join(missing)}")
-    build_track(arguments.w, arguments.height, arguments.segment_length, arguments.materials)
+    build_track(
+        barrier_width=arguments.barrier_width,
+        barrier_height=arguments.barrier_height,
+        segment_length=arguments.segment_length,
+        material_names=arguments.materials,
+    )
     if arguments.save:
         save_path = os.path.abspath(arguments.save)
         os.makedirs(os.path.dirname(save_path), exist_ok=True)

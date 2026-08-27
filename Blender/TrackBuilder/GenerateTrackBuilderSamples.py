@@ -397,10 +397,10 @@ def expected_result(number: int) -> str:
 def record_parameters(parameters: BuildParameters, result: str) -> None:
     """Record reproducible build parameters and the expected result in the scene."""
 
-    width, height, target, material_names = parameters
+    barrier_width, barrier_height, target, material_names = parameters
     scene = bpy.context.scene
-    scene["track_builder_W"] = width
-    scene["track_builder_H"] = height
+    scene["track_builder_barrier_width"] = barrier_width
+    scene["track_builder_barrier_height"] = barrier_height
     scene["track_builder_segment_length"] = target
     scene["track_builder_material_names"] = json.dumps(material_names)
     scene["track_builder_expected_result"] = result

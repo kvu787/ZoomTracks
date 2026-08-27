@@ -117,9 +117,10 @@ From the repository root:
 & "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" --background --factory-startup --python-exit-code 1 --python "Blender\TrackBuilder\BenchmarkTrackBuilder.py" -- --blend "Blender\TrackBuilder\TestInputs\TrackBuilderRepresentativeCurve.blend" --runs 9 --expected-hash ec42161fad649ff3367c47eb4bcce1440c661d2b4fc562f9acf8e72b93ca8649
 ```
 
-The defaults match that representative scene: `W=1`, `H=0.1`,
-`segment_length=5`, and materials `BarrierRed BarrierWhite`. Override them with
-`--w`, `--height`, `--segment-length`, and `--materials`. Use `--warmup` only
+The defaults match that representative scene: `barrier_width=1`,
+`barrier_height=0.1`, `segment_length=5`, and materials
+`BarrierRed BarrierWhite`. Override them with `--barrier-width`,
+`--barrier-height`, `--segment-length`, and `--materials`. Use `--warmup` only
 when intentionally measuring warmed repeated builds.
 
 Performance assertions are deliberately not part of the integration suite;

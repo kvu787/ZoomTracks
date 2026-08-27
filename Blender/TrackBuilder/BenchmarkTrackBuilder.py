@@ -27,8 +27,8 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--blend", required=True, help="Input .blend file to open")
     parser.add_argument("--runs", type=int, default=9, help="Number of timed rebuilds")
     parser.add_argument("--warmup", type=int, default=0, help="Untimed rebuilds before measurement")
-    parser.add_argument("--w", type=float, default=1.0, help="Barrier width")
-    parser.add_argument("--height", type=float, default=0.1, help="Barrier height")
+    parser.add_argument("--barrier-width", type=float, default=1.0, help="Barrier width")
+    parser.add_argument("--barrier-height", type=float, default=0.1, help="Barrier height")
     parser.add_argument("--segment-length", type=float, default=5.0)
     parser.add_argument(
         "--materials",
@@ -73,8 +73,8 @@ def _main() -> None:
     bpy.ops.wm.open_mainfile(filepath=blend_path)
 
     parameters = (
-        arguments.w,
-        arguments.height,
+        arguments.barrier_width,
+        arguments.barrier_height,
         arguments.segment_length,
         arguments.materials,
     )
@@ -104,8 +104,8 @@ def _main() -> None:
         "blend": blend_path,
         "blender": bpy.app.version_string,
         "parameters": {
-            "W": arguments.w,
-            "H": arguments.height,
+            "barrier_width": arguments.barrier_width,
+            "barrier_height": arguments.barrier_height,
             "segment_length": arguments.segment_length,
             "materials": arguments.materials,
         },

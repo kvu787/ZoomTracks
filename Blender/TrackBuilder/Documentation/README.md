@@ -49,7 +49,7 @@ TrackBuilder rejects the build before replacing `TrackBuilder/Output` when any
 of these checked preconditions fails:
 
 - **Build arguments:**
-  - `W`, `H`, and `segment_length` are Python `int` or
+  - `barrier_width`, `barrier_height`, and `segment_length` are Python `int` or
     `float` values (not booleans), are finite, and are at least `0.1`.
     `material_names` is a list with at least two entries; every entry is a
     non-empty string naming an existing Blender material. Repeated names are
@@ -189,7 +189,7 @@ TrackBuilder also does not require generated barrier polygons to be simple,
 non-overlapping, or contained within the fill regions. Beyond finite miters and
 three distinct points, it does not check their positive area or spatial
 clearance. If the application requires those properties, the user must choose
-the outlines and `W` accordingly.
+the outlines and `barrier_width` accordingly.
 
 ### Geometric tolerance
 
@@ -212,21 +212,22 @@ turn-angle rule is independent of this distance tolerance.
 The public entry point is:
 
 ```python
-build_track(W, H, segment_length, material_names)
+build_track(barrier_width, barrier_height, segment_length, material_names)
 ```
 
 Parameters:
 
-- `W`: Barrier thickness.
-- `H`: Barrier height along global +Z.
+- `barrier_width`: Barrier thickness.
+- `barrier_height`: Barrier height along global +Z.
 - `segment_length`: Target barrier segment length measured along an outline's
   normally evaluated contact boundary.
 - `material_names`: Ordered Blender material names used repeatedly on barrier
   segments.
 
-`W`, `H`, and `segment_length` must each be finite and greater than or equal to
-`0.1`. At least two non-empty barrier-material names are required, every name
-must resolve to an existing Blender material, and repeated names are allowed.
+`barrier_width`, `barrier_height`, and `segment_length` must each be finite and
+greater than or equal to `0.1`. At least two non-empty barrier-material names
+are required, every name must resolve to an existing Blender material, and
+repeated names are allowed.
 
 Example from Blender's Python console:
 
@@ -236,7 +237,12 @@ import sys
 sys.path.insert(0, r"C:\path\to\ZoomTracks\Blender\TrackBuilder")
 from TrackBuilder import build_track
 
-output = build_track(W=1, H=0.1, segment_length=5, material_names=["red", "white"])
+output = build_track(
+    barrier_width=1,
+    barrier_height=0.1,
+    segment_length=5,
+    material_names=["red", "white"],
+)
 ```
 
 The function returns the newly committed Blender `TrackBuilder/Output`
@@ -250,7 +256,7 @@ checkbox.
 Run a build from the repository root in PowerShell:
 
 ```powershell
-& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "C:\path\to\Input.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilderCLI.py" -- --build --w 0.35 --height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "C:\path\to\BuiltTrack.blend"
+& "$env:USERPROFILE\Program\blender-4.5.12-windows-x64\blender.exe" "C:\path\to\Input.blend" --background --python-exit-code 1 --python "Blender\TrackBuilder\TrackBuilderCLI.py" -- --build --barrier-width 0.35 --barrier-height 0.8 --segment-length 2.75 --materials BarrierRed BarrierWhite --save "C:\path\to\BuiltTrack.blend"
 ```
 
 `--save` is optional. Without it, TrackBuilder builds the current file in memory
@@ -287,10 +293,10 @@ segment length. Objects sourced from curves record
 `track_builder_curve_sampling` and `track_builder_curve_sample_count`; curve
 barriers additionally record `track_builder_curve_offset_sample_count`.
 
-Barriers extend one-sided away from the track by `W` and upward by `H`. Adjacent
-infinite offset lines define their miter points. Self-overlap, self-intersecting
-barrier polygons, and barriers bleeding into the track are accepted;
-TrackBuilder does not perform boolean cleanup.
+Barriers extend one-sided away from the track by `barrier_width` and upward by
+`barrier_height`. Adjacent infinite offset lines define their miter points.
+Self-overlap, self-intersecting barrier polygons, and barriers bleeding into the
+track are accepted; TrackBuilder does not perform boolean cleanup.
 
 ### Adaptive smooth-curve barriers
 
@@ -325,7 +331,7 @@ ribbon:
 5. The dense offset is simplified independently between each pair of adjacent
    forced contact stations. Only away-edge chord error needs to be measured
    because the contact path inside an authored interval is linear. The maximum
-   offset deviation remains no greater than `W * 0.001`.
+   offset deviation remains no greater than `barrier_width * 0.001`.
 6. Adaptive stations add geometry only to the away edge. Material boundaries may
    independently add endpoints to either side when a segment cut falls inside an
    existing edge.

@@ -218,8 +218,8 @@ def _create_bezier_loop(
 def _recorded_parameters() -> samples.BuildParameters:
     scene = bpy.context.scene
     return (
-        float(scene["track_builder_W"]),
-        float(scene["track_builder_H"]),
+        float(scene["track_builder_barrier_width"]),
+        float(scene["track_builder_barrier_height"]),
         float(scene["track_builder_segment_length"]),
         json.loads(scene["track_builder_material_names"]),
     )
@@ -1307,8 +1307,8 @@ class TrackBuilderTests(unittest.TestCase):
 
         signature = _output_signature(output)
         invalid_parameters = {
-            "W": (math.nextafter(0.1, 0.0), 0.1, 0.1, material_names),
-            "H": (0.1, math.nextafter(0.1, 0.0), 0.1, material_names),
+            "barrier_width": (math.nextafter(0.1, 0.0), 0.1, 0.1, material_names),
+            "barrier_height": (0.1, math.nextafter(0.1, 0.0), 0.1, material_names),
             "segment_length": (0.1, 0.1, math.nextafter(0.1, 0.0), material_names),
         }
         for name, parameters in invalid_parameters.items():
