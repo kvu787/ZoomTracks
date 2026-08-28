@@ -1,6 +1,6 @@
 {
     "CameraFollowsCarLocation": false,
-    "FollowCameraSize": 23.5,
+    "FollowCameraSize": 19,
     "StartCarIndex": 1,
     "Cars": [
         {

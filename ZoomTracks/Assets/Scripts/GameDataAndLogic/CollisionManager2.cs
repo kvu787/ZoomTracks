@@ -7,8 +7,13 @@ namespace ZoomTracks {
     /// bounds are refreshed only when the active car changes.
     /// </summary>
     public sealed class CollisionManager2 {
-        private const float ShortenColliderFront = 0.7f;
-        private const float ShortenColliderRear = 1.3f;
+        //// For zero height barriers:
+        //private const float ShortenColliderFront = 0.7f;
+        //private const float ShortenColliderRear = 1.3f;
+
+        // For standard height barriers:
+        private const float ShortenColliderFront = 0.165f;
+        private const float ShortenColliderRear = 0.0f;
 
         private readonly CarSwitcher _carSwitcher;
         private readonly ColliderJson _colliderJson;
