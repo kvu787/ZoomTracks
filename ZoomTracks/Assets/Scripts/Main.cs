@@ -14,6 +14,7 @@ namespace ZoomTracks {
         private const string UiSceneName = "Ui";
         private const int InitialTrackIndex = 0;
         private static IReadOnlyList<string> TrackNames { get; } = Array.AsReadOnly(new[] {
+            "Basic",
             "Track001",
         });
 
