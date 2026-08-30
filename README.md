@@ -6,7 +6,7 @@ So, to play this, you'll probably need to adjust several things.
 
 # Screenshot
 
-![<Images/Screenshot 2026-08-29 194054.png>](<Images/Screenshot 2026-08-29 194054.png>)
+![<Images/Screenshot 2026-08-29 194950.png>](<Images/Screenshot 2026-08-29 194950.png>)
 
 # Description
 
