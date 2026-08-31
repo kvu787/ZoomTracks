@@ -9,6 +9,40 @@ import bpy
 
 FORMAT_VERSION = 1
 COORDINATE_SYSTEM = "BlenderWorldXY"
+REQUIRED_EXCLUDED_COLLECTION_PATHS = (
+    "Collection/Camera",
+    "Collection/Templates",
+    "Collection/TrackBuilder/Input/Outlines",
+    "Collection/TrackBuilder/Output/OutlineMeshes",
+)
+
+
+def _require_collections_excluded_from_view_layer() -> None:
+    def find_collection(
+        layer_collection: bpy.types.LayerCollection,
+        path_parts: list[str],
+        collection_path: str,
+    ) -> bpy.types.LayerCollection:
+        if not path_parts:
+            return layer_collection
+
+        child = layer_collection.children.get(path_parts[0])
+        if child is None:
+            raise RuntimeError(f"Collection '{collection_path}' does not exist")
+
+        return find_collection(child, path_parts[1:], collection_path)
+
+    for collection_path in REQUIRED_EXCLUDED_COLLECTION_PATHS:
+        collection = find_collection(
+            bpy.context.view_layer.layer_collection,
+            collection_path.split("/"),
+            collection_path,
+        )
+        if not collection.exclude:
+            raise RuntimeError(
+                f"Collection '{collection_path}' must be excluded from view "
+                f"layer '{bpy.context.view_layer.name}' before exporting"
+            )
 
 
 def _find_repository_root() -> Path:
@@ -161,6 +195,8 @@ def export_collider_data(filepath: Path) -> None:
 
 
 def main() -> None:
+    _require_collections_excluded_from_view_layer()
+
     track_name = Path(bpy.data.filepath).stem
     filepath = ZOOMTRACKS_ASSETS_PATH / "FBX" / f"{track_name}.fbx"
     filepath.parent.mkdir(parents=True, exist_ok=True)
