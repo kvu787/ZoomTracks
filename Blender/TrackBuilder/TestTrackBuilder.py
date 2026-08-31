@@ -189,7 +189,7 @@ def _create_mesh_loop(
     return obj
 
 
-def _create_bezier_loop(
+def _create_nurbs_loop(
     collection: bpy.types.Collection,
     name: str,
     radius_x: float,
@@ -200,15 +200,14 @@ def _create_bezier_loop(
     curve.dimensions = "2D"
     curve.fill_mode = "NONE"
     curve.resolution_u = 2
-    spline = curve.splines.new(type="BEZIER")
-    spline.bezier_points.add(7)
+    spline = curve.splines.new(type="NURBS")
+    spline.points.add(7)
+    spline.order_u = 4
     spline.resolution_u = 2
     spline.use_cyclic_u = True
-    for index, point in enumerate(spline.bezier_points):
-        angle = math.tau * index / len(spline.bezier_points)
-        point.co = (radius_x * math.cos(angle), radius_y * math.sin(angle), 0.0)
-        point.handle_left_type = "AUTO"
-        point.handle_right_type = "AUTO"
+    for index, point in enumerate(spline.points):
+        angle = math.tau * index / len(spline.points)
+        point.co = (radius_x * math.cos(angle), radius_y * math.sin(angle), 0.0, 1.0)
     curve.materials.append(material)
     obj = bpy.data.objects.new(name, curve)
     collection.objects.link(obj)
@@ -516,15 +515,14 @@ class TrackBuilderTests(unittest.TestCase):
         curve = bpy.data.curves.new("DenseEvaluationCurve", type="CURVE")
         curve.dimensions = "2D"
         curve.fill_mode = "NONE"
-        spline = curve.splines.new(type="BEZIER")
+        spline = curve.splines.new(type="NURBS")
         control_point_count = 20
-        spline.bezier_points.add(control_point_count - 1)
+        spline.points.add(control_point_count - 1)
+        spline.order_u = 4
         spline.use_cyclic_u = True
-        for index, point in enumerate(spline.bezier_points):
+        for index, point in enumerate(spline.points):
             angle = math.tau * index / control_point_count
-            point.co = (100.0 * math.cos(angle), 100.0 * math.sin(angle), 0.0)
-            point.handle_left_type = "AUTO"
-            point.handle_right_type = "AUTO"
+            point.co = (100.0 * math.cos(angle), 100.0 * math.sin(angle), 0.0, 1.0)
 
         obj = bpy.data.objects.new("DenseEvaluation", curve)
         bpy.context.scene.collection.objects.link(obj)
@@ -1046,20 +1044,6 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertEqual(sum(len(obj.data.vertices) for obj in output.all_objects), 16_220)
         self.assertEqual(sum(len(obj.data.polygons) for obj in output.all_objects), 9_454)
 
-    def test_poly_curve_remains_linear_and_unresampled(self) -> None:
-        parameters = self.load_test_input(7)
-        input_counts = {
-            obj.name: len(obj.data.splines[0].points)
-            for obj in _outlines_collection().all_objects
-        }
-        output = TrackBuilder.build_track(*parameters)
-        for obj in output.all_objects:
-            source = obj.get("track_builder_source")
-            if source not in input_counts or obj.get("track_builder_curve_sampling") is None:
-                continue
-            self.assertEqual(obj["track_builder_curve_sampling"], "evaluated_input")
-            self.assertEqual(obj["track_builder_curve_sample_count"], input_counts[source])
-
     def test_unsupported_curve_features_are_rejected(self) -> None:
         def add_modifier(obj: bpy.types.Object) -> None:
             obj.modifiers.new("UnsupportedModifier", type="NODES")
@@ -1104,6 +1088,21 @@ class TrackBuilderTests(unittest.TestCase):
                     TrackBuilder.build_track(*parameters)
                 self.assertIsNone(_output_collection())
 
+    def test_poly_and_bezier_curve_splines_are_rejected(self) -> None:
+        for spline_type in ["POLY", "BEZIER"]:
+            with self.subTest(spline_type=spline_type):
+                parameters = self.load_test_input(7)
+                curve = bpy.data.objects["OuterTrackCurve"]
+                curve.data.splines.clear()
+                spline = curve.data.splines.new(type=spline_type)
+                spline.use_cyclic_u = True
+                with self.assertRaisesRegex(
+                    TrackBuilder.TrackBuilderValidationError,
+                    "must contain exactly one cyclic NURBS spline",
+                ):
+                    TrackBuilder.build_track(*parameters)
+                self.assertIsNone(_output_collection())
+
     def test_unsupported_curve_feature_rejection_preserves_previous_output(self) -> None:
         parameters = self.load_test_input(7)
         output = TrackBuilder.build_track(*parameters)
@@ -1117,7 +1116,7 @@ class TrackBuilderTests(unittest.TestCase):
         self.assertIs(output, _output_collection())
         self.assertEqual(signature, _output_signature(output))
 
-    def test_supported_bezier_curve_is_sampled_without_modifying_input(self) -> None:
+    def test_supported_nurbs_curve_is_sampled_without_modifying_input(self) -> None:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         track_builder_collection = bpy.data.collections.new("TrackBuilder")
         input_collection = bpy.data.collections.new("Input")
@@ -1135,12 +1134,17 @@ class TrackBuilderTests(unittest.TestCase):
             [(-15.0, -10.0), (15.0, -10.0), (15.0, 10.0), (-15.0, 10.0)],
             ground_material,
         )
-        curve = _create_bezier_loop(
+        curve = _create_nurbs_loop(
             outlines_collection,
-            "OuterBezier",
+            "OuterNURBS",
             10.0,
             6.0,
             track_material,
+        )
+        raw_curve_outline = next(
+            outline
+            for outline in TrackBuilder._read_raw_outlines(outlines_collection)
+            if outline.object_name == curve.name
         )
         original_resolution = curve.data.splines[0].resolution_u
         output = TrackBuilder.build_track(
@@ -1158,8 +1162,14 @@ class TrackBuilderTests(unittest.TestCase):
                 "contact=authored_evaluated,offset=adaptive,"
             )
         )
-        self.assertEqual(track["track_builder_curve_sample_count"], 16)
-        self.assertEqual(barrier["track_builder_curve_sample_count"], 16)
+        self.assertEqual(
+            track["track_builder_curve_sample_count"],
+            len(raw_curve_outline.vertices),
+        )
+        self.assertEqual(
+            barrier["track_builder_curve_sample_count"],
+            len(raw_curve_outline.vertices),
+        )
         self.assertGreater(
             barrier["track_builder_curve_offset_sample_count"],
             barrier["track_builder_curve_sample_count"],

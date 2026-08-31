@@ -181,12 +181,6 @@ def _unique_objects(collection: bpy.types.Collection) -> list[bpy.types.Object]:
     return sorted(by_pointer.values(), key=lambda obj: obj.name)
 
 
-def _curve_control_points(spline: bpy.types.Spline) -> list[object]:
-    if spline.type == "BEZIER":
-        return list(spline.bezier_points)
-    return list(spline.points)
-
-
 def _validate_supported_curve_features(obj: bpy.types.Object) -> None:
     """Reject curve features unsupported by adaptive sampling."""
 
@@ -215,16 +209,15 @@ def _validate_supported_curve_features(obj: bpy.types.Object) -> None:
     if curve.taper_object is not None:
         unsupported.append("a taper object")
 
-    if len(curve.splines) == 1:
-        spline = curve.splines[0]
-        for point in _curve_control_points(spline):
-            if abs(float(point.tilt)) > 1.0e-12:
-                unsupported.append("non-zero control-point tilt")
-                break
-        for point in _curve_control_points(spline):
-            if abs(float(point.radius) - 1.0) > 1.0e-12:
-                unsupported.append("non-default control-point radius")
-                break
+    spline = curve.splines[0]
+    for point in spline.points:
+        if abs(float(point.tilt)) > 1.0e-12:
+            unsupported.append("non-zero control-point tilt")
+            break
+    for point in spline.points:
+        if abs(float(point.radius) - 1.0) > 1.0e-12:
+            unsupported.append("non-default control-point radius")
+            break
 
     if unsupported:
         features = ", ".join(dict.fromkeys(unsupported))
@@ -249,12 +242,16 @@ def _read_raw_outlines(input_collection: bpy.types.Collection) -> list[_RawOutli
                 "only MESH and CURVE are allowed"
             )
         if obj.type == "CURVE":
-            _validate_supported_curve_features(obj)
             splines = obj.data.splines
-            if len(splines) != 1 or not splines[0].use_cyclic_u:
+            if (
+                len(splines) != 1
+                or splines[0].type != "NURBS"
+                or not splines[0].use_cyclic_u
+            ):
                 raise TrackBuilderValidationError(
-                    f"Curve {obj.name!r} must contain exactly one cyclic spline"
+                    f"Curve {obj.name!r} must contain exactly one cyclic NURBS spline"
                 )
+            _validate_supported_curve_features(obj)
 
         slots = list(obj.material_slots)
         if len(slots) != 1 or slots[0].material is None:
@@ -525,8 +522,7 @@ def _evaluated_curve_loop(
     temporary_object.matrix_world = obj.matrix_world.copy()
     temporary_data.resolution_u = resolution
     temporary_data.render_resolution_u = 0
-    if temporary_data.splines[0].type != "POLY":
-        temporary_data.splines[0].resolution_u = resolution
+    temporary_data.splines[0].resolution_u = resolution
     temporary_collection.objects.link(temporary_object)
     evaluated_object = None
     evaluated_mesh = None
@@ -762,9 +758,6 @@ def _adaptive_curve_outline(
     epsilon: float,
     temporary_collection: bpy.types.Collection,
 ) -> _Outline:
-    spline = outline.source_object.data.splines[0]
-    if spline.type == "POLY":
-        return outline
     resolution = _curve_reference_resolution(outline.source_object)
     dense_source = _evaluated_curve_loop(
         outline.source_object,

@@ -69,8 +69,8 @@ of these checked preconditions fails:
     excluded `Outlines` collection before reading its objects.
 - **Object types and materials:**
   - every object found recursively in `TrackBuilder/Input/Outlines` is
-    a Mesh or Curve, can be converted to normally evaluated mesh geometry, and
-    has exactly one non-empty material slot.
+    a Mesh or legacy Curve, can be converted to normally evaluated mesh
+    geometry, and has exactly one non-empty material slot.
 - **Normally evaluated coordinates and topology:**
   - every world-space coordinate
     is finite; every outline has at least three evaluated vertices, has no faces,
@@ -87,14 +87,14 @@ of these checked preconditions fails:
     not applied to Curve objects because legitimate curve evaluation can produce
     near-collinear samples.
 - **Curve data:**
-  - A Curve contains exactly one cyclic spline and uses only the
+  - A Curve contains exactly one cyclic NURBS spline and uses only the
     supported feature set. TrackBuilder rejects linked-library Curve objects or
     datablocks; modifiers; constraints; parenting; object or data animation and
     drivers; shape keys; a separate render resolution; curve offset, extrusion,
     bevel geometry, bevel objects, or taper objects; non-zero control-point tilt;
-    and non-default control-point radius. Cyclic `POLY`, Bézier, and NURBS splines,
-    2D or 3D Curve dimensions, object transforms, and NURBS weights are otherwise
-    supported. `POLY` splines remain linear and are not adaptively resampled.
+    and non-default control-point radius. 2D or 3D Curve dimensions, object
+    transforms, and NURBS weights are otherwise supported. `POLY` and Bézier
+    splines are rejected.
 - **Representative-point role classification:**
   - Testing one representative
     vertex from each outline against the other outlines produces exactly one
@@ -103,7 +103,7 @@ of these checked preconditions fails:
     candidate count is rejected. This check detects nested inner outlines when
     the trusted whole-boundary conditions in the next section hold.
 - **Smooth-curve reference geometry:**
-  - A Bézier or NURBS outer or inner outline's
+  - A NURBS outer or inner outline's
     denser temporary evaluation still has no faces, forms one closed degree-two
     loop, is planar, has no edge at or below `epsilon`, has non-negligible signed
     area, and has defined, finite barrier miters.
@@ -149,8 +149,7 @@ edges. The user must ensure all of the following:
   - Inner-track boundaries must be mutually disjoint and non-nested.
     - TrackBuilder's representative-point tests do not establish whole-boundary containment.
 - **Curve paths satisfy those rules between control points.**
-  - For Bézier and
-    NURBS inputs, inspect the evaluated spline rather than only its control
+  - For NURBS inputs, inspect the evaluated spline rather than only its control
     polygon. The normally evaluated path must remain simple and separated; for
     outer and inner barrier outlines, the denser reference path must do so as
     well.
@@ -314,7 +313,7 @@ input Curve object. In effect, the barrier is a ribbon whose track-facing edge
 preserves Blender's normal evaluation while its away-facing edge is allowed to
 use as much detail as its offset shape requires.
 
-For smooth Bézier and NURBS barrier outlines, TrackBuilder treats the source
+For smooth NURBS barrier outlines, TrackBuilder treats the source
 curve and its away-from-track offset as two independently sampled sides of a
 ribbon:
 

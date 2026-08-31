@@ -79,8 +79,8 @@ The suite covers:
 - Recovery when perimeter division rounds just below a feasible integer count.
 - Acceptance of segment counts and dense curve evaluations above the former
   fixed maximums.
-- `POLY` curve behavior.
-- A generated cyclic Bézier outline.
+- Rejection of `POLY` and Bézier Curve splines.
+- A generated cyclic NURBS outline.
 - The representative NURBS curvature scene.
 - Exact preservation of the normally evaluated contact topology.
 - Adaptive away-edge chord-error bounds.

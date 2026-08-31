@@ -116,8 +116,9 @@ def _create_outline_object(
         data = bpy.data.curves.new(f"{name}Curve", type="CURVE")
         data.dimensions = "2D"
         data.resolution_u = 12
-        spline = data.splines.new(type="POLY")
+        spline = data.splines.new(type="NURBS")
         spline.points.add(len(ordered) - 1)
+        spline.order_u = min(4, len(ordered))
         for spline_point, (x, y) in zip(spline.points, ordered):
             spline_point.co = (x, y, 0.0, 1.0)
         spline.use_cyclic_u = True
