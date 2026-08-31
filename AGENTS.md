@@ -1,24 +1,38 @@
-# Instructions
+# Base template
 
-Never make any source code edits unless explicitly instructed in the prompt.
-If you are recommending any edits, put them in the reply to the prompt.
+## External tools
 
-# Available tools
+You may use the tools in `%UserProfile%\Program`.
+You may refer to local copies of source repos in `%UserProfile%\Repository\External`.
 
-* This should be on Windows 11.
-* These additional tools should be available:
-  * Modern PowerShell
-  * Python
-  * Git
-* A portable installation of Blender should be in `%UserProfile%\Program\blender*`
+## Godot
 
-# Info
+If you create a Godot project, include a "Run.cmd" file that builds and launches the standalone exe of the Godot project by double-clicking the Run.cmd from File Explorer.
+
+## Git
+
+When implementing stuff, avoid difficult-to-review "mega-commits".
+Split large work into multiple commits to make it easier to review.
+Separate commits that record conversations from other commits.
+
+## Mathematical notation in Markdown
+
+Any mathematical notation in Markdown files (LaTeX, KaTeX, MathJax, etc) must display properly in VSCode's Markdown previewer, GitHub.com's Markdown displayer, and the markdown viewer in the Windows 11 ChatGPT app.
+
+# Base template additions
+
+## Compatibility
+
+Do not attempt to maintain any sort of application compatibility between different commits of the repo. This creates unwanted complexity.
+
+# Repository-specific
+
+## Info
 
 * The root of the Unity Engine game project is the ZoomTracks subfolder.
-* Game logs are in `C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyLogOutput`.
-* Assume that the standalone build of the unity game is up-to-date and in `C:\Users\kevin\Repository\Unity\ZoomTracks\ZoomTracks\MyBuildOutput`.
+* Game logs are in `Unity\ZoomTracks\ZoomTracks\MyLogOutput`.
 
-# TrackBuilder tests
+## TrackBuilder tests
 
 Testing architecture and commands are documented in
 `Blender\TrackBuilder\Documentation\TEST.md`.
@@ -37,7 +51,7 @@ tests, run `Blender\TrackBuilder\TestTrackBuilder.py`. Each run writes inspectab
 `.blend` results and an overall report to the gitignored
 `Blender\TrackBuilder\TestArtifacts` directory. Never commit those artifacts.
 
-# While reviewing the Unity C# code
+## While reviewing the Unity C# code
 
 Ignore this stuff:
 * Commented out code
