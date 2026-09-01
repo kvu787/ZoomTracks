@@ -1,5 +1,0 @@
-.dotnet-home/
-.nuget-packages/
-**/bin/
-**/obj/
-artifacts/failures/

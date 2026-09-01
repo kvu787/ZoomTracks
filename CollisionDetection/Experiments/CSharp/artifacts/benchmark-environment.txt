@@ -1,8 +1,0 @@
-ENV timestamp_utc=2026-08-23T16:14:54.2665824Z
-ENV cpu=Intel(R) Core(TM) Ultra 9 275HX
-ENV os=Microsoft Windows 10.0.26200 framework=.NET 10.0.11 process_arch=X64 os_arch=X64
-ENV logical_processors_visible=24 gc_server=False gc_latency=Interactive
-ENV stopwatch_frequency=10000000 stopwatch_high_resolution=True priority=Normal affinity=0xffffff
-ENV library_target=netstandard2.1 runner_target=net10.0 unity_version=6000.3.22f1 build=Release debugger_attached=False
-ENV controls=standalone_runner;affinity_not_modified;priority_not_modified;power_mode_uncontrolled;background_load_uncontrolled seed=31415926
-ENV source_sha256=c285544bb82ddfc49107958f03851ed00724237d123ff950e9b6fb3be7691ad6
