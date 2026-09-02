@@ -29,7 +29,7 @@ Do not attempt to maintain any sort of application compatibility between differe
 
 ## Info
 
-* The root of the Unity Engine game project is the ZoomTracks subfolder.
+* The Unity Engine game project is located in the ZoomTracks subfolder.
 * Game logs are in `ZoomTracks\MyLogOutput`.
 
 ## TrackBuilder tests
