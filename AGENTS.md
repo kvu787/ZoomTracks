@@ -50,16 +50,3 @@ After any change that can affect TrackBuilder output, validation, fixtures, or
 tests, run `Blender\TrackBuilder\TestTrackBuilder.py`. Each run writes inspectable
 `.blend` results and an overall report to the gitignored
 `Blender\TrackBuilder\TestArtifacts` directory. Never commit those artifacts.
-
-## While reviewing the Unity C# code
-
-Ignore this stuff:
-* Commented out code
-* graphics options are reset on track switch
-* setup new scene tool can duplicate colliders and doesn't check if it's already been run
-* fast cars can tunnel through obstacles
-  * i know this can happen and it's fine
-
-Ignore these currently unused features:
-* TireGroundContactPoints
-* MeshColliders on grass, gravel, track, etc
