@@ -65,11 +65,20 @@ namespace ZoomTracks {
             UseRuntimeOnlyCopyOfUrpAsset();
             UniversalRenderPipeline.asset.supportsHDR = false;
 
+            /*
+             * Why use `Application.isEditor ? 2 : 1;`?
+             * 
+             * Work around a Unity Editor DX12 deadlock where maxQueuedFrames = 1 can
+             * freeze Play Mode while waiting indefinitely for a D3D12 fence (UUM-131962).
+             * Use 2 in the Editor to avoid the freeze, while retaining 1 in standalone
+             * builds for lower render latency. I observed a Unity Editor game play mode
+             * get stuck due to this on Aug 4 2026.
+             */
             // When running with an empty main loop:
             // maxQueuedFrames = 1 runs at ~1200 fps
             // maxQueuedFrames = 2 runs at ~2400 fps
             // maxQueuedFrames = 3+ runs at ~2900 fps
-            QualitySettings.maxQueuedFrames = 1;
+            QualitySettings.maxQueuedFrames = Application.isEditor ? 2 : 1;
 
             Application.targetFrameRate = -1;
         }
