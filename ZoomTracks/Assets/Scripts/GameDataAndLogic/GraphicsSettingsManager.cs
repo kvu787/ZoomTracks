@@ -7,8 +7,8 @@ namespace ZoomTracks {
     public class GraphicsSettingsManager {
         private enum MsaaModeEnum {
             Off,
-            Msaa2x,
-            Msaa4x,
+            //Msaa2x,
+            //Msaa4x,
             Msaa8x,
         }
 
@@ -24,17 +24,17 @@ namespace ZoomTracks {
         private enum VsyncModeEnum {
             Off,
             EveryVBlank,
-            EveryTwoVBlanks,
-            EveryThreeVBlanks,
-            EveryFourVBlanks,
+            //EveryTwoVBlanks,
+            //EveryThreeVBlanks,
+            //EveryFourVBlanks,
         }
 
         private enum RenderScaleEnum {
             Scale0_125,
-            Scale0_25,
-            Scale0_5,
+            //Scale0_25,
+            //Scale0_5,
             Scale1,
-            Scale1_5,
+            //Scale1_5,
             Scale2,
         }
 
@@ -142,18 +142,18 @@ namespace ZoomTracks {
             QualitySettings.vSyncCount = this.VsyncMode switch {
                 VsyncModeEnum.Off => 0,
                 VsyncModeEnum.EveryVBlank => 1,
-                VsyncModeEnum.EveryTwoVBlanks => 2,
-                VsyncModeEnum.EveryThreeVBlanks => 3,
-                VsyncModeEnum.EveryFourVBlanks => 4,
+                //VsyncModeEnum.EveryTwoVBlanks => 2,
+                //VsyncModeEnum.EveryThreeVBlanks => 3,
+                //VsyncModeEnum.EveryFourVBlanks => 4,
                 _ => throw new System.Exception(),
             };
 
             UniversalRenderPipeline.asset.renderScale = this.RenderScale switch {
                 RenderScaleEnum.Scale0_125 => 0.125f,
-                RenderScaleEnum.Scale0_25 => 0.25f,
-                RenderScaleEnum.Scale0_5 => 0.5f,
+                //RenderScaleEnum.Scale0_25 => 0.25f,
+                //RenderScaleEnum.Scale0_5 => 0.5f,
                 RenderScaleEnum.Scale1 => 1f,
-                RenderScaleEnum.Scale1_5 => 1.5f,
+                //RenderScaleEnum.Scale1_5 => 1.5f,
                 RenderScaleEnum.Scale2 => 2f,
                 _ => throw new System.Exception()
             };
@@ -169,8 +169,8 @@ namespace ZoomTracks {
         private void ApplyMsaaMode() {
             UniversalRenderPipeline.asset.msaaSampleCount = this.MsaaMode switch {
                 MsaaModeEnum.Off => 1,
-                MsaaModeEnum.Msaa2x => 2,
-                MsaaModeEnum.Msaa4x => 4,
+                //MsaaModeEnum.Msaa2x => 2,
+                //MsaaModeEnum.Msaa4x => 4,
                 MsaaModeEnum.Msaa8x => 8,
                 _ => throw new System.Exception(),
             };
