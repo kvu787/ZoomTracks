@@ -52,21 +52,6 @@ Outliner > Filter > Filter > Object Contents = Unchecked
     * Shadows = Unchecked
   * Color Management > View Transform = Standard
 
-# Track objects
-
-* In the Templates collection, add the BarrierSegment and CheckeredLineSegment objects
-* In the Track collection, add a simple oval track that uses each object:
-  * Rectangular grass area
-  *
-
-# Geometry nodes
-
-After adding the template track, you should have these custom geometry nodes modifiers:
-* GenerateBarrier
-* GenerateCheckeredLine
-
-All custom geometry nodes modifiers should have "Fake User" enabled.
-
 # Camera objects
 
 Camera pivot:
@@ -94,6 +79,21 @@ Exception:
 If you want a simple solid color with just shading and no specular, use these parameters:
 1. Base color > Surface > Roughness = 1.0
 2. Base color > Surface > Specular > IOR Level = 0.0
+
+# Track objects
+
+* In the Templates collection, add the BarrierSegment and CheckeredLineSegment objects
+* In the Track collection, add a simple oval track that uses each object:
+  * Rectangular grass area
+  *
+
+# Geometry nodes
+
+After adding the template track, you should have these custom geometry nodes modifiers:
+* GenerateBarrier
+* GenerateCheckeredLine
+
+All custom geometry nodes modifiers should have "Fake User" enabled.
 
 # Usage instructions
 
