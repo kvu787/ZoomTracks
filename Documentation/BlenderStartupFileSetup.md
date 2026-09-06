@@ -35,20 +35,21 @@ In "Outliner > Filter > Restriction Toggles", enable only these:
 * Arrow
 * Eye
 
-Uncheck: "Outliner > Filter > Filter > Object Contents"
+Outliner > Filter > Filter > Object Contents = Unchecked
 
 # Viewport
 
-3D Viewport >
+* 3D Viewport >
   * Top-right corner > Gizmos > Camera > Lens = Unchecked
   * Viewport Overlays > Statistics = Checked
   * N-sidebar > View > View > Clip start = 1 m
   * N-sidebar > View > View > Clip end = 10000 m
-
-Properties > Render >
-  * Sampling > Viewport > Samples = 1
-  * Sampling > Viewport > Temporal Reprojection = Unchecked
-  * Sampling > Shadows = Unchecked
+* Properties > Render >
+  * Sampling >
+    * Viewport >
+      * Samples = 1
+      * Temporal Reprojection = Unchecked
+    * Shadows = Unchecked
   * Color Management > View Transform = Standard
 
 # Track objects
