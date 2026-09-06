@@ -4,25 +4,32 @@ using UnityEngine.InputSystem;
 namespace ZoomTracks {
     public class CarState {
         /// <summary>
+        /// A "hardware deadzone" refers to deadzone processing done by the controller hardware prior to sending input data via USB or wireless connection to the PC.
+        /// A "game deadzone" refers to deadzone processing by the game software via Unity built-in code or this custom code.
+        /// 
         /// 1. For an 8BitDo Ultimate 2 Wireless controller:
-        ///    * This controller has built-in hardware deadzones that are enabled by default.
+        ///    * This controller has hardware deadzones that are enabled by default.
         ///    * The at-rest analog stick value is always reported as 0.0000152587890625 for both X and Y.
         ///      * (I don't know why it is 0.0000152587890625 instead of just 0.0.)
-        ///    * Therefore, a minimum safe inner deadzone is 0.0001, which is effectively 0.0.
+        ///    * Therefore, if the hardware deadzone is enabled and set high enough, then a minimum safe game inner deadzone is 0.0001, which is effectively 0.0.
+        ///    * However, if the hardware deadzone is disabled or enabled but set low enough, then you will need a high enough game inner deadzone.
         /// 
         /// 2. For a Razer Wolverine Pro 8K PC controller:
         ///    * Turn off "Prevent Double Deadzones".
         ///    * Same as 1.
+        ///    
+        /// 3. For a Gamesir G7 Pro 8K PC controller:
+        ///    * Same as 1.
         ///
-        /// 3. For a standard Xbox Series controller:
-        ///    * This controller does not have built-in hardware deadzones.
+        /// 4. For a standard Xbox Series controller:
+        ///    * This controller does not have hardware deadzones.
         ///    * This means the at-rest analog stick value will bounce around from 0.00 to +/-0.02.
-        ///    * A minimum safe inner deadzone is 0.03.
+        ///    * A minimum safe game inner deadzone is 0.03.
         ///
-        /// 4. For a standard PlayStation 5 DualSense controller:
+        /// 5. For a standard PlayStation 5 DualSense controller:
         ///    * Same as 3.
         ///
-        /// However, just because a controller's minimum safe inner deadzone is N doesn't mean it should be set to N.
+        /// However, just because a controller's minimum safe game inner deadzone is N doesn't mean it should be set to N.
         /// I have set the inner deadzone value to 0.05, which is well above all the minimums for the controllers I use,
         /// because my thumb's precision is too janky below 0.05.
         ///
