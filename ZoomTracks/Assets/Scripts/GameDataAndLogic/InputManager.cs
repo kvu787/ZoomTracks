@@ -30,7 +30,6 @@ namespace ZoomTracks {
         public void UpdateInputs() {
             this.Keyboard = Keyboard.current;
             this.Gamepad = Gamepad.current;
-            //this.LogGamepadRightStick();
 
             this.QuitGame = (this.Keyboard?.escapeKey.wasPressedThisFrame is true) || (this.Gamepad?.startButton.wasPressedThisFrame is true);
 
@@ -52,6 +51,9 @@ namespace ZoomTracks {
             this.ResetCar = this.Gamepad != null && !this.Gamepad.leftShoulder.isPressed && this.Gamepad.xButton.wasPressedThisFrame;
 
             this.InsertStutterLogSpacer = false;
+
+            //// Uncomment this line to print out raw and unprocessed right stick input every half-second 
+            //this.LogGamepadRightStick();
         }
 
         private DateTime LastLogTime = DateTime.MinValue;
