@@ -1,52 +1,55 @@
+# Blender version
+
 These instructions assume you are using Blender 4.5.x LTS.
 
 # Initial setup
 
-* Delete all default objects
-* Move Outliner and Properties sidebar from the right side to the left side
 * Remove the Timeline editor area at the bottom
+* Move Outliner and Properties sidebar from the right side to the left side
 * Expand the N-sidebar
+* Delete all default objects
 
 # Collections
 
 * There should be only 1 item at the root: a collection called "Collection"
 * Then, add the following collections:
 
-```python
-ExpectedCollectionNames = (
-    "Barriers",
-    "BigCones",
-    "Camera",
-    "Checkpoints",
-    "Cones",
-    "Templates",
-    "Track",
-    "Uncategorized",
-    "Vehicles",
-)
+```
+Camera/
+Checkpoints/
+Decorations/
+  BigCones/
+  Decorations/
+Templates/
+Vehicles/
+TrackBuilder/
+  Input/
+    Outlines/
 ```
 
 # Outliner
 
 In "Outliner > Filter > Restriction Toggles", enable only these:
+
 * Checkbox
 * Arrow
 * Eye
-* Monitor
 
 Uncheck: "Outliner > Filter > Filter > Object Contents"
 
 # Viewport
 
-* 3D Viewport > Top-right corner > Gizmos > Camera > Lens = Unchecked
-* 3D Viewport > Viewport Overlays > Statistics = Checked
-* 3D Viewport > N-sidebar > View > View > Clip start = 1 m
-* 3D Viewport > N-sidebar > View > View > Clip end = 10000 m
+3D Viewport >
+  * Top-right corner > Gizmos > Camera > Lens = Unchecked
+  * Viewport Overlays > Statistics = Checked
+  * N-sidebar > View > View > Clip start = 1 m
+  * N-sidebar > View > View > Clip end = 10000 m
 
-* Properties > Render > Sampling > Viewport > Samples = 1
-* Properties > Render > Sampling > Viewport > Temporal Reprojection = Unchecked
-* Properties > Render > Sampling > Shadows = Unchecked
-* Properties > Render > Color Management > View Transform = Standard
+Properties > Render >
+  * Sampling > Viewport > Samples = 1
+  * Sampling > Viewport > Temporal Reprojection = Unchecked
+  * Sampling > Shadows = Unchecked
+  * Color Management > View Transform = Standard
 
 # Track objects
 
