@@ -36,7 +36,6 @@ Checkpoints/
 Decorations/
   BigCones/
   Cones/
-Templates/
 Vehicles/
 TrackBuilder/
   Input/
