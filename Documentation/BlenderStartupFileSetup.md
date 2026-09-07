@@ -2,7 +2,7 @@
 
 These instructions assume you are using Blender 4.5.x LTS.
 
-# Initial setup
+# Interface setup
 
 * Remove the Timeline editor area at the bottom
 * Move Outliner and Properties sidebar from the right side to the left side
@@ -41,7 +41,7 @@ Outliner > Filter > Filter > Object Contents = Unchecked
 
 * 3D Viewport >
   * Top-right corner > Gizmos > Camera > Lens = Unchecked
-  * Viewport Overlays > Statistics = Checked
+  * Top-right corner > Overlays > Statistics = Checked
   * N-sidebar > View > View > Clip start = 1 m
   * N-sidebar > View > View > Clip end = 10000 m
 * Properties > Render > Sampling > Viewport > Samples = 1
