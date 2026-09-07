@@ -9,6 +9,22 @@ These instructions assume you are using Blender 4.5.x LTS.
 * Expand the N-sidebar
 * Delete all default objects
 
+# Global settings
+
+* Outliner >
+  * Filter > Restriction Toggles = (Checkbox, Arrow, Eye)
+  * Filter > Filter > Object Contents = Unchecked
+* 3D Viewport >
+  * Top-right corner > Gizmos > Camera > Lens = Unchecked
+  * Top-right corner > Overlays > Statistics = Checked
+  * N-sidebar > View > View > Clip start = 1 m
+  * N-sidebar > View > View > Clip end = 10000 m
+* Properties > Render >
+  * Sampling > Viewport > Samples = 1
+  * Sampling > Viewport > Temporal Reprojection = Unchecked
+  * Sampling > Shadows = Unchecked
+  * Color Management > View Transform = Standard
+
 # Collections
 
 * There should be only 1 item at the root: a collection called "Collection"
@@ -26,22 +42,6 @@ TrackBuilder/
   Input/
     Outlines/
 ```
-
-# Global settings
-
-* Outliner >
-  * Filter > Restriction Toggles = (Checkbox, Arrow, Eye)
-  * Filter > Filter > Object Contents = Unchecked
-* 3D Viewport >
-  * Top-right corner > Gizmos > Camera > Lens = Unchecked
-  * Top-right corner > Overlays > Statistics = Checked
-  * N-sidebar > View > View > Clip start = 1 m
-  * N-sidebar > View > View > Clip end = 10000 m
-* Properties > Render >
-  * Sampling > Viewport > Samples = 1
-  * Sampling > Viewport > Temporal Reprojection = Unchecked
-  * Sampling > Shadows = Unchecked
-  * Color Management > View Transform = Standard
 
 # Camera objects
 
