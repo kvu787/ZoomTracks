@@ -46,19 +46,19 @@ TrackBuilder/
 
 * Camera pivot:
   * Name: "CameraPivot"
+  * Pitch (Rotation.X) = 45 deg
+  * Yaw (Rotation.Z) = 45 deg
   * Plain axes
     * Display As = Arrows
     * Size = 10 m
-  * Pitch = 45 deg (Rotation.X)
-  * Yaw   = 45 deg (Rotation.Z)
 * Camera:
   * Name: "Camera"
+  * Distance from pivot to camera (Location.Z) = 500 m
   * Type = Orthographic
   * Orthographic Scale = 300
   * Clip Start = 1 m
   * Clip End = 1000 m
   * Properties > Data > Viewport Display > Show > Limit = Checked
-  * Distance from pivot to camera (Location.Z) = 500 m
 
 # Materials
 
