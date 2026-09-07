@@ -44,13 +44,10 @@ Outliner > Filter > Filter > Object Contents = Unchecked
   * Viewport Overlays > Statistics = Checked
   * N-sidebar > View > View > Clip start = 1 m
   * N-sidebar > View > View > Clip end = 10000 m
-* Properties > Render >
-  * Sampling >
-    * Viewport >
-      * Samples = 1
-      * Temporal Reprojection = Unchecked
-    * Shadows = Unchecked
-  * Color Management > View Transform = Standard
+* Properties > Render > Sampling > Viewport > Samples = 1
+* Properties > Render > Sampling > Viewport > Temporal Reprojection = Unchecked
+* Properties > Render > Sampling > Shadows = Unchecked
+* Properties > Render > Color Management > View Transform = Standard
 
 # Camera objects
 
