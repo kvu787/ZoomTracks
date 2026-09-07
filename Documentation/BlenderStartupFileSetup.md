@@ -33,6 +33,7 @@ These instructions assume you are using Blender 4.5.x LTS.
 ```
 Camera/
 Checkpoints/
+ColorBlocks/
 Decorations/
   BigCones/
   Cones/
