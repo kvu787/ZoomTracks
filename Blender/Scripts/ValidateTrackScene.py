@@ -4,6 +4,15 @@ from pathlib import Path
 from collections.abc import Iterable
 import math
 
+def IsTrackTemplateFile():
+    area = bpy.context.area
+    if area is not None and area.type == "TEXT_EDITOR":
+        if bpy.data.filepath:
+            blend_name = Path(bpy.data.filepath).name
+            if blend_name == "TrackTemplate.blend":
+                return True
+    return False
+
 def FindLayerCollection(layerCollection: bpy.types.LayerCollection, collection: bpy.types.Collection) -> bpy.types.LayerCollection | None:
     if layerCollection.collection == collection:
         return layerCollection
@@ -70,16 +79,33 @@ def Main():
             raise Exception(f"Disallowed collection name: {collectionName}")
     assert len(rootCollection.children) == len(ExpectedCollectionNames), f"Root collection must contain exactly {len(ExpectedCollectionNames)} collections"
 
-    HiddenCollectionNames = (
-        "Camera",
-    )
+    HiddenCollectionNames = None
+    VisibleCollectionNames = None
 
-    VisibleCollectionNames = (
-        "Checkpoints",
-        "Decorations",
-        "Vehicles",
-        "TrackBuilder",
-    )
+    if IsTrackTemplateFile():
+        HiddenCollectionNames = (
+            "Camera",
+        )
+        VisibleCollectionNames = (
+            "Checkpoints",
+            "ColorBlocks",
+            "Decorations",
+            "Templates",
+            "Vehicles",
+            "TrackBuilder",
+        )
+    else:
+        HiddenCollectionNames = (
+            "Camera",
+            "ColorBlocks",
+            "Templates",
+        )
+        VisibleCollectionNames = (
+            "Checkpoints",
+            "Decorations",
+            "Vehicles",
+            "TrackBuilder",
+        )
 
     # Ensure collections are unhidden/hidden
     assert not FindLayerCollection(viewLayer.layer_collection, rootCollection).exclude, "Root collection is hidden"
