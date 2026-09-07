@@ -35,7 +35,7 @@ Camera/
 Checkpoints/
 Decorations/
   BigCones/
-  Decorations/
+  Cones/
 Templates/
 Vehicles/
 TrackBuilder/
