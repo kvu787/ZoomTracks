@@ -27,18 +27,11 @@ TrackBuilder/
     Outlines/
 ```
 
-# Outliner
+# Global settings
 
-In "Outliner > Filter > Restriction Toggles", enable only these:
-
-* Checkbox
-* Arrow
-* Eye
-
-Outliner > Filter > Filter > Object Contents = Unchecked
-
-# Viewport
-
+* Outliner >
+  * Filter > Restriction Toggles = (Checkbox, Arrow, Eye)
+  * Filter > Filter > Object Contents = Unchecked
 * 3D Viewport >
   * Top-right corner > Gizmos > Camera > Lens = Unchecked
   * Top-right corner > Overlays > Statistics = Checked
