@@ -12,10 +12,11 @@ namespace ZoomTracks {
         private const string RefreshRateFlag = "-refreshRate";
         private const string StutterLogFilePathFlag = "-stutterLogFilePath";
         private const string UiSceneName = "Ui";
-        private const int InitialTrackIndex = 1;
+        private const int InitialTrackIndex = 2;
         private static IReadOnlyList<string> TrackNames { get; } = Array.AsReadOnly(new[] {
             "Basic",
             "Track001",
+            "Track002",
         });
 
         private TimeSpan TimeoutDurationSeconds { get; } = TimeSpan.FromSeconds(0.35);
