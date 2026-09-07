@@ -48,6 +48,7 @@ def Main():
     ExpectedCollectionNames = (
         "Camera",
         "Checkpoints",
+        "ColorBlocks",
         "Decorations",
         "Templates",
         "Vehicles",
@@ -69,12 +70,23 @@ def Main():
             raise Exception(f"Disallowed collection name: {collectionName}")
     assert len(rootCollection.children) == len(ExpectedCollectionNames), f"Root collection must contain exactly {len(ExpectedCollectionNames)} collections"
 
+    HiddenCollectionNames = (
+        "Camera",
+    )
+
+    VisibleCollectionNames = (
+        "Checkpoints",
+        "Decorations",
+        "Vehicles",
+        "TrackBuilder",
+    )
+
     # Ensure collections are unhidden/hidden
     assert not FindLayerCollection(viewLayer.layer_collection, rootCollection).exclude, "Root collection is hidden"
     for collection in rootCollection.children:
-        if collection.name in ("Camera", "Templates"):
+        if collection.name in HiddenCollectionNames:
             assert FindLayerCollection(viewLayer.layer_collection, collection).exclude, f"This collection should be hidden: {collection.name}"
-        else:
+        if collection.name in VisibleCollectionNames:
             assert not FindLayerCollection(viewLayer.layer_collection, collection).exclude, f"This collection should not be hidden: {collection.name}"
 
     # Ensure all objects belong to one collection
