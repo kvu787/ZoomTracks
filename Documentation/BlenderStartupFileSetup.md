@@ -101,7 +101,7 @@ If you want a simple solid color with just shading and no specular, use these pa
 | Node group `GenerateCheckeredLine`     | Creates the three checker rows                             |
 | Node group `GenerateBarrier`           | Generates the individual segments in each row              |
 | Object `Template_CheckeredLineSegment` | Supplies the segment geometry                              |
-| Mesh `Cube.001`                        | The template’s actual vertices and faces                   |
+| Mesh `Cube.001`                        | The template's actual vertices and faces                   |
 | Material `CheckeredLineBlack`          | Black checker material, including its shader nodes         |
 | Material `CheckeredLineWhite`          | White checker material, including its shader nodes         |
 
