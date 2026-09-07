@@ -44,29 +44,29 @@ Outliner > Filter > Filter > Object Contents = Unchecked
   * Top-right corner > Overlays > Statistics = Checked
   * N-sidebar > View > View > Clip start = 1 m
   * N-sidebar > View > View > Clip end = 10000 m
-* Properties > Render > Sampling > Viewport > Samples = 1
-* Properties > Render > Sampling > Viewport > Temporal Reprojection = Unchecked
-* Properties > Render > Sampling > Shadows = Unchecked
-* Properties > Render > Color Management > View Transform = Standard
+* Properties > Render >
+  * Sampling > Viewport > Samples = 1
+  * Sampling > Viewport > Temporal Reprojection = Unchecked
+  * Sampling > Shadows = Unchecked
+  * Color Management > View Transform = Standard
 
 # Camera objects
 
-Camera pivot:
-* Name: "CameraPivot"
-* Plain axes
-  * Display As = Arrows
-  * Size = 10 m
-* Pitch = 45 deg (Rotation.X)
-* Yaw   = 45 deg (Rotation.Z)
-
-Camera:
-* Name: "Camera"
-* Type = Orthographic
-* Orthographic Scale = 300
-* Clip Start = 1 m
-* Clip End = 1000 m
-* Properties > Data > Viewport Display > Show > Limit = Checked
-* Distance from pivot to camera (Location.Z) = 500 m
+* Camera pivot:
+  * Name: "CameraPivot"
+  * Plain axes
+    * Display As = Arrows
+    * Size = 10 m
+  * Pitch = 45 deg (Rotation.X)
+  * Yaw   = 45 deg (Rotation.Z)
+* Camera:
+  * Name: "Camera"
+  * Type = Orthographic
+  * Orthographic Scale = 300
+  * Clip Start = 1 m
+  * Clip End = 1000 m
+  * Properties > Data > Viewport Display > Show > Limit = Checked
+  * Distance from pivot to camera (Location.Z) = 500 m
 
 # Materials
 
