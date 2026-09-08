@@ -99,6 +99,10 @@ If you want a simple solid color with just shading and no specular, use these pa
 - The GenerateBarrier modifier was formerly used to generate straight lengths track barrier, but
   it has been superseded by TrackBuilder.
 
+# Transform locking
+
+TBD
+
 # Usage instructions
 
 * Use "Viewport Shading = Material Preview" to see colors.
