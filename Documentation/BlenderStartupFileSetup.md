@@ -101,7 +101,10 @@ If you want a simple solid color with just shading and no specular, use these pa
 
 # Transform locking
 
-TBD
+* Lock entire transform for Camera object
+* Lock Location.Z, Rotation.XY, Scale.XYZ for CameraPivot
+
+TODO...
 
 # Usage instructions
 
