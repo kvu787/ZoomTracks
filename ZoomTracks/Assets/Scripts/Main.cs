@@ -43,6 +43,10 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
+            if (!Debug.isDebugBuild) {
+                throw new Exception("UnityEngine.Debug.isDebugBuild was false. Application must be a debug/development build.");
+            }
+
             GraphicsSettingsManager.ConfigureSessionGraphicsSettings();
             DebugManager.instance.enableRuntimeUI = false;
 
