@@ -81,12 +81,12 @@ namespace ZoomTracks {
             RenderPipelineAsset_Original = null;
             RenderPipelineAsset_Copy = null;
 
-#if UNITY_EDITOR
-            // Play Mode shutdown may not process a deferred Destroy call.
-            Object.DestroyImmediate(renderPipelineAsset_Copy);
-#else
-            Object.Destroy(renderPipelineAsset_Copy);
-#endif
+            if (Application.isEditor) {
+                // Play Mode shutdown may not process a deferred Destroy call.
+                Object.DestroyImmediate(renderPipelineAsset_Copy);
+            } else {
+                Object.Destroy(renderPipelineAsset_Copy);
+            }
         }
 
         public static void ConfigureSessionGraphicsSettings() {
