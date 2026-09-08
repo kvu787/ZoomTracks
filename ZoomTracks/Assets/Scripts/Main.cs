@@ -43,11 +43,18 @@ namespace ZoomTracks {
             Debug.Log($"BEGIN: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
             Debug.Log($"Log path for standalone exe: {Application.persistentDataPath}/Player.log".Replace("/", "\\"));
 
-            GraphicsSettingsManager.UseRuntimeOnlyCopyOfUrpAsset();
             GraphicsSettingsManager.ConfigureSessionGraphicsSettings();
             DebugManager.instance.enableRuntimeUI = false;
 
             Debug.Log($"END: Main.Awake on object='{this.gameObject.name}' in scene='{this.gameObject.scene.name}'");
+        }
+
+        private void OnApplicationQuit() {
+            GraphicsSettingsManager.RestoreOriginalUrpAsset();
+        }
+
+        private void OnDestroy() {
+            GraphicsSettingsManager.RestoreOriginalUrpAsset();
         }
 
         // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/MonoBehaviour.Start.html

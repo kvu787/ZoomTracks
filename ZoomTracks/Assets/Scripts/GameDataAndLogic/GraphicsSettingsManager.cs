@@ -38,6 +38,9 @@ namespace ZoomTracks {
             Scale2,
         }
 
+        private static RenderPipelineAsset RenderPipelineAsset_Original { get; set; }
+        private static RenderPipelineAsset RenderPipelineAsset_Copy { get; set; }
+
         private UniversalAdditionalCameraData CameraData { get; }
         private InputManager InputManager { get; }
 
@@ -50,15 +53,40 @@ namespace ZoomTracks {
         /// This is necessary to prevent changes to the URP asset from persisting between different game start/stop
         /// sessions within the same Unity Editor session.
         /// </summary>
-        public static void UseRuntimeOnlyCopyOfUrpAsset() {
+        private static void UseRuntimeOnlyCopyOfUrpAsset() {
+            Assert.IsNull(RenderPipelineAsset_Original);
+            Assert.IsNull(RenderPipelineAsset_Copy);
+
             Assert.IsNull(GraphicsSettings.defaultRenderPipeline);
-            UniversalRenderPipelineAsset urpOriginal = UniversalRenderPipeline.asset;
-            Assert.IsNotNull(urpOriginal);
-            UniversalRenderPipelineAsset urpRuntimeCopy = Object.Instantiate(urpOriginal);
-            Assert.IsNotNull(urpRuntimeCopy);
-            QualitySettings.renderPipeline = urpRuntimeCopy;
-            UniversalRenderPipelineAsset urp = UniversalRenderPipeline.asset;
-            Assert.IsNotNull(urp);
+            Assert.IsNotNull(GraphicsSettings.currentRenderPipeline);
+            Assert.IsNotNull(QualitySettings.renderPipeline);
+            Assert.IsNotNull(UniversalRenderPipeline.asset);
+            Assert.IsTrue((GraphicsSettings.currentRenderPipeline == QualitySettings.renderPipeline) && (QualitySettings.renderPipeline == UniversalRenderPipeline.asset));
+
+            RenderPipelineAsset_Original = QualitySettings.renderPipeline;
+            RenderPipelineAsset_Copy = Object.Instantiate(RenderPipelineAsset_Original);
+            RenderPipelineAsset_Copy.hideFlags = HideFlags.DontSave;
+
+            QualitySettings.renderPipeline = RenderPipelineAsset_Copy;
+        }
+
+        public static void RestoreOriginalUrpAsset() {
+            if (RenderPipelineAsset_Copy == null) {
+                return;
+            }
+
+            // Restore the saved asset before releasing the session's runtime copy.
+            QualitySettings.renderPipeline = RenderPipelineAsset_Original;
+            RenderPipelineAsset renderPipelineAsset_Copy = RenderPipelineAsset_Copy;
+            RenderPipelineAsset_Original = null;
+            RenderPipelineAsset_Copy = null;
+
+#if UNITY_EDITOR
+            // Play Mode shutdown may not process a deferred Destroy call.
+            Object.DestroyImmediate(renderPipelineAsset_Copy);
+#else
+            Object.Destroy(renderPipelineAsset_Copy);
+#endif
         }
 
         public static void ConfigureSessionGraphicsSettings() {
