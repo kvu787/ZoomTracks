@@ -22,7 +22,7 @@ from mathutils.geometry import delaunay_2d_cdt
 
 
 MINIMUM_TURN_ANGLE_DEGREES = 0.01
-MINIMUM_BARRIER_SEGMENT_DIMENSION = 0.1
+MINIMUM_BARRIER_SEGMENT_DIMENSION = 0.00390625
 
 # TODO: I need to better understand these constants or simplify the approach
 CURVE_REFERENCE_RESOLUTION_MULTIPLIER = 32
