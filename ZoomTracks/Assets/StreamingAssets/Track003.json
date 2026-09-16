@@ -7,10 +7,10 @@
             "GameObjectName": "SlopeCarGreen",
             "Dynamic": {
                 "AccelerationMap": {
-                    "Forward": 20,
-                    "Reverse": 120,
-                    "Left": 60,
-                    "Right": 60
+                    "Forward": 10,
+                    "Reverse": 100,
+                    "Left": 40,
+                    "Right": 40
                 }
             }
         },
@@ -18,10 +18,10 @@
             "GameObjectName": "SlopeCarBlue",
             "Dynamic": {
                 "AccelerationMap": {
-                    "Forward": 60,
-                    "Reverse": 120,
-                    "Left": 60,
-                    "Right": 60
+                    "Forward": 35,
+                    "Reverse": 70,
+                    "Left": 35,
+                    "Right": 35
                 }
             }
         },
@@ -29,10 +29,10 @@
             "GameObjectName": "SlopeCarRed",
             "Dynamic": {
                 "AccelerationMap": {
-                    "Forward": 120,
-                    "Reverse": 240,
-                    "Left": 120,
-                    "Right": 120
+                    "Forward": 70,
+                    "Reverse": 140,
+                    "Left": 70,
+                    "Right": 70
                 }
             }
         },
@@ -40,10 +40,10 @@
             "GameObjectName": "SlopeCarYellow",
             "Dynamic": {
                 "AccelerationMap": {
-                    "Forward": 240,
-                    "Reverse": 480,
-                    "Left": 240,
-                    "Right": 240
+                    "Forward": 140,
+                    "Reverse": 280,
+                    "Left": 140,
+                    "Right": 140
                 }
             }
         },
@@ -51,10 +51,10 @@
             "GameObjectName": "SlopeCarCyan",
             "Dynamic": {
                 "AccelerationMap": {
-                    "Forward": 480,
-                    "Reverse": 960,
-                    "Left": 480,
-                    "Right": 480
+                    "Forward": 280,
+                    "Reverse": 560,
+                    "Left": 280,
+                    "Right": 280
                 }
             }
         },
