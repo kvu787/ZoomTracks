@@ -21,4 +21,21 @@
 - To export, run ExportToZoomTracks.py
   - This should generate an FBX model file and a JSON file with collision data
 - Open the ZoomTracks project in Unity Editor
--
+- In the Scenes folder, copy/paste a track scene.
+  - Rename it to the name of the new track
+- Click the track FBX file in the Project pane, view it in the Inspector, and check "Bake Axis Conversion, and click "Apply"
+- In the new track scene, delete the old track FBX object and drag/drop the new track FBX object
+  - Set its transform.position to (0,0,0)
+- Adjust the fixed camera settings by changing these:
+  - CameraPanAndYaw.Position.XZ
+  - CameraPanAndYaw.Rotation.
+  - Camera.Size
+- Click "Build Profiles > Scene List > Add Open Scenes"
+- Edit these in the C#:
+  - ZoomTracks.Main.TrackNames
+  - ZoomTracks.Main.InitialTrackIndex
+- Copy/paste a track settings JSON file, rename it to the name of the new track
+  - Adjust settings as desired
+- Switch back to Unity Editor and press Ctrl+R
+- Run the game in Unity Editor and check that everything works
+- Do an export to update the EXE
