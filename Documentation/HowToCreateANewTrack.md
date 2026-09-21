@@ -30,6 +30,7 @@
   - CameraPanAndYaw.Position.XZ
   - CameraPanAndYaw.Rotation.
   - Camera.Size
+  - Optional: Minimize clipping planes
 - Click "Build Profiles > Scene List > Add Open Scenes"
 - Edit these in the C#:
   - ZoomTracks.Main.TrackNames
