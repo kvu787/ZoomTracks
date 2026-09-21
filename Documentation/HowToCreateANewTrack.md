@@ -40,3 +40,19 @@
 - Switch back to Unity Editor and press Ctrl+R
 - Run the game in Unity Editor and check that everything works
 - Do an export to update the EXE
+
+# Things to check in the track Blender file
+
+- Ensure required objects are present
+- Ensure objects have the correct prefixes
+- Ensure objects are in the correct collections
+- Ensure all collision objects have geometry-centered origins:
+  - Barriers
+  - Cars
+  - Checkpoints
+  - Cones
+- Ensure all objects have materials assigned
+- Check material slots
+- Run validation python script
+- Select all and check that face normals are correct
+- File > Clean Up > Purge Unused Data
