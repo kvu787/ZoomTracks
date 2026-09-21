@@ -35,6 +35,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Track006_MiniComb.unity
     guid: 91a004645fe699a47b7134992c40b113
+  - enabled: 1
+    path: Assets/Scenes/Track007_MiniComb2.unity
+    guid: efb9a3908825a7e428fbd5ff6e6d657c
+  - enabled: 1
+    path: Assets/Scenes/Track008_MiniComb3.unity
+    guid: 347cbd4a70eae2b4690642de29b26a75
+  - enabled: 1
+    path: Assets/Scenes/Track009_MiniComb4.unity
+    guid: 9e4f4809807b7ae449e3eee38863802c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 857a649a08e1b1840b8388c547964540, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
