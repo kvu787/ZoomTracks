@@ -23,11 +23,18 @@ $stutterLogFilePath = "$($logFolderPath)\Stutter.log"
 
 # When specifying refresh rate, use exact frequency as reported by "Settings > System > Display > Advanced display".
 
-# Monitor 1, dx12, 2560*1440, borderless fullscreen
+# # Monitor 1, dx12, 2560*1440, borderless fullscreen
+# $process = `
+#     Start-Process `
+#         -FilePath "C:\Users\k\Repository\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
+#         -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate -1 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+#         -PassThru
+
+# Monitor 1, dx12, 3840*2160, borderless fullscreen
 $process = `
     Start-Process `
         -FilePath "C:\Users\k\Repository\ZoomTracks\ZoomTracks\MyBuildOutput\ZoomTracks.exe" `
-        -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 2560 -screen-height 1440 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate -1 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
+        -ArgumentList "-monitor 1 -force-d3d12 -window-mode borderless -screen-width 3840 -screen-height 2160 -logFile `"$($unityLogFilePath)`" -timestamps -refreshRate -1 -stutterLogFilePath `"$($stutterLogFilePath)`"" `
         -PassThru
 
 # # Monitor 1, dx11, 2560*1440, borderless fullscreen
